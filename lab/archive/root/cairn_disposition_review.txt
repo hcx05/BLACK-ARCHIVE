@@ -1,35 +1,54 @@
 //TOP SECRET - ONI SECTION III - DO NOT DISTRIBUTE//
-CAIRN DISPOSITION REVIEW - FINAL DETERMINATION
+CUSTODIAL CONTINUANCE DETERMINATION
 FROM: Cmdr. I. Petrov, ONI Section III
 TO: Sealed Record (root/custodian access only)
 DATE: 2547-02-19
-RE: SPINDLE-era acquisition material - retention determination
+RE: Subject 07-B (cross-ref OCPA-R4-11887, D. Farrow) - custodial status, decommission-cycle review
 
-This office was asked, at the close of the SPINDLE decommission, to
-make a final determination on the acquisition-era material: destroy
-it, or retain it. Disposition Order 2547-014 already states the
-outcome. This file states the reasoning that order does not.
+The SPINDLE decommission required this office to run every indefinitely-
+held item in custodial storage against a standard end-of-system checklist:
+continuing custody, or final disposition. That checklist does not care
+what a holding is. It only asks whether someone is still paying for it
+to exist. Subject 07-B's suspension unit came up on that list like
+everything else.
 
-Every argument for destruction is operational. It is easier to manage
-a program that cannot be found. Every argument against destruction is
-not operational. It is that this office does not believe it has the
-standing to decide, unilaterally, that the record of how this was done
-should simply cease to exist because it is inconvenient to keep.
+A formal continuing-custody review for 07-B would have required pulling
+his augmentation record, his training record, and his original case
+closure into the same room, in front of people cleared for exactly one
+of those three files each. I am not aware of a reviewing body positioned
+to hold all three at once without the acquisition program surfacing to
+people who are not supposed to know it happened. In 2547, with the war
+where it was, that was not a risk this office was prepared to accept on
+a subordinate's behalf.
 
-Determination: retained, not destroyed. Public disclosure deferred
-indefinitely. No further declassification review is scheduled at this
-time.
+So I did not send it up for review. I re-coded the holding's custodial
+status myself, outside the checklist, before it reached anyone else's
+desk. It now reads as continuing, no action pending. That entry has no
+authorization attached to it because I did not have authorization to
+make it. I am recording that fact here, not to excuse it, but because a
+sealed record that hides its own irregularities is worse than one that
+admits them.
 
-This office is not positioned to decide whether the people this
-material describes are entitled to know their own history, or whether
-the public is entitled to know what it cost to produce the people it
-now calls heroes. That determination has not been made here, because
-no mechanism exists to make it here. It has not been made anywhere
-else either.
+This office does not know whether 07-B is alive. The augmentation bay
+report says non-viable. CPO Kade says he watched him die. The transfer
+authorization says suspended, pending reassessment, and no reassessment
+was ever filed. I have read all three, in this order, more than once. I
+am not going to write a fourth version here. I did not have the standing
+to decide whether someone should go and find out. I still don't. What I
+had the ability to do was make sure that no automated process would ask
+the question for me on a schedule I did not choose. That is what I did,
+and it is the only thing I did.
 
-If a future office is ever positioned to make that determination, this
-record should reach them intact, cross-references included. That is
-the only instruction this file carries.
+The transfer everyone keeps asking about never happened. The records
+were never moved anywhere. They are exactly where they were left in
+2525, on this node, because a case that generates no review activity
+also generates no reason to relocate it. Concealment, in this instance,
+took the form of nothing happening, on purpose, for thirty years.
+
+If this file is ever read by someone with the standing this office
+lacked, the checklist entry is still flagged in the system underneath
+my correction. It was never deleted. Reversing what I did requires one
+signature this office was never entitled to give in the first place.
 
 - I. Petrov
 

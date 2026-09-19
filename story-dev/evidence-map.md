@@ -132,3 +132,11 @@
 - **archive SMB shares**：`public` share 新增一份非正式會議紀錄（連時間表都在抱怨），`backups` share 新增一份 2546 年 Q3 的舊預算摘要——刻意放在跟 `casualty_log_partial.txt`、`training_roster_fragment.txt` 同一個資料夾裡，呈現「機密檔案室裡混著無聊行政雜務」這個很真實的細節，而不是每個備份都剛好是重大證據。
 
 全部填充內容都用了跟現有填充內容一致的語氣（瑣碎、有點不耐煩、真實辦公室感），刻意避免寫成明顯裝飾用的空洞句子。
+
+## 第七輪：終局真相重新設計（SPARTAN-II 不再是最終答案）
+使用者指出核心問題：「這些孩子被帶去 SPARTAN-II」對熟悉 Halo 的玩家太容易在 Act II 就猜到，等於提早劇透遊戲的最終答案。要求重新設計，讓 SPARTAN-II 維持是 Act III 前半的重大世界觀 reveal，但真正的案件終局是 BLACK ARCHIVE 原創、規模是「一個人、一份被隱藏的紀錄」而不是另一個陰謀。
+
+- **root 文件全部重寫**：`cairn_disposition_review.txt` 不再回答「Petrov 為什麼不銷毀整批資料」（這個問題現在只在 CAIRN record 101 裡簡短交代，作為 Act III reveal 的一部分），改成回答 LONGSHORE 真正委託的具體問題——SPINDLE 除役時的標準檔案檢查把 Farrow（07-B）的低溫懸置單位列入審查清單，Petrov 在正式審查觸發前私自把保管狀態改成「繼續、無需處理」，未經授權跳過審查，因為正式審查會讓 augmentation/訓練/結案三份互不該交叉閱讀的紀錄同時攤開，在戰爭仍在進行的 2547 年讓 acquisition 計畫曝光風險太高。這份文件依然**不解答**07-B 是否存活——三份矛盾來源（casualty log／Kade／低溫轉移授權）維持永遠不解答，root 文件只解釋「這份 30 年前的死亡紀錄為什麼在 2547 年被重新處理過」，這正是玩家從 Act I 開始就在追的那個 transfer_ref 異常的真正成因。
+- **LONGSHORE 開場委託信改寫**（`.md` + `.html`）：原本結尾「find out what happened to them」太模糊。改成她已經有一份具體的 migration index 殘存片段，證明 Farrow 的案件在結案數十年後被重新處理過；委託目標改成三個明確問題（誰授權了轉移／原始紀錄送去哪裡／為什麼 Farrow 案在死後三十年被重新開啟），並保留一句更有戲劇性的收尾：「I don't need a theory. I need the record that made them change his file.」同時修掉一個舊 bug——`.md`/`.html` 兩份都寫著「attaching four names」卻只列了三筆，已修正為「three names」。
+- **新增 Naomi = LONGSHORE 的可發現證據鏈**（原本只存在開發文件，玩家沒有機會自己推出來）：relay `system_migration_log` 新增一筆由「N. Okafor, Colonial Records Clerk」處理 2547 批次重新索引的紀錄；archive backups share 新增一份通知記錄殘檔，列出「Naomi Okafor」為 Eli 原始案件監護人的全名。兩者都用行政語氣寫成，不強調、不特別標示，細心玩家要自己把姓氏/職務連起來才會推出身分，遊戲仍然不會直接講。
+- CAIRN record 101-106 的既有內容全部保留不動——這批文件已經很好地完成「SPARTAN-II 正式揭露」跟「Farrow 三方矛盾」兩個任務，不需要重寫，只是重新定位成「重大 reveal，但不是最終答案」。

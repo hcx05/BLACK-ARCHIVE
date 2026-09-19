@@ -1,0 +1,13 @@
+//ROUTINE - REGIONAL RECORDS OFFICE//
+NEXT-OF-KIN NOTIFICATION LOG (FRAGMENT, BACKUP COPY)
+RE: Dependent case closures, batch NOK-2517-R4, partial
+
+This fragment should not be in this share. Flagging for cleanup, low
+priority.
+
+Case OCPA-R4-11902 (E. Okafor) - notification delivered to:
+  Naomi Okafor, parent/guardian of record, Eridanus II colonial registry.
+  Delivery method: standard mail, colonial administration relay.
+  Acknowledgment on file: yes, dated within statutory window.
+
+Remaining entries in this batch not recovered.

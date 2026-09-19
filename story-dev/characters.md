@@ -12,7 +12,7 @@
 - 只提供三個名字（Eli Okafor / Talia Wren / Dominic Farrow）與一句話任務：「Find out what happened to them.」——**只有三個，不是四個**：她自己也沒查到 Samuel Voight，這是刻意的（見下方「為什麼是現在」）。
 - **真實身分（後期揭露，不強制玩家發現）**：Naomi Okafor，殖民地 records clerk，Eli Okafor 的母親。她從未真正相信兒子是病死。
 - **為什麼是現在**（解決「等了將近 40 年才找 hacker」這個動機漏洞）：Naomi 不是在 Eli 消失 38 年後突然心血來潮。約 2547 年 SPINDLE 系統退役／資料遷移時，她因為工作關係接觸到 Eli 的舊 case 被重新索引，意外看到一個不該存在的 `transfer_ref`。她沒有權限進入限閱系統，只能用自己的 records 職權，花了約 8 年時間安靜地用同樣的 pattern 交叉搜尋，才陸續找到 Wren、Farrow 的案例（沒找到 Voight——她的搜尋管道本來就有限）。2555 年她終於累積到足夠信心，透過 LONGSHORE 這個代號找上玩家。真正的觸發點是**系統遷移意外讓一個不該存在的痕跡露出來**，不是單純的母親直覺。
-- 目前 repo 的技術內容（frontier/relay/archive）尚未直接置入 LONGSHORE 的訊息文本以外的委託對話——這屬於未來可以擴充的「委託人互動」層，目前先確保環境內部證據自洽。
+- 身分線索現在確實存在於環境內：relay `system_migration_log` 有一筆由「N. Okafor, Colonial Records Clerk」處理 2547 批次重新索引的紀錄；archive backups share 有一份列出「Naomi Okafor」為 Eli 監護人全名的通知記錄殘檔。兩者都用行政語氣寫成，不強調、不加粗、不特別標示——細心玩家自己把姓氏跟職務連起來就能推出身分，遊戲不會直接講。
 
 ## Tobias Reyes（T.R.）— 系統管理員
 - 維護 ROSTER（frontier）與 LEDGER（relay）的 sysadmin。
@@ -28,6 +28,7 @@
 - 在 relay 的 `system_migration_log` 表與 archive 的 CAIRN record 101（Disposition Order 2547-014）出現。
 - 負責 SPINDLE 系統退役後的資料處置授權，決定「保留但列為限閱」而非銷毀。
 - 態度：程序性、謹慎，代表 ONI 對這段歷史「不销毁但不公開」的官方立場。
+- **root-only 文件的真正作者**：`cairn_disposition_review.txt` 現在是他對 07-B（Farrow）個案的私人揭露——SPINDLE 除役檔案檢查把 07-B 的低溫懸置單位列入審查清單時，他在正式審查觸發前私自改寫保管狀態、跳過審查，並在文件裡承認自己沒有這個授權。這是他個人道德立場（「我沒有資格決定」）第一次不再是抽象的行政哲學，而是一個具體、他自己承認越權的個人行為——也是整個遊戲的最終答案。
 
 ## CPO M. Kade — 訓練教官（Mendez 類比角色，原創姓名）
 - 出現在 archive 的 CAIRN record 104（Internal Memo）。
