@@ -4,8 +4,9 @@ TO: Self / Systems Backlog
 DATE: 2547-02-09
 RE: Open items
 
-- [ ] Fix upload validation on Case File Intake (low priority — nobody
-      uploads anything but scans anyway)
+- [x] Fix upload validation on Case File Intake — added an image check
+      (SEC-1188) so it at least rejects garbage files. Extension
+      allowlist/rename still open, marked low priority, don't re-open.
 - [ ] Escape the search query field, for real this time
 - [ ] Pull the /debug endpoint off the webmail box. Should've done this
       after the audit last year.

@@ -321,8 +321,12 @@ switch($page) {
         echo '<p style="margin-top:0">Upload scanned correspondence, medical transfer notes, or archived case material for indexing.</p>';
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
             $target = '/var/www/html/portal/uploads/' . basename($_FILES['file']['name']);
-            // Vulnerable: no file type validation, no renaming
-            if (move_uploaded_file($_FILES['file']['tmp_name'], $target)) {
+            // Post-finding patch (SEC-1188): reject anything that isn't a
+            // decodable image. Still no extension allowlist or rename -
+            // that part of the finding was marked "won't fix" (see todo.txt).
+            if (@getimagesize($_FILES['file']['tmp_name']) === false) {
+                echo "<p class='warning'>Intake rejected: file does not appear to be a valid scanned image.</p>";
+            } elseif (move_uploaded_file($_FILES['file']['tmp_name'], $target)) {
                 echo "<p>File indexed: <a href='/uploads/" . basename($_FILES['file']['name']) . "'>" . htmlspecialchars($_FILES['file']['name']) . "</a></p>";
             } else {
                 echo "<p class='warning'>Intake failed.</p>";
@@ -343,8 +347,10 @@ switch($page) {
         echo ' <input type="submit" value="Ping">';
         echo '</form>';
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['host'])) {
-            $host = $_POST['host'];
-            // Vulnerable: direct command injection
+            // Post-finding patch (SEC-1188): strips the separator from the
+            // last incident report. Nobody checked for other separators.
+            $host = str_replace(';', '', $_POST['host']);
+            // Vulnerable: direct command injection (semicolons only, see above)
             $output = shell_exec("ping -c 3 " . $host);
             echo '<pre style="margin-top:16px">' . $output . '</pre>';
         }

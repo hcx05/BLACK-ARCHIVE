@@ -239,7 +239,11 @@ class AdminHandler(BaseHTTPRequestHandler):
         if self.path == "/login":
             username = params.get("username", [""])[0]
             password = params.get("password", [""])[0]
-            # SQL Injection vulnerability
+            # Sanitization added to the username field after SEC-2211 (a prior
+            # pentest finding scoped only to username). password was not in
+            # scope of that finding and is still concatenated unmodified below.
+            username = username.replace("'", "").replace("--", "")
+            # SQL Injection vulnerability (still reachable via password)
             conn = sqlite3.connect(DB_PATH)
             c = conn.cursor()
             query = f"SELECT * FROM admins WHERE username='{username}' AND password='{password}'"

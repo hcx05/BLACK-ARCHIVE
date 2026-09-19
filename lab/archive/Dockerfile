@@ -35,9 +35,21 @@ COPY app/admin/assets/ /opt/admin/assets/
 COPY root/cairn_disposition_review.txt /root/cairn_disposition_review.txt
 RUN chmod 600 /root/cairn_disposition_review.txt
 
-# Writable cron job (privilege escalation)
-RUN printf '#!/bin/bash\necho "Health check: $(date)" >> /var/log/health.log\n' > /opt/healthcheck.sh \
-    && chmod 777 /opt/healthcheck.sh \
+# Root cron healthcheck job (privilege escalation via PATH resolution, not a
+# writable script). /opt/staging is a leftover deployment directory from the
+# last CAIRN rollout - never cleaned up, still group-writable to the
+# deploy group, and still ahead of the system dirs in root's crontab PATH.
+# logtool itself was never actually shipped anywhere on the real PATH, so
+# this job has been silently failing since the rollout.
+RUN groupadd -f deploy \
+    && usermod -aG deploy sysadmin \
+    && mkdir -p /opt/staging \
+    && chown root:deploy /opt/staging \
+    && chmod 775 /opt/staging \
+    && printf '#!/bin/bash\nlogtool "Health check: $(date)" >> /var/log/health.log\n' > /opt/healthcheck.sh \
+    && chown root:deploy /opt/healthcheck.sh \
+    && chmod 750 /opt/healthcheck.sh \
+    && echo "PATH=/opt/staging:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> /etc/crontab \
     && echo "* * * * * root /opt/healthcheck.sh" >> /etc/crontab
 
 COPY config/supervisord.conf /etc/supervisor/conf.d/archive.conf

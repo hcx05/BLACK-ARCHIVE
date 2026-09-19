@@ -14,8 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Weak SSH config + authorized_keys writable (legacy gateway misconfig)
 RUN mkdir -p /home/sysadmin/.ssh \
-    && chmod 777 /home/sysadmin/.ssh \
-    && echo "sysadmin ALL=(ALL) NOPASSWD: /usr/bin/socat" >> /etc/sudoers
+    && chmod 777 /home/sysadmin/.ssh
 
 # SUID binary for privilege escalation (leftover diagnostic tool)
 RUN cp /usr/bin/python3 /usr/local/bin/python3-suid \
