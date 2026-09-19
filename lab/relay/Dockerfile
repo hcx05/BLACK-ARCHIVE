@@ -25,7 +25,7 @@ COPY app/api/ /opt/relay/api/
 COPY sql/init.sql /opt/relay/sql/init.sql
 COPY scripts/run-mariadb.sh /opt/relay/scripts/run-mariadb.sh
 RUN chmod +x /opt/relay/scripts/run-mariadb.sh \
-    && cd /opt/relay/api && npm install --omit=dev --no-audit --no-fund
+    && cd /opt/relay/api && npm install --production --no-audit --no-fund
 
 RUN mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
 

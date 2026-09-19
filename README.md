@@ -65,6 +65,11 @@ Attacker (Kali)
 - 不要對未經授權的系統使用這裡的技巧
 - 僅在隔離、受控的環境中使用
 
-## License
+## 授權說明
 
-MIT（沿用原 VulnCastle 授權方式）。
+這個 repo 混合了兩種不同性質的內容，授權狀態不一樣，**不宣告整個 repo 為 MIT**：
+
+- **`lab/` 底下的靶機程式碼與 Dockerfile／設定**：改編自 [VulnCastle](https://github.com/0x6d61/vulncastle)，該專案在自己的 README 聲明 MIT License（雖然 repo 內沒有附獨立 `LICENSE` 檔案）。這部分的漏洞機制與工程手法沿用其授權條件，並在本文件保留致謝。
+- **故事、人物、Halo/UNSC/ONI/SPARTAN-II 相關敘事內容**：非官方 Halo 同人創作，使用的是 Microsoft／343 Industries 擁有的智慧財產。這部分**不屬於作者原創版權範圍，作者無權將其授權給任何人使用**，僅作為非商業同人專案存在，與 Microsoft／343 Industries 無關、未經其授權或認可。
+
+如果要重新散布或修改此 repo，請分開處理這兩部分：程式碼／靶機架構部分可視為延續 VulnCastle 的 MIT 條件；故事內容請視為同人創作，不要當作可自由再授權的素材。
