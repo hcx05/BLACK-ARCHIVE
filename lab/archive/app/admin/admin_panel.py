@@ -139,30 +139,45 @@ class AdminHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "text/html")
             self.end_headers()
             self.wfile.write(b"""<html><head><title>CAIRN Records Terminal</title>
+            <link rel="icon" type="image/png" href="/assets/oni_seal.png">
             <style>
             body{font-family:'Consolas','DejaVu Sans Mono',monospace;background:#000;color:#ffb000;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;margin:0}
             .classbar{position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:6px;font-size:0.75em;letter-spacing:2px;border-bottom:1px solid #ff3b30}
-            .panel{background:#0a0a05;padding:40px;border:1px solid #ffb000}
+            .panel{background:#0a0a05;padding:40px;border:1px solid #ffb000;text-align:center}
+            .seal{width:72px;opacity:0.9;margin-bottom:10px}
+            h1{margin:6px 0}
             input{display:block;margin:10px 0;padding:8px;width:220px;background:#000;border:1px solid #7a5c00;color:#ffb000;font-family:inherit}
             button{padding:10px 20px;background:#1a1200;color:#ffb000;border:1px solid #ffb000;cursor:pointer;width:100%;font-family:inherit}
             </style></head>
             <body><div class="classbar">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
-            <div class="panel"><h1>CAIRN RECORDS TERMINAL</h1>
+            <div class="panel"><img class="seal" src="/assets/oni_seal.png"><h1>CAIRN RECORDS TERMINAL</h1>
             <p style="font-size:0.8em">DISPOSITION HOLD ACCESS ONLY -- UNAUTHORIZED ACCESS IS A VIOLATION OF UNSC MILITARY CODE ART. 12</p>
             <form method="POST" action="/login">
             <input name="username" placeholder="Username">
             <input name="password" type="password" placeholder="Password">
             <button type="submit">ACCESS</button>
             </form></div></body></html>""")
+        elif parsed.path == "/assets/oni_seal.png":
+            try:
+                with open("/opt/admin/assets/oni_seal.png", "rb") as f:
+                    data = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.end_headers()
+                self.wfile.write(data)
+            except OSError:
+                self.send_response(404)
+                self.end_headers()
         elif parsed.path == "/dashboard":
             self.send_response(200)
             self.send_header("Content-Type", "text/html")
             self.end_headers()
             # No session validation (broken authentication)
-            html = """<html><head><title>CAIRN Dashboard</title></head>
+            html = """<html><head><title>CAIRN Dashboard</title>
+            <link rel="icon" type="image/png" href="/assets/oni_seal.png"></head>
             <body style="background:#000;color:#ffb000;font-family:'Consolas','DejaVu Sans Mono',monospace;padding:60px 20px 20px">
             <div style="position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:6px;font-size:0.75em;letter-spacing:2px;border-bottom:1px solid #ff3b30">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
-            <h1>DISPOSITION HOLD -- RECORD INDEX</h1>
+            <div style="display:flex;align-items:center;gap:14px"><img src="/assets/oni_seal.png" width="46" style="opacity:0.9"><h1 style="margin:0">DISPOSITION HOLD -- RECORD INDEX</h1></div>
             <ul>"""
             for rid, title, _ in RECORDS:
                 html += f'<li><a style="color:#ffb000" href="/records/{rid}">[{rid}] {title}</a></li>'

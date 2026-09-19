@@ -79,3 +79,10 @@
 - **LONGSHORE = Naomi Okafor 缺一個「為什麼是現在」**：原本的設定是「不相信兒子病死的母親，38 年後突然找上駭客」，動機薄弱。已改成：Naomi 是殖民地 records clerk，2547 年 SPINDLE 退役／資料遷移時，因工作接觸意外看到 Eli 的舊 case 被重新索引、帶有不該存在的 transfer_ref；她沒有系統存取權限，只能用自己的職權花約 8 年時間安靜交叉搜尋同樣的 pattern，找到 Wren、Farrow（沒找到 Voight，這也是她一開始只給玩家三個名字的原因）。2555 年她終於累積夠了才聯絡玩家。觸發點是系統遷移意外露出痕跡，不是單純的母親直覺，時間差也從「38 年」縮小成「發現異常後又謹慎查證了 8 年」，合理很多。
 - **`service_accounts` 表太像「下一關鑰匙箱」**：原本 CAIRN Fileshare 跟 CAIRN Records Terminal 的帳密都乾淨地放在同一張 DB 表裡，玩家 `SELECT *` 就一次拿到全部。CAIRN Fileshare 那筆本身只是「跟已知密碼重用」的印證，保留；CAIRN Records Terminal 的帳密已經移出 DB，改成要在 relay 檔案系統找到 `/etc/ledger/sync.conf`（ledger-cairn-sync 服務的真實設定檔，呼應 API record id 5 早就提過這個服務存在）才能拿到——從「SELECT * FROM next_level_passwords」變成「environment relationship → 找 config 檔 → credential discovery」。
 - **Farrow 矛盾追加第三個來源**：原本只有官方 casualty log vs. Kade 備忘錄兩份互相矛盾的來源。新增 CAIRN record 106「07-B 低溫恢復艙轉移授權」，記載他被判定臨床無法存活、轉入懸置、之後無追蹤紀錄——三份來源都不完整，讓矛盾從「一真一假」升級成真正的 forensic ambiguity，永遠不解答。
+
+## 真實 ONI 素材（repo 已改為 private 之後採用）
+使用者把 repo 切成 private 之後，同意在小範圍、非大量複製的前提下使用真實 Halo 視覺素材（而不是完全靠原創重製）。做法：
+- 從 Halopedia（`halo.wiki.gallery`）抓了官方 ONI Seal（eye-pyramid 設計）跟 UNSC 官方 eagle logo 的公開圖檔，用 Pillow 依照線稿明暗重新上色（保留原始線稿細節，只換色版，不是整張圖片複製貼上一個新色塊），做出琥珀色版（CAIRN 用）跟暗紅版（文件信頭用）。
+- **只用在 Act III（archive/CAIRN）**：CAIRN Records Terminal 的登入頁與 dashboard 現在有真的 ONI seal（`lab/archive/app/admin/assets/oni_seal.png`，透過 admin_panel.py 新增的 `/assets/oni_seal.png` route 提供），以及 `disposition_order_2547-014.pdf`／`acquisition_directive_scan.pdf` 兩份官方文件掃描版右上角現在有暗紅、半透明的 ONI 信頭浮水印。
+- **刻意不用在 FRONTIER**：UNSC eagle logo（`unsc_cyan.png`，已生成但目前沒用上）跟 ONI seal 都沒有放在 frontier/webmail，因為 Act I 的設計目標是「一眼看不出是 Halo」，過早放上明顯可辨識的官方 Halo 圖騰會破壞這個節奏。真實素材的「辨識度衝擊」刻意保留給 Act III 的揭露時刻。
+- 沒有使用大篇幅的美術資源（過場截圖、完整原畫、成套 UI kit）——只用了小型、單一的標誌/徽記類圖案，這是私人使用下風險最低、也最符合敘事節奏的取捨。

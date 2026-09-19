@@ -29,6 +29,7 @@ RUN chmod 644 /srv/share/confidential/* /srv/share/backups/*
 RUN (echo "admin123"; echo "admin123") | smbpasswd -a -s sysadmin
 
 COPY app/admin/admin_panel.py /opt/admin/app.py
+COPY app/admin/assets/ /opt/admin/assets/
 
 # Final root-gated disposition summary
 COPY root/cairn_disposition_review.txt /root/cairn_disposition_review.txt
