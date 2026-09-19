@@ -248,10 +248,13 @@ smbclient //cairn.internal/confidential -U sysadmin%admin123 -m NT1 \
 **`backups`**（guest 可讀寫，操作失誤留下的東西）：
 ```bash
 smbclient //cairn.internal/backups -U sysadmin%admin123 -m NT1 \
-  -c "get casualty_log_partial.txt; get training_roster_fragment.txt; get old_budget_q3_2546.txt"
+  -c "get casualty_log_partial.txt; get training_roster_fragment.txt; get old_budget_q3_2546.txt; \
+      get dependent_notification_fragment.txt; get n.okafor_badge_photo.jpg"
 ```
 - `casualty_log_partial.txt` — 四個候選人的 augmentation 結果（死亡/殘障/現役），第一次把 Act I/II 的名字跟「augmentation」這個詞連起來。
 - `training_roster_fragment.txt` — **只給訓練代號 + 殖民地 + 年齡，不給姓名**，見 4.4 節。
+- `dependent_notification_fragment.txt` — 一份不該留在這個分享的次要送達紀錄殘存片段，指出 Eli Okafor 的通知送達對象是「Naomi Okafor, parent/guardian of record」——這是 LONGSHORE = Naomi Okafor 這條 optional evidence chain 的其中一環，見 `truth-map.md`。
+- `n.okafor_badge_photo.jpg` — 一張員工識別證照片，跟 relay `system_migration_log` 裡「Processed by: N. Okafor, Colonial Records Clerk」那筆紀錄對得上，也剛好跟同一個分享夾裡 `dependent_notification_fragment.txt` 提到的監護人同名同姓。純粹是「這張照片剛好也在這個備份資料夾裡」的巧合擺放，沒有任何文字說明特別指出兩者是同一人——玩家自己要注意到名字重複。這是刻意加強 Naomi Okafor 身份線索真實感的素材，不是必經節點。
 - `old_budget_q3_2546.txt` — 純填充，一份過季的預算摘要，跟劇情完全無關，放著只是因為「備份資料夾裡通常什麼都有」。
 
 ### 4.3 SQLi 進 CAIRN Records Terminal（8080）— 要抓包才會發現該換欄位
