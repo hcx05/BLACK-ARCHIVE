@@ -59,19 +59,19 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
     <style>
         :root {
-            --bg: #000000;
-            --surface: #05140a;
-            --surface-2: #0a2013;
-            --surface-hover: #0f2a18;
-            --border: #204d2c;
-            --border-soft: #163a21;
-            --text: #4fbf6e;
-            --text-dim: #338f4c;
-            --text-faint: #235f37;
-            --accent: #8beca3;
-            --accent-soft: rgba(139, 236, 163, 0.10);
-            --danger: #e8564a;
-            --danger-bg: #2a0f0c;
+            --bg: #050a12;
+            --surface: #0b1826;
+            --surface-2: #112337;
+            --surface-hover: #162c44;
+            --border: #244a63;
+            --border-soft: #1a3348;
+            --text: #7ec4e8;
+            --text-dim: #4f89ac;
+            --text-faint: #2f5870;
+            --accent: #bfe6f7;
+            --accent-soft: rgba(191, 230, 247, 0.08);
+            --danger: #d4685c;
+            --danger-bg: #2a1310;
             --mono: 'IBM Plex Mono', 'Consolas', monospace;
         }
         * { box-sizing: border-box; }
@@ -79,12 +79,20 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
         body {
             font-family: var(--mono);
             margin: 0;
-            background: var(--bg);
             color: var(--text);
             font-size: 15.5px;
             line-height: 1.55;
+            background-color: var(--bg);
+            background-image:
+                repeating-linear-gradient(180deg, rgba(191,230,247,0.022) 0px, rgba(191,230,247,0.022) 1px, transparent 1px, transparent 3px),
+                radial-gradient(ellipse at 50% 40%, rgba(191,230,247,0.045) 0%, rgba(0,0,0,0) 55%),
+                radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.45) 100%);
+            background-attachment: fixed;
         }
         a { color: var(--accent); }
+        .cursor-blink { display: inline-block; width: 0.55em; height: 1em; background: var(--text); vertical-align: -0.15em; margin-left: 2px; animation: blink 1.1s steps(1) infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        @media (prefers-reduced-motion: reduce) { .cursor-blink { animation: none; opacity: 0.6; } }
         .topbar {
             background: var(--danger-bg);
             color: var(--danger);
@@ -126,7 +134,7 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
             border-left: 3px solid transparent;
         }
         .sidenav a:hover { background: var(--surface-hover); color: var(--text); }
-        .sidenav a.active { color: #04140a; background: var(--text); border-left-color: var(--accent); font-weight: 600; }
+        .sidenav a.active { color: #051622; background: var(--text); border-left-color: var(--accent); font-weight: 600; }
         .sidefoot {
             padding: 14px 16px;
             border-top: 1px solid var(--border-soft);
@@ -148,7 +156,7 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
         }
         .crumb { font-size: 12px; color: var(--text-faint); letter-spacing: 0.5px; }
         .crumb b { color: var(--text-dim); }
-        h1.page-title { font-size: 20px; font-weight: 600; margin: 3px 0 0 0; color: var(--text); }
+        h1.page-title { font-size: 20px; font-weight: 600; margin: 3px 0 0 0; color: var(--text); text-shadow: 0 0 6px rgba(126,196,232,0.35); }
         .body-row { display: flex; align-items: flex-start; }
         .content { flex: 1; min-width: 0; padding: 24px 28px 40px; }
 
@@ -174,7 +182,7 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
         /* Components */
         .dash-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
         .stat { flex: 1 1 150px; background: var(--surface); border: 1px solid var(--border); border-radius: 0; padding: 16px 18px; }
-        .stat .num { font-size: 28px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+        .stat .num { font-size: 28px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; text-shadow: 0 0 6px rgba(126,196,232,0.3); }
         .stat .lbl { font-size: 12px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 4px; }
         .board { background: var(--surface); border: 1px solid var(--border); border-radius: 0; overflow: hidden; }
         .board-item { padding: 11px 14px; border-bottom: 1px solid var(--border-soft); font-size: 14px; display: flex; justify-content: space-between; gap: 14px; color: var(--text-dim); }
@@ -182,7 +190,7 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
         .board-item .tag { color: var(--text-faint); font-size: 12px; white-space: nowrap; }
         .quicklinks { display: flex; gap: 8px; flex-wrap: wrap; }
         .quicklinks a { background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); padding: 9px 14px; border-radius: 0; text-decoration: none; font-size: 13.5px; }
-        .quicklinks a:hover { color: #04140a; border-color: var(--text); background: var(--text); }
+        .quicklinks a:hover { color: #051622; border-color: var(--text); background: var(--text); }
 
         .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 0; padding: 20px 22px; }
         input[type="text"], input[type="file"] { font-family: var(--mono); padding: 9px 10px; width: 320px; max-width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 0; color: var(--text); font-size: 14px; }
@@ -191,9 +199,9 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
             border: 1px solid var(--border); border-radius: 0; cursor: pointer; font-size: 13.5px;
             letter-spacing: 0.4px; text-transform: uppercase;
         }
-        input[type="submit"]:hover, button:hover { border-color: var(--text); background: var(--text); color: #04140a; }
+        input[type="submit"]:hover, button:hover { border-color: var(--text); background: var(--text); color: #051622; }
         pre {
-            font-family: var(--mono); font-size: 13.5px; background: #030a05; color: #6fd48b;
+            font-family: var(--mono); font-size: 13.5px; background: #030810; color: #8ed0ef;
             padding: 16px 18px; border: 1px solid var(--border); border-radius: 0; overflow-x: auto; line-height: 1.6;
         }
         .warning { color: var(--danger); }
@@ -234,7 +242,7 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
 <?php endforeach; ?>
         </nav>
         <div class="sidefoot">
-            SESSION duty-terminal-04<br>
+            SESSION duty-terminal-04<span class="cursor-blink"></span><br>
             LAST LOGIN 2547-02-19 06:12
         </div>
     </aside>

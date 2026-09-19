@@ -89,15 +89,23 @@ STYLE = b"""<html><head><title>OCPA Webmail</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 :root {
-  --bg: #000000; --surface: #05140a; --surface-2: #0a2013; --surface-hover: #0f2a18;
-  --border: #204d2c; --border-soft: #163a21; --text: #4fbf6e; --text-dim: #338f4c;
-  --text-faint: #235f37; --accent: #8beca3; --accent-soft: rgba(139,236,163,0.10);
-  --danger: #e8564a; --danger-bg: #2a0f0c;
+  --bg: #050a12; --surface: #0b1826; --surface-2: #112337; --surface-hover: #162c44;
+  --border: #244a63; --border-soft: #1a3348; --text: #7ec4e8; --text-dim: #4f89ac;
+  --text-faint: #2f5870; --accent: #bfe6f7; --accent-soft: rgba(191,230,247,0.08);
+  --danger: #d4685c; --danger-bg: #2a1310;
   --mono: 'IBM Plex Mono', 'Consolas', monospace;
 }
 * { box-sizing: border-box; }
 html { background: var(--bg); }
-body { font-family: var(--mono); margin: 0; background: var(--bg); color: var(--text); font-size: 15.5px; }
+body {
+  font-family: var(--mono); margin: 0; color: var(--text); font-size: 15.5px;
+  background-color: var(--bg);
+  background-image:
+    repeating-linear-gradient(180deg, rgba(191,230,247,0.022) 0px, rgba(191,230,247,0.022) 1px, transparent 1px, transparent 3px),
+    radial-gradient(ellipse at 50% 40%, rgba(191,230,247,0.045) 0%, rgba(0,0,0,0) 55%),
+    radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.45) 100%);
+  background-attachment: fixed;
+}
 .banner { background: var(--danger-bg); color: var(--danger); text-align: center; padding: 7px 12px; font-size: 12px; letter-spacing: 0.6px; text-transform: uppercase; border-bottom: 1px solid #3a1d1d; }
 .shell { max-width: 960px; margin: 0 auto; border: 1px solid var(--border); border-top: none; display: flex; background: var(--bg); min-height: calc(100vh - 30px); }
 .sidebar { width: 190px; background: var(--surface); border-right: 1px solid var(--border); flex-shrink: 0; }
@@ -105,19 +113,19 @@ body { font-family: var(--mono); margin: 0; background: var(--bg); color: var(--
 .brand img { width: 44px; opacity: 0.95; }
 .brand div { font-weight: 600; font-size: 13.5px; }
 .folder { padding: 10px 16px; font-size: 14px; color: var(--text-dim); border-left: 3px solid transparent; }
-.folder.active { color: #04140a; background: var(--text); border-left-color: var(--accent); font-weight: 600; }
+.folder.active { color: #051622; background: var(--text); border-left-color: var(--accent); font-weight: 600; }
 .main { flex: 1; padding: 24px 26px; min-width: 0; }
-h1 { font-size: 17px; font-weight: 600; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin: 0 0 16px; }
+h1 { font-size: 17px; font-weight: 600; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin: 0 0 16px; text-shadow: 0 0 6px rgba(126,196,232,0.35); }
 input { display: block; margin: 10px 0; padding: 9px 10px; width: 260px; background: var(--bg); border: 1px solid var(--border); border-radius: 0; color: var(--text); font-family: var(--mono); font-size: 14px; }
 button { padding: 9px 18px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 0; cursor: pointer; font-family: var(--mono); font-size: 13.5px; letter-spacing: 0.4px; text-transform: uppercase; }
-button:hover { border-color: var(--text); background: var(--text); color: #04140a; }
+button:hover { border-color: var(--text); background: var(--text); color: #051622; }
 .msg { border: 1px solid var(--border); border-radius: 0; margin: 0 0 10px; background: var(--surface); }
 .msg .hdr { display: flex; align-items: center; gap: 11px; padding: 11px 14px; border-bottom: 1px solid var(--border-soft); }
 .msg .avatar { width: 34px; height: 34px; border-radius: 0; background: var(--surface-2); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; border: 1px solid var(--border); }
 .msg .from { font-weight: 600; color: var(--text); font-size: 14px; }
 .msg .subj { color: var(--text-dim); font-size: 14px; }
 .msg .date { margin-left: auto; color: var(--text-faint); font-size: 12px; white-space: nowrap; }
-pre { font-family: var(--mono); font-size: 13.5px; background: #030a05; color: #6fd48b; padding: 13px 14px; margin: 0; overflow-x: auto; line-height: 1.6; border-radius: 0; }
+pre { font-family: var(--mono); font-size: 13.5px; background: #030810; color: #8ed0ef; padding: 13px 14px; margin: 0; overflow-x: auto; line-height: 1.6; border-radius: 0; }
 </style></head><body>"""
 
 def initials(addr):
