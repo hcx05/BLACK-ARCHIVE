@@ -121,3 +121,14 @@
 - **`briefing/00_longshore_contact.md` 的 Dominic Farrow 還寫著 age 7**：先前只改了 `.html` 版本跟 relay/frontier 的資料，`.md` 純文字備份版漏改，導致同一份委託信的兩種格式互相矛盾。已修正為 age 6，跟其他所有來源一致。
 - **`disposition_order_2547-014.pdf`（掃描版）內容跟 admin panel 的 record 101 文字對不起來**：CAIRN 重新定位成「staging mirror」那段說明（解釋為什麼這台機器資安這麼糟）只加進了 `admin_panel.py` 的文字版，PDF 生成腳本（`gen_disposition_order.py`）是獨立的硬寫死文字，沒有同步更新——玩家如果先看 PDF 版本，會完全看不到這個關鍵的世界觀說明。已經讓 PDF 文字跟 record 101 逐字對齊，重新產生 PDF（保留 ONI 信頭浮水印跟 RESTRICTED 印章），並確認 `acquisition_directive_scan.pdf` 跟對應的 `.txt` 版本本來就沒有這個問題（沒有在後續修訂中被單獨改過）。
 - 其餘交叉比對過的項目全部一致，沒有發現新問題：`OCPA-R4-XXXXX` case_ref 在 frontier/relay/archive/briefing 四處出現次數合理且對得上；`SPINDLE-7-XXXX` transfer_ref 只在該有的三筆案件（Okafor/Wren/Farrow）出現；四組關鍵密碼（`S3cretDB!2024`／`admin123`／`Records!Access99`／`MailP@ss2024`）在該出現的檔案裡都對得上；殖民地名稱（Eridanus II / Madrigal / Skopje）拼法全專案一致，沒有變體；`archive/shares/confidential/legacy_service_credentials.txt` 跟 `lab/base/Dockerfile` 的四組帳密完全吻合；`RECORD_PHOTOS` 的人物-文件對應（101 Petrov／102 Castel／104 Kade／105 Achebe）跟 `RECORDS` 陣列內容檢查過都正確，103（Halsey）刻意沒有照片，106（低溫轉移授權）也刻意沒有照片，都符合設計。
+
+## 第六輪：加大量無關緊要的雜訊
+使用者的核心意見：「這不要是一個用來駭、用來調查的環境，是一個真環境，只是我們在調查」——換句話說，目前的環境雖然已經有一些填充內容（停車證、印表機缺碳粉等），但份量還是太少，導致玩家找到的東西「幾乎每一筆都有意義」，這本身就會讓人感覺是精心設計過的關卡而不是真的公司/軍方系統。這輪大幅增加跟案件完全無關的雜訊，不是為了增加難度，是為了稀釋訊噪比：
+
+- **webmail 信箱**：從 5 封信（3 條劇情線 + 2 封填充）擴充到 11 封（3 條劇情線 + 8 封填充）：年度合規訓練提醒、電梯故障公告、辦公室閒聊（「今天中午訂便當」）、系統 patch 公告、文具缺貨、承包商門禁暫停通知。刻意跟之前的填充內容（水管維修、印表機缺紙）互相呼應，讓這些瑣事看起來像同一群人在抱怨同一批日常問題，而不是各自獨立的裝飾文字。
+- **frontier `/notes/`**：從 4 個檔案增加到 6 個，新增兩份跟停車證通知同等級的純填充（電梯狀態、文具櫃庫存），且內容特地跟 webmail 對應的填充信互相引用（「見同天的 all-staff email」），強化「這是同一個辦公室」的真實感。
+- **Dependent Status Index（frontier 搜尋 + relay DB）**：新增三筆完全正常的對照組案例（Marcus Webb / Dana Song / Theo Alvarez，橫跨 Tribute/Coral/Eridanus II 三個殖民地），frontier 跟 relay 兩邊資料一致；relay DB 另外多兩筆只存在內部、不會出現在公開搜尋結果的案例（Nadia Oyelaran、Kenji Park），呼應「內部系統本來就比對外可查的多」這個真實細節。連同已有的 Priya Anand，對照組現在有 4 筆，跟真正異常的 3 筆（Okafor/Wren/Farrow）加 Voight 相比，比例更接近真實案件量的「大多數都沒問題」。
+- **relay `service_accounts`**：新增兩筆純死路帳密（會議室預約系統、販賣機庫存回報），跟已有的印表機伺服器一樣是「看起來像線索、其實是死路」的訓練，同時也是很寫實的企業 IT 遺留系統堆積現象。
+- **archive SMB shares**：`public` share 新增一份非正式會議紀錄（連時間表都在抱怨），`backups` share 新增一份 2546 年 Q3 的舊預算摘要——刻意放在跟 `casualty_log_partial.txt`、`training_roster_fragment.txt` 同一個資料夾裡，呈現「機密檔案室裡混著無聊行政雜務」這個很真實的細節，而不是每個備份都剛好是重大證據。
+
+全部填充內容都用了跟現有填充內容一致的語氣（瑣碎、有點不耐煩、真實辦公室感），刻意避免寫成明顯裝飾用的空洞句子。

@@ -17,6 +17,12 @@ $DEPENDENT_INDEX = array(
           'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_farrow.png'),
     array('name' => 'Priya Anand', 'colony' => 'Eridanus II', 'case_ref' => 'OCPA-R4-12210',
           'status' => 'Active - standard dependent case', 'image' => 'case_anand.png'),
+    array('name' => 'Marcus Webb', 'colony' => 'Tribute', 'case_ref' => 'OCPA-R4-12551',
+          'status' => 'Active - standard dependent case', 'image' => 'case_webb.png'),
+    array('name' => 'Dana Song', 'colony' => 'Coral', 'case_ref' => 'OCPA-R4-12608',
+          'status' => 'Active - standard dependent case', 'image' => 'case_song.png'),
+    array('name' => 'Theo Alvarez', 'colony' => 'Eridanus II', 'case_ref' => 'OCPA-R4-12439',
+          'status' => 'Case Closed - Family relocated off-colony', 'image' => 'case_alvarez.png'),
 );
 
 $NAV = array(
@@ -254,10 +260,14 @@ switch($page) {
 
         echo '<h2>System Notices</h2>';
         echo '<div class="board">';
+        echo '<div class="board-item"><span>Annual badge photo retake week - sign-up sheet at the Facilities desk, Building 2.</span><span class="tag">2547-02-19</span></div>';
         echo '<div class="board-item"><span>Scheduled maintenance window, Sun 0200-0400 - terminal may be briefly unavailable.</span><span class="tag">2547-02-18</span></div>';
+        echo '<div class="board-item"><span>Cafeteria closed for deep clean, Thu 1100-1400. Vending machines on 2nd and 4th floor unaffected.</span><span class="tag">2547-02-14</span></div>';
         echo '<div class="board-item"><span>SPINDLE migration cleanup ongoing. Report stale references to Systems, do not self-correct case data.</span><span class="tag">2547-02-11</span></div>';
         echo '<div class="board-item"><span>Water shutoff, Building 4, Tue 0600-0900 - see Support Tickets for details.</span><span class="tag">2547-02-09</span></div>';
+        echo '<div class="board-item"><span>Lot C resurfacing complete. Standard permit parking resumes Monday.</span><span class="tag">2547-02-06</span></div>';
         echo '<div class="board-item"><span>Reminder: case file intake accepts scanned correspondence and transfer notes only.</span><span class="tag">2547-01-30</span></div>';
+        echo '<div class="board-item"><span>Region 4 quarterly all-hands moved to the 25th, same time, same room.</span><span class="tag">2547-01-22</span></div>';
         echo '</div>';
 
         echo '<h2>Quick Links</h2>';

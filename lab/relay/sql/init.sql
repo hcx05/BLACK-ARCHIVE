@@ -19,7 +19,12 @@ INSERT INTO dependent_case_index (name, colony, dob, status, case_ref, guardian_
 ('Talia Wren', 'Madrigal', '2511-05-19', 'Closed - Deceased', 'OCPA-R4-11944', 'r.wren@colonial-mail.mad'),
 ('Dominic Farrow', 'Skopje', '2511-08-14', 'Closed - Deceased', 'OCPA-R4-11887', 'unreachable - forwarding expired'),
 ('Priya Anand', 'Eridanus II', '2512-01-14', 'Active', 'OCPA-R4-12210', 'k.anand@colonial-mail.eri2'),
-('Samuel Voight', 'Eridanus II', '2510-06-15', 'Closed - Deceased', 'OCPA-R4-10733', 'unreachable - forwarding expired');
+('Samuel Voight', 'Eridanus II', '2510-06-15', 'Closed - Deceased', 'OCPA-R4-10733', 'unreachable - forwarding expired'),
+('Marcus Webb', 'Tribute', '2513-04-22', 'Active', 'OCPA-R4-12551', 'j.webb@colonial-mail.trb'),
+('Dana Song', 'Coral', '2514-09-03', 'Active', 'OCPA-R4-12608', 'l.song@colonial-mail.cor'),
+('Theo Alvarez', 'Eridanus II', '2512-11-17', 'Closed - Family relocated off-colony', 'OCPA-R4-12439', 'unreachable - forwarding expired'),
+('Nadia Oyelaran', 'Madrigal', '2515-02-28', 'Active', 'OCPA-R4-12719', 'p.oyelaran@colonial-mail.mad'),
+('Kenji Park', 'Tribute', '2509-12-05', 'Closed - Aged out of dependent status', 'OCPA-R4-09982', 'k.park@colonial-mail.trb');
 
 -- Internal service credentials (lateral movement target)
 CREATE TABLE service_accounts (
@@ -35,7 +40,9 @@ INSERT INTO service_accounts (service_name, username, password, host, notes) VAL
 ('CAIRN Fileshare', 'sysadmin', 'admin123', 'cairn.internal', 'Same login as the gateway account (reused, never rotated per-service)'),
 ('CAIRN Cache', '', '', 'cairn.internal:6379', 'No authentication required'),
 ('Gateway Maintenance SSH', 'backup', 'backup', 'relay.internal', 'Used for automated backups'),
-('Floor Print Server', 'printsvc', 'printsvc', 'printsvc.internal:9100', 'Decommissioned with the old floor plan, host no longer answers');
+('Floor Print Server', 'printsvc', 'printsvc', 'printsvc.internal:9100', 'Decommissioned with the old floor plan, host no longer answers'),
+('Conference Room Booking', 'booking-svc', 'B00king2019', 'roombook.internal:80', 'Outdated - Region 4 moved to the calendar app two years ago, nobody decommissioned this'),
+('Vending Machine Telemetry', 'vendtel', 'vendtel', 'vendtel.internal:8081', 'Reports stock levels to Facilities. Not connected to anything of interest.');
 
 -- Migration history (why LEDGER and CAIRN exist as separate tiers)
 CREATE TABLE system_migration_log (

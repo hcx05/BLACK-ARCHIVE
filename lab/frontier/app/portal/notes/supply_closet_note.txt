@@ -1,0 +1,13 @@
+//OCPA REGION 4 - INTERNAL USE ONLY//
+FROM: Ops
+TO: Floor Staff
+DATE: 2547-02-03
+RE: Supply closet
+
+Standard toner and staples are gone until the backorder clears.
+There's still a partial box of the wide-format paper nobody uses
+if you need something to feel productive with while you wait.
+
+The dark-cartridge toner for the upload/intake scanner is a
+separate order and should still be in stock - check the bottom
+shelf before submitting a new requisition.

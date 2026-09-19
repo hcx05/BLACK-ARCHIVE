@@ -1,0 +1,11 @@
+//OCPA REGION 4 - INTERNAL USE ONLY//
+FROM: Facilities
+TO: Building 4 Staff
+DATE: 2547-02-17
+RE: Elevator B
+
+Ticket closed as duplicate. See the all-staff email from Facilities
+on the same date. Part is on backorder, no ETA yet. Use Elevator A
+or the east stairwell.
+
+Please stop filing new tickets for this, we know.
