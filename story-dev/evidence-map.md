@@ -84,5 +84,14 @@
 使用者把 repo 切成 private 之後，同意在小範圍、非大量複製的前提下使用真實 Halo 視覺素材（而不是完全靠原創重製）。做法：
 - 從 Halopedia（`halo.wiki.gallery`）抓了官方 ONI Seal（eye-pyramid 設計）跟 UNSC 官方 eagle logo 的公開圖檔，用 Pillow 依照線稿明暗重新上色（保留原始線稿細節，只換色版，不是整張圖片複製貼上一個新色塊），做出琥珀色版（CAIRN 用）跟暗紅版（文件信頭用）。
 - **只用在 Act III（archive/CAIRN）**：CAIRN Records Terminal 的登入頁與 dashboard 現在有真的 ONI seal（`lab/archive/app/admin/assets/oni_seal.png`，透過 admin_panel.py 新增的 `/assets/oni_seal.png` route 提供），以及 `disposition_order_2547-014.pdf`／`acquisition_directive_scan.pdf` 兩份官方文件掃描版右上角現在有暗紅、半透明的 ONI 信頭浮水印。
-- **刻意不用在 FRONTIER**：UNSC eagle logo（`unsc_cyan.png`，已生成但目前沒用上）跟 ONI seal 都沒有放在 frontier/webmail，因為 Act I 的設計目標是「一眼看不出是 Halo」，過早放上明顯可辨識的官方 Halo 圖騰會破壞這個節奏。真實素材的「辨識度衝擊」刻意保留給 Act III 的揭露時刻。
+- **後續調整**：使用者認為「素材多寡只影響真實感，跟版權無關」，並指出 FRONTIER 頁面本身看起來還是「很塑膠」。同意後半段判斷是對的：FRONTIER 沒動過視覺細節，全站 monospace + 單一 cyan 色階，才是看起來假的主因。已把 UNSC eagle logo（`unsc_insignia.png`，原本生成但沒用上）加進 frontier 側邊欄品牌區塊——ONI 那個 eye-pyramid seal 依然只留給 Act III（那個圖騰跟 SPARTAN-II/Section III 的連結太直接，放在 Act I 會直接劇透），但 UNSC 這個大範圍軍方識別本身沒有洩漏任何劇情機密，放在「這本來就是一個 UNSC 政府部門」的 FRONTIER 上沒有 pacing 問題。
 - 沒有使用大篇幅的美術資源（過場截圖、完整原畫、成套 UI kit）——只用了小型、單一的標誌/徽記類圖案，這是私人使用下風險最低、也最符合敘事節奏的取捨。
+
+## FRONTIER 網站真實感二次翻修（設計品質，不只是加內容）
+第一輪翻修（dashboard/webmail 改版）加了內容密度，但視覺本身沒有真的變好——全站只用等寬字體、只有一個 cyan 色階、沒有真正的排版層級，這才是「看起來很塑膠」的根本原因，不是內容多寡的問題。第二輪改動：
+- **真正的字體配對**：改用 Google Fonts 的 IBM Plex Sans（介面文字：導覽、標題、內文）+ IBM Plex Mono（只用在真正的「系統輸出」區塊：ping 結果、notes 內容、search 結果的資料值）。之前整站都用等寬字體，是很典型的「一眼看出來是生成的」破綻——真正的政府/企業系統，UI chrome 用一般 sans-serif，只有終端機/log 輸出才會用等寬字體。
+- **從單一置中卡片改成真的側邊欄版型**：左側常駐 sidebar（品牌區塊 + UNSC 徽記 + 導覽 + session 資訊），右側 main content 有 breadcrumb（`OCPA › ROSTER › 頁面名稱`）+ page title，這是 GOV.UK／一般企業 intranet 常見的版型模式，不是憑空設計。
+- **真正的色彩層級**：不再整站同一個 cyan——標題用近白色、內文用中灰、cyan 只留給連結／active 狀態／少量強調，紅色只留給 classification banner，層級感因此出現。
+- **webmail 套用同一套設計系統**（同樣的字體、色票、sidebar 折疊夾模式），視覺上跟 portal 是同一個機構的兩個系統，而不是兩套風格拼在一起。
+- **順手抓到一個真的 bug**：重寫時發現 `upload` 頁面的目標路徑寫的是 `/var/www/html/uploads/`，但 nginx 的 webroot 其實是 `/var/www/html/portal/`（跟先前修過的 notes LFI 是同一種路徑對不起來的問題）——上傳的檔案雖然「上傳成功」，但連結指到的網址其實 404，玩家永遠打不開自己剛上傳的檔案。已修正成 `/var/www/html/portal/uploads/`，實測上傳後連結可以正常開啟。
+- 全部用 headless Chromium 實際截圖驗證，不是憑空調整 CSS 數值。

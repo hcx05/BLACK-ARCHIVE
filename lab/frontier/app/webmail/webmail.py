@@ -48,24 +48,42 @@ EMAILS = [
 ]
 
 
-STYLE = b"""<html><head><title>OCPA Webmail</title><link rel="icon" type="image/png" href="/favicon.png"><style>
-body { font-family: 'Consolas', 'DejaVu Sans Mono', monospace; margin: 0; background: #0b0f14; color: #c9d6df; }
-.banner { background: #2a1010; color: #ff6b5e; text-align: center; padding: 6px; font-size: 0.75em; letter-spacing: 1px; border-bottom: 1px solid #ff6b5e; }
-.shell { max-width: 820px; margin: 30px auto; border: 1px solid #1f2b38; display: flex; background: #10161d; min-height: 420px; }
-.sidebar { width: 150px; background: #0d1319; border-right: 1px solid #1f2b38; padding: 14px 0; flex-shrink: 0; }
-.sidebar .folder { padding: 8px 16px; font-size: 0.82em; color: #7290a3; }
-.sidebar .folder.active { color: #7fd1e0; background: #131b23; border-left: 2px solid #7fd1e0; }
-.main { flex: 1; padding: 20px 22px; min-width: 0; }
-h1 { color: #7fd1e0; font-size: 1.05em; text-transform: uppercase; border-bottom: 1px solid #1f2b38; padding-bottom: 10px; margin-top: 0; }
-input { display: block; margin: 10px 0; padding: 8px; width: 240px; background: #0b0f14; border: 1px solid #2a3b4a; color: #c9d6df; font-family: inherit; }
-button { padding: 8px 16px; background: #1f2b38; color: #7fd1e0; border: 1px solid #2a3b4a; cursor: pointer; font-family: inherit; }
-.msg { border: 1px solid #1f2b38; margin: 10px 0; background: #131b23; }
-.msg .hdr { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-bottom: 1px solid #1a232c; }
-.msg .avatar { width: 24px; height: 24px; border-radius: 2px; background: #1f2b38; color: #7fd1e0; display: flex; align-items: center; justify-content: center; font-size: 0.72em; flex-shrink: 0; }
-.msg .from { font-weight: bold; color: #c9d6df; font-size: 0.85em; }
-.msg .subj { color: #9db3c2; font-size: 0.85em; }
-.msg .date { margin-left: auto; color: #4c5a68; font-size: 0.75em; white-space: nowrap; }
-pre { background: #05070a; color: #9adfc2; padding: 10px 12px; margin: 0; overflow-x: auto; }
+STYLE = b"""<html><head><title>OCPA Webmail</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg: #0a0d11; --surface: #131920; --surface-2: #1a212a; --surface-hover: #1f2731;
+  --border: #232c36; --border-soft: #1a2129; --text: #d7dee4; --text-dim: #8a97a3;
+  --text-faint: #55616c; --accent: #5fb3d1; --accent-soft: rgba(95,179,209,0.12);
+  --danger: #c96560; --danger-bg: #2a1414;
+  --sans: 'IBM Plex Sans', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'IBM Plex Mono', 'Consolas', monospace;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body { font-family: var(--sans); margin: 0; background: var(--bg); color: var(--text); font-size: 14px; }
+.banner { background: var(--danger-bg); color: var(--danger); text-align: center; padding: 6px 12px; font-size: 11.5px; letter-spacing: 0.4px; border-bottom: 1px solid #3a1d1d; }
+.shell { max-width: 900px; margin: 0 auto; border: 1px solid var(--border); border-top: none; display: flex; background: var(--bg); min-height: calc(100vh - 27px); }
+.sidebar { width: 170px; background: var(--surface); border-right: 1px solid var(--border); flex-shrink: 0; }
+.brand { display: flex; align-items: center; gap: 9px; padding: 16px 14px; border-bottom: 1px solid var(--border-soft); }
+.brand img { width: 26px; opacity: 0.92; }
+.brand div { font-weight: 600; font-size: 12.5px; }
+.folder { padding: 9px 16px; font-size: 13px; color: var(--text-dim); border-left: 2px solid transparent; }
+.folder.active { color: var(--accent); background: var(--accent-soft); border-left-color: var(--accent); font-weight: 500; }
+.main { flex: 1; padding: 22px 26px; min-width: 0; }
+h1 { font-size: 16px; font-weight: 600; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin: 0 0 16px; }
+input { display: block; margin: 10px 0; padding: 8px 10px; width: 260px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; color: var(--text); font-family: var(--sans); font-size: 13px; }
+button { padding: 8px 16px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 3px; cursor: pointer; font-family: var(--sans); font-size: 13px; }
+button:hover { border-color: var(--accent); color: var(--accent); }
+.msg { border: 1px solid var(--border); border-radius: 4px; margin: 0 0 10px; background: var(--surface); }
+.msg .hdr { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border-soft); }
+.msg .avatar { width: 26px; height: 26px; border-radius: 3px; background: var(--surface-2); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+.msg .from { font-weight: 600; color: var(--text); font-size: 13px; }
+.msg .subj { color: var(--text-dim); font-size: 13px; }
+.msg .date { margin-left: auto; color: var(--text-faint); font-family: var(--mono); font-size: 11.5px; white-space: nowrap; }
+pre { font-family: var(--mono); font-size: 12.5px; background: #05070a; color: #9ad0c9; padding: 12px 14px; margin: 0; overflow-x: auto; line-height: 1.6; border-radius: 0 0 4px 4px; }
 </style></head><body>"""
 
 def initials(addr):
@@ -76,7 +94,7 @@ def initials(addr):
 FOLDERS = [("Inbox", True), ("Sent", False), ("Drafts", False), ("Trash", False)]
 
 def sidebar_html():
-    out = '<div class="sidebar">'
+    out = '<div class="sidebar"><div class="brand"><img src="/favicon.png"><div>OCPA Mail</div></div>'
     for name, active in FOLDERS:
         cls = "folder active" if active else "folder"
         out += f'<div class="{cls}">{name}</div>'
