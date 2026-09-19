@@ -24,8 +24,9 @@ COPY shares/confidential/ /srv/share/confidential/
 COPY shares/backups/ /srv/share/backups/
 RUN chmod 644 /srv/share/confidential/* /srv/share/backups/*
 
-# Set Samba password for the sysadmin (base) account
-RUN (echo "Cairn#Records24"; echo "Cairn#Records24") | smbpasswd -a -s sysadmin
+# Set Samba password for the sysadmin (base) account. Same password as
+# everywhere else - whoever provisioned this never rotates per-service.
+RUN (echo "admin123"; echo "admin123") | smbpasswd -a -s sysadmin
 
 COPY app/admin/admin_panel.py /opt/admin/app.py
 

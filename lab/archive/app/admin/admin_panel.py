@@ -10,8 +10,12 @@ DB_PATH = "/opt/admin/admin.db"
 
 RECORDS = [
     (101, "ONI Section III - Disposition Order 2547-014",
+     "//CLASSIFIED - ONI SECTION III - EYES ONLY//\n"
      "DISPOSITION ORDER 2547-014\n"
-     "Authorizing Officer: Cmdr. I. Petrov, ONI Section III\n\n"
+     "FROM: Cmdr. I. Petrov, ONI Section III\n"
+     "TO: CAIRN Records Custodian\n"
+     "DATE: 2547-02-11\n"
+     "RE: SPINDLE decommission - records disposition\n\n"
      "Per review of the SPINDLE decommission, all case material predating the\n"
      "2547 migration is reclassified RESTRICTED - DISPOSITION HOLD pending further\n"
      "review. Active dependent cases remain on LEDGER. All acquisition-era\n"
@@ -21,7 +25,10 @@ RECORDS = [
      "This order does not authorize destruction of the material. Retention only."),
 
     (102, "Flash-Clone Substitution Protocol - Medical Annex",
-     "MEDICAL ANNEX - REVIEWED: Dr. M. Castel, UNSC Medical\n\n"
+     "//CLASSIFIED - ONI SECTION III - EYES ONLY//\n"
+     "MEDICAL ANNEX - FLASH-CLONE SUBSTITUTION PROTOCOL\n"
+     "REVIEWED BY: Dr. M. Castel, UNSC Medical Corps\n"
+     "RE: Candidate acquisition - case closure procedure\n\n"
      "Standard procedure for candidate acquisition required a substitute\n"
      "biological record to close the originating case file without raising\n"
      "family or colonial-administration inquiry. Substitutes were accelerated-\n"
@@ -35,6 +42,11 @@ RECORDS = [
      "- M.C."),
 
     (103, "Correspondence Fragment - C. Halsey to Section III, 2517",
+     "//CLASSIFIED - ONI SECTION III - EYES ONLY//\n"
+     "CORRESPONDENCE FRAGMENT (RECOVERED, PARTIAL)\n"
+     "FROM: Dr. C. Halsey\n"
+     "TO: ONI Section III\n"
+     "DATE: 2517 (exact date not recovered)\n\n"
      "...you asked me whether I could live with it. I don't think that is the\n"
      "right question. The right question is whether the colonies survive long\n"
      "enough to ask me anything at all. I have run the projections three more\n"
@@ -47,6 +59,11 @@ RECORDS = [
      "Proceed with the candidate list as submitted."),
 
     (104, "Internal Memo - CPO M. Kade to Records, 2540",
+     "//CLASSIFIED - ONI SECTION III - EYES ONLY//\n"
+     "INTERNAL MEMO\n"
+     "FROM: CPO M. Kade, UNSC Training Command (Reach)\n"
+     "TO: Records\n"
+     "DATE: 2540\n\n"
      "To whoever eventually reads this file and not just stamps it -\n\n"
      "I trained most of the names on the SPINDLE list personally. I watched some\n"
      "of them not survive augmentation. I watched the rest of them become\n"
@@ -87,12 +104,16 @@ class AdminHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "text/html")
             self.end_headers()
             self.wfile.write(b"""<html><head><title>CAIRN Records Terminal</title>
-            <style>body{font-family:monospace;background:#1a1a2e;color:#e94560;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
-            .panel{background:#16213e;padding:40px;border-radius:8px;border:1px solid #e94560}
-            input{display:block;margin:10px 0;padding:8px;width:220px;background:#0f3460;border:1px solid #e94560;color:#fff}
-            button{padding:10px 20px;background:#e94560;color:#fff;border:none;cursor:pointer;width:100%}</style></head>
-            <body><div class="panel"><h1>CAIRN RECORDS TERMINAL</h1>
-            <p style="font-size:0.8em">RESTRICTED - DISPOSITION HOLD ACCESS ONLY</p>
+            <style>
+            body{font-family:'Consolas','DejaVu Sans Mono',monospace;background:#000;color:#ffb000;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;margin:0}
+            .classbar{position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:6px;font-size:0.75em;letter-spacing:2px;border-bottom:1px solid #ff3b30}
+            .panel{background:#0a0a05;padding:40px;border:1px solid #ffb000}
+            input{display:block;margin:10px 0;padding:8px;width:220px;background:#000;border:1px solid #7a5c00;color:#ffb000;font-family:inherit}
+            button{padding:10px 20px;background:#1a1200;color:#ffb000;border:1px solid #ffb000;cursor:pointer;width:100%;font-family:inherit}
+            </style></head>
+            <body><div class="classbar">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
+            <div class="panel"><h1>CAIRN RECORDS TERMINAL</h1>
+            <p style="font-size:0.8em">DISPOSITION HOLD ACCESS ONLY -- UNAUTHORIZED ACCESS IS A VIOLATION OF UNSC MILITARY CODE ART. 12</p>
             <form method="POST" action="/login">
             <input name="username" placeholder="Username">
             <input name="password" type="password" placeholder="Password">
@@ -103,12 +124,14 @@ class AdminHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "text/html")
             self.end_headers()
             # No session validation (broken authentication)
-            html = """<html><head><title>CAIRN Dashboard</title></head><body style="background:#1a1a2e;color:#eee;font-family:monospace;padding:20px">
-            <h1>Disposition Hold - Record Index</h1>
+            html = """<html><head><title>CAIRN Dashboard</title></head>
+            <body style="background:#000;color:#ffb000;font-family:'Consolas','DejaVu Sans Mono',monospace;padding:60px 20px 20px">
+            <div style="position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:6px;font-size:0.75em;letter-spacing:2px;border-bottom:1px solid #ff3b30">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
+            <h1>DISPOSITION HOLD -- RECORD INDEX</h1>
             <ul>"""
             for rid, title, _ in RECORDS:
-                html += f'<li><a style="color:#e94560" href="/records/{rid}">[{rid}] {title}</a></li>'
-            html += "</ul><h2>Server Info</h2><pre>"
+                html += f'<li><a style="color:#ffb000" href="/records/{rid}">[{rid}] {title}</a></li>'
+            html += "</ul><h2>Terminal Status</h2><pre style=\"border:1px solid #7a5c00;padding:10px;background:#0a0a05\">"
             html += f"Hostname: {os.uname().nodename}\n"
             html += f"User: {os.getenv('USER', 'root')}\n"
             html += "</pre></body></html>"
@@ -124,11 +147,12 @@ class AdminHandler(BaseHTTPRequestHandler):
             self.end_headers()
             if record:
                 html = f"""<html><head><title>{record[1]}</title></head>
-                <body style="background:#1a1a2e;color:#eee;font-family:monospace;padding:20px">
-                <a style="color:#e94560" href="/dashboard">&laquo; back to index</a>
-                <h1>{record[1]}</h1><pre style="white-space:pre-wrap">{record[2]}</pre></body></html>"""
+                <body style="background:#000;color:#ffb000;font-family:'Consolas','DejaVu Sans Mono',monospace;padding:60px 20px 20px">
+                <div style="position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:6px;font-size:0.75em;letter-spacing:2px;border-bottom:1px solid #ff3b30">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
+                <a style="color:#ffb000" href="/dashboard">&laquo; back to index</a>
+                <h1>{record[1]}</h1><pre style="white-space:pre-wrap;border:1px solid #7a5c00;padding:10px;background:#0a0a05">{record[2]}</pre></body></html>"""
             else:
-                html = "<html><body style='background:#1a1a2e;color:#e94560'>Record not found.</body></html>"
+                html = "<html><body style='background:#000;color:#ff3b30;font-family:monospace;padding:20px'>RECORD NOT FOUND / OUT OF SCOPE.</body></html>"
             self.wfile.write(html.encode())
         else:
             self.send_response(404)

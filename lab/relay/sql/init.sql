@@ -32,7 +32,7 @@ CREATE TABLE service_accounts (
 );
 
 INSERT INTO service_accounts (service_name, username, password, host, notes) VALUES
-('CAIRN Fileshare', 'smbadmin', 'Cairn#Records24', 'cairn.internal', 'Read/write access to all shares'),
+('CAIRN Fileshare', 'sysadmin', 'admin123', 'cairn.internal', 'Same login as the gateway account (reused, never rotated per-service)'),
 ('CAIRN Cache', '', '', 'cairn.internal:6379', 'No authentication required'),
 ('Gateway Maintenance SSH', 'backup', 'backup', 'relay.internal', 'Used for automated backups'),
 ('CAIRN Records Terminal', 'administrator', 'Records!Access99', 'cairn.internal:8080', 'Disposition/records interface, restricted');

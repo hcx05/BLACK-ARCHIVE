@@ -1,5 +1,9 @@
-ROOT ACCESS ONLY - NOT FOR GENERAL DISTRIBUTION
-CAIRN Disposition Review - Final Summary (2547)
+//TOP SECRET - ONI SECTION III - DO NOT DISTRIBUTE//
+CAIRN DISPOSITION REVIEW - FINAL SUMMARY
+FROM: Disposition Review Office
+TO: Sealed Record (root/custodian access only)
+DATE: 2547
+RE: SPINDLE / SPARTAN-II cross-reference, consolidated
 
 This file exists to connect material that was deliberately kept apart
 across systems. It should not be readable outside of a full disposition

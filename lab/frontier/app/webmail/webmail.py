@@ -37,6 +37,18 @@ EMAILS = [
 ]
 
 
+STYLE = b"""<html><head><title>OCPA Webmail</title><style>
+body { font-family: 'Consolas', 'DejaVu Sans Mono', monospace; margin: 0; background: #0b0f14; color: #c9d6df; }
+.banner { background: #2a1010; color: #ff6b5e; text-align: center; padding: 6px; font-size: 0.75em; letter-spacing: 1px; border-bottom: 1px solid #ff6b5e; }
+.container { max-width: 700px; margin: 30px auto; background: #10161d; padding: 20px 25px; border: 1px solid #1f2b38; }
+h1 { color: #7fd1e0; font-size: 1.05em; text-transform: uppercase; border-bottom: 1px solid #1f2b38; padding-bottom: 10px; }
+input { display: block; margin: 10px 0; padding: 8px; width: 240px; background: #0b0f14; border: 1px solid #2a3b4a; color: #c9d6df; font-family: inherit; }
+button { padding: 8px 16px; background: #1f2b38; color: #7fd1e0; border: 1px solid #2a3b4a; cursor: pointer; font-family: inherit; }
+.msg { border: 1px solid #1f2b38; padding: 10px; margin: 10px 0; background: #131b23; }
+pre { background: #05070a; color: #9adfc2; padding: 10px; overflow-x: auto; }
+</style></head><body>"""
+
+
 class WebmailHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
@@ -44,24 +56,25 @@ class WebmailHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-Type", "text/html")
             self.end_headers()
-            self.wfile.write(b"""<html><head><title>ROSTER Webmail</title></head><body>
-            <h1>OCPA Region 4 - Webmail</h1>
+            self.wfile.write(STYLE + b"""<div class="banner">OCPA REGION 4 INTERNAL MAIL -- DO NOT FORWARD OFF NETWORK</div>
+            <div class="container">
+            <h1>OCPA Region 4 :: Webmail</h1>
             <form method="POST" action="/login">
             <input name="user" placeholder="Username"><br>
             <input name="pass" type="password" placeholder="Password"><br>
             <button type="submit">Login</button>
-            </form></body></html>""")
+            </form></div>""")
         elif parsed.path == "/inbox":
             self.send_response(200)
             self.send_header("Content-Type", "text/html")
             self.end_headers()
-            html = "<html><head><title>Inbox</title></head><body><h1>Inbox</h1>"
+            html = STYLE.decode() + '<div class="banner">OCPA REGION 4 INTERNAL MAIL -- DO NOT FORWARD OFF NETWORK</div><div class="container"><h1>Inbox</h1>'
             for email in EMAILS:
-                html += "<div style='border:1px solid #ccc;padding:10px;margin:5px'>"
-                html += f"<b>From:</b> {email['from']}<br>"
-                html += f"<b>Subject:</b> {email['subject']}<br>"
+                html += "<div class='msg'>"
+                html += f"<b>FROM:</b> {email['from']}<br>"
+                html += f"<b>SUBJECT:</b> {email['subject']}<br>"
                 html += f"<pre>{email['body']}</pre></div>"
-            html += "</body></html>"
+            html += "</div>"
             self.wfile.write(html.encode())
         elif parsed.path == "/debug":
             # Information disclosure: environment variables

@@ -38,6 +38,10 @@ docker compose up -d --build
 ```
 或 `docker compose down`
 
+### 開始之前
+
+在碰任何 exploit 之前，先讀 [`briefing/00_longshore_contact.md`](briefing/00_longshore_contact.md)——那是你唯一會拿到的委託內容，之後不會再有人告訴你下一步該做什麼。FRONTIER 預設對外開在 `8080`（portal）、`8025`（webmail），RELAY 開在 `2222`（SSH）；如果是從另一台攻擊機打，把 `localhost` 換成跑 docker 那台機器的 IP 就好。
+
 ## 架構
 
 ```

@@ -7,25 +7,30 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ROSTER — OCPA Regional Terminal</title>
+    <title>ROSTER :: OCPA Regional Terminal</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background: #eef0f2; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; font-size: 1.3em; }
-        nav { background: #34495e; padding: 10px; border-radius: 2px; margin-bottom: 20px; }
-        nav a { color: #dfe6e9; margin-right: 15px; text-decoration: none; font-size: 0.9em; }
-        .upload-form { background: #ecf0f1; padding: 15px; border-radius: 4px; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Consolas', 'DejaVu Sans Mono', monospace; margin: 0; background: #0b0f14; color: #c9d6df; }
+        .banner { background: #2a1010; color: #ff6b5e; text-align: center; padding: 6px; font-size: 0.75em; letter-spacing: 1px; border-bottom: 1px solid #ff6b5e; }
+        .container { max-width: 860px; margin: 30px auto; background: #10161d; padding: 20px 25px; border: 1px solid #1f2b38; box-shadow: 0 0 0 1px #050708; }
+        h1 { color: #7fd1e0; font-size: 1.05em; letter-spacing: 0.5px; border-bottom: 1px solid #1f2b38; padding-bottom: 10px; margin-top: 0; text-transform: uppercase; }
+        h2 { color: #7fd1e0; font-size: 1em; text-transform: uppercase; letter-spacing: 0.5px; }
+        nav { background: #131b23; padding: 10px; margin-bottom: 20px; border: 1px solid #1f2b38; }
+        nav a { color: #7fd1e0; margin-right: 18px; text-decoration: none; font-size: 0.85em; }
+        nav a:hover { text-decoration: underline; }
+        .upload-form { background: #131b23; padding: 15px; border: 1px solid #1f2b38; }
         .search-form { margin: 15px 0; }
-        input[type="text"] { padding: 8px; width: 300px; }
-        input[type="submit"], button { padding: 8px 16px; background: #34495e; color: white; border: none; cursor: pointer; }
-        pre { background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 4px; overflow-x: auto; }
-        .warning { color: #c0392b; }
-        footer { font-size: 0.75em; color: #7f8c8d; margin-top: 20px; }
+        input[type="text"] { padding: 8px; width: 300px; background: #0b0f14; border: 1px solid #2a3b4a; color: #c9d6df; font-family: inherit; }
+        input[type="submit"], button { padding: 8px 16px; background: #1f2b38; color: #7fd1e0; border: 1px solid #2a3b4a; cursor: pointer; font-family: inherit; }
+        pre { background: #05070a; color: #9adfc2; padding: 15px; border: 1px solid #1f2b38; overflow-x: auto; }
+        .warning { color: #ff6b5e; }
+        footer { font-size: 0.7em; color: #4c5a68; margin-top: 20px; border-top: 1px solid #1f2b38; padding-top: 10px; }
     </style>
 </head>
 <body>
+<div class="banner">UNSC OCPA NETWORK -- AUTHORIZED PERSONNEL ONLY -- ACTIVITY IS LOGGED (Reg. 4 Systems Directive 09)</div>
 <div class="container">
-    <h1>ROSTER — Office of Colonial Personnel Affairs, Regional Support Terminal</h1>
+    <h1>ROSTER :: Office of Colonial Personnel Affairs -- Regional Support Terminal</h1>
     <nav>
         <a href="?page=home">Home</a>
         <a href="?page=search">Dependent Status Index</a>
@@ -106,7 +111,7 @@ switch($page) {
         echo '<li><a href="?page=notes&file=todo.txt">Open Items — Systems</a></li>';
         echo '</ul>';
         // Vulnerable: no path validation
-        $filepath = '/var/www/html/notes/' . $file;
+        $filepath = '/var/www/html/portal/notes/' . $file;
         if (file_exists($filepath)) {
             echo "<pre>" . htmlspecialchars(file_get_contents($filepath)) . "</pre>";
         } else {

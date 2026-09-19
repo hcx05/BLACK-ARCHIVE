@@ -6,6 +6,8 @@
 
 用來檢查「玩家在拿到某份證據之後，應該知道什麼、還不應該知道什麼」，避免某個 host 過早劇透。
 
+實際的開場委託信在 `briefing/00_longshore_contact.md`（玩家實際會讀到的檔案），內容是三個案例（Eli Okafor / Talia Wren / Dominic Farrow）加一句「find out what happened to them」，不含任何登入資訊或下一步提示。
+
 ## 開場（拿到 LONGSHORE 的委託後）
 知道：一批兒童紀錄、官方顯示已死亡、委託人懷疑造假。
 不知道：SPINDLE / LEDGER / CAIRN 這些名字、ONI、SPARTAN-II、Halsey。

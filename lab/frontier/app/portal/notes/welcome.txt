@@ -1,5 +1,8 @@
-Onboarding Note — ROSTER Terminal
-From: T. Reyes (Systems, OCPA Region 4)
+//OCPA REGION 4 - INTERNAL USE ONLY//
+FROM: T. Reyes (Systems)
+TO: New Terminal User
+DATE: 2547-02-02
+RE: ROSTER onboarding
 
 Welcome to the team. A few things that never made it into the official
 onboarding packet:
