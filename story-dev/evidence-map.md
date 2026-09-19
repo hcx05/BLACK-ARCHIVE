@@ -106,3 +106,11 @@
   - webmail `/debug`、relay 的 LEDGER API 原始 JSON、archive 的 SMB 分享——這些本來就該是「原始資料」的樣子（debug endpoint、REST API、檔案分享），沒有理由套用網頁美術風格，維持現狀。
 - **人物照片**：這個環境裡沒有可以生成照片級人像的工具（試過 `ToolSearch` 找不到對應的圖片生成能力，目前手上只有 Pillow 可以畫向量圖形/合成既有素材，沒辦法生成真人臉孔）。已經明確告知使用者這個限制，並重申一個刻意的設計決定：**案件裡的兒童（Eli/Talia/Dominic/Samuel/Priya）本來就不該有生成的擬真照片**——這是敏感題材（兒童失蹤/人體實驗故事），用「IMAGE CORRUPTED」雜訊取代人臉是刻意的倫理考量，不只是能力限制，即使未來有圖片生成能力也不會改變這個決定。如果要幫「成年」角色（T. Reyes、Dr. Castel、Petrov、Kade、Achebe）做識別證風格的頭像，可以用 Pillow 做縮寫字母 + 幾何底色的識別證佔位圖（像 webmail 郵件列表的寄件人縮寫頭像那樣），但這不是照片級人像；真的要照片，由使用者自己提供。
 - **LONGSHORE 信件重做**：原本的版本已經是深色終端機風格，但使用者覺得不夠真實。改動：(1) 加了終端機視窗外框（三個圓點的視窗列 + 標題列，模擬真的終端機應用程式視窗，不是一段裸露的文字）；(2) 加了很淡的掃描線紋理背景（`repeating-linear-gradient` 模擬 CRT 顯示器）跟文字的輕微 glow（`text-shadow`），這是真實終端機美術很常見的手法；(3) 用虛線分隔取代實線，強化「這是列印/擷取出來的東西」而非「網頁區塊」的感覺；(4) 字體改用 Google Fonts 的 JetBrains Mono（terminal.css 這類真實終端機風格框架公認的字體之一，先前已經在用，這次沒換）。同一份內容也同步更新到先前發布的 Claude Artifact 連結（version 2）。
+
+## 第四輪：使用者自己生成的人物照片
+使用者用自己的管道生成了 6 張高品質、高解析度的角色照片（T. Reyes、Cmdr. Petrov、Dr. Castel、CPO Kade、Dr. Achebe、Naomi Okafor），品質遠超這個環境現有能力，並詳細符合先前給的角色特徵描述（制服、徽章、場景招牌文字都對應正確的部門）。處理方式：
+- 原始高解析度檔案（1.7–2MB／張）移到 `story-dev/character-photos/`（dev-only 來源存檔，不進玩家發行版，因為原檔太大也不需要真的被 serve）。
+- 壓縮成 420px 寬、JPEG quality 82 的網頁用版本（每張 20–31KB），實際部署進遊戲：
+  - `t_reyes.jpg` → frontier `assets/`，掛在 Support Tickets 頁面：只要載入的是他寫的三份文件（welcome/todo/credential_rotation），就會在內文上方出現一張小的「作者卡」（照片 + 姓名 + 職稱），其他人寫的（如停車證通知）不會出現他的照片。
+  - `i_petrov.jpg` / `m_castel.jpg` / `m_kade.jpg` / `r_achebe.jpg` → archive `assets/`，掛在各自簽署/提到的 CAIRN record（101/102/104/105）上，用 sepia 濾鏡處理成「機密檔案裡附的人事照片」質感，不是乾淨的現代照片感。admin_panel.py 的靜態檔案 route 從只認 `oni_seal.png` 改成通用的 `/assets/<filename>`（有做 `os.path.basename` 防止路徑穿越，避免意外變成新的檔案讀取漏洞）。
+  - `n_okafor.jpg`（Naomi/LONGSHORE）**先不掛進遊戲**——目前沒有任何遊戲內介面會揭露 LONGSHORE 的真實身分，硬塞一張沒有敘事連結的照片只會顯得莫名其妙。已經跟使用者說明這個狀況，等對方決定要不要設計一個「發現真相」的機制再接。

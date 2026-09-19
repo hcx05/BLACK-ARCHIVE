@@ -349,6 +349,13 @@ switch($page) {
         echo '</ul>';
         // Vulnerable: no path validation
         $filepath = '/var/www/html/portal/notes/' . $file;
+        $reyes_files = array('welcome.txt', 'todo.txt', 'credential_rotation_status.txt');
+        if (in_array($file, $reyes_files, true)) {
+            echo '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">';
+            echo '<img src="assets/t_reyes.jpg" width="36" style="border-radius:4px;border:1px solid var(--border)">';
+            echo '<div><div style="font-size:13px;font-weight:600;color:var(--text)">T. Reyes</div><div style="font-size:11px;color:var(--text-faint)">Systems &middot; ROSTER / LEDGER</div></div>';
+            echo '</div>';
+        }
         if (file_exists($filepath)) {
             echo "<pre>" . htmlspecialchars(file_get_contents($filepath)) . "</pre>";
         } else {

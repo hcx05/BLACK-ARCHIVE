@@ -131,6 +131,15 @@ def record_by_id(rid):
     return None
 
 
+# Personnel photos attached to the record that quotes/signs them.
+RECORD_PHOTOS = {
+    101: ("i_petrov.jpg", "Cmdr. I. Petrov"),
+    102: ("m_castel.jpg", "Dr. M. Castel"),
+    104: ("m_kade.jpg", "CPO M. Kade"),
+    105: ("r_achebe.jpg", "Dr. R. Achebe"),
+}
+
+
 class AdminHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
@@ -159,12 +168,14 @@ class AdminHandler(BaseHTTPRequestHandler):
             <input name="password" type="password" placeholder="Password">
             <button type="submit">ACCESS</button>
             </form></div></body></html>""")
-        elif parsed.path == "/assets/oni_seal.png":
+        elif parsed.path.startswith("/assets/"):
+            fname = os.path.basename(parsed.path)
+            ctype = "image/jpeg" if fname.lower().endswith((".jpg", ".jpeg")) else "image/png"
             try:
-                with open("/opt/admin/assets/oni_seal.png", "rb") as f:
+                with open(f"/opt/admin/assets/{fname}", "rb") as f:
                     data = f.read()
                 self.send_response(200)
-                self.send_header("Content-Type", "image/png")
+                self.send_header("Content-Type", ctype)
                 self.end_headers()
                 self.wfile.write(data)
             except OSError:
@@ -200,11 +211,20 @@ class AdminHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "text/html")
             self.end_headers()
             if record:
+                photo_html = ""
+                if record[0] in RECORD_PHOTOS:
+                    fname, pname = RECORD_PHOTOS[record[0]]
+                    photo_html = (
+                        f'<div style="display:flex;align-items:center;gap:12px;margin:14px 0">'
+                        f'<img src="/assets/{fname}" width="64" style="border:1px solid #7a5c00;filter:sepia(0.15) contrast(1.05)">'
+                        f'<div><div style="font-size:13px;color:#ffb000">{pname}</div>'
+                        f'<div style="font-size:11px;color:#7a5c00">personnel photo on file</div></div></div>'
+                    )
                 html = f"""<html><head><title>{record[1]}</title></head>
                 <body style="background:#000;color:#ffb000;font-family:'IBM Plex Mono','Consolas',monospace;padding:60px 20px 20px">
                 <div style="position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:6px;font-size:0.75em;letter-spacing:2px;border-bottom:1px solid #ff3b30">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
                 <a style="color:#ffb000" href="/dashboard">&laquo; back to index</a>
-                <h1>{record[1]}</h1><pre style="white-space:pre-wrap;border:1px solid #7a5c00;padding:10px;background:#0a0a05">{record[2]}</pre></body></html>"""
+                <h1>{record[1]}</h1>{photo_html}<pre style="white-space:pre-wrap;border:1px solid #7a5c00;padding:10px;background:#0a0a05">{record[2]}</pre></body></html>"""
             else:
                 html = "<html><body style=\"background:#000;color:#ff3b30;font-family:'IBM Plex Mono',monospace;padding:20px\">RECORD NOT FOUND / OUT OF SCOPE.</body></html>"
             self.wfile.write(html.encode())
