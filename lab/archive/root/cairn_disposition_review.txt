@@ -1,44 +1,36 @@
 //TOP SECRET - ONI SECTION III - DO NOT DISTRIBUTE//
-CAIRN DISPOSITION REVIEW - FINAL SUMMARY
-FROM: Disposition Review Office
+CAIRN DISPOSITION REVIEW - FINAL DETERMINATION
+FROM: Cmdr. I. Petrov, ONI Section III
 TO: Sealed Record (root/custodian access only)
-DATE: 2547
-RE: SPINDLE / SPARTAN-II cross-reference, consolidated
+DATE: 2547-02-19
+RE: SPINDLE-era acquisition material - retention determination
 
-This file exists to connect material that was deliberately kept apart
-across systems. It should not be readable outside of a full disposition
-review.
+This office was asked, at the close of the SPINDLE decommission, to
+make a final determination on the acquisition-era material: destroy
+it, or retain it. Disposition Order 2547-014 already states the
+outcome. This file states the reasoning that order does not.
 
-1. Origin (2517): Section III authorized a covert program, provisional
-   designation SPARTAN-II, to remove a small cohort of colonial children
-   and train them from early childhood as a counter-insurgency asset.
-   See CAIRN record 103 (Halsey correspondence) and the acquisition
-   directive on the confidential share.
+Every argument for destruction is operational. It is easier to manage
+a program that cannot be found. Every argument against destruction is
+not operational. It is that this office does not believe it has the
+standing to decide, unilaterally, that the record of how this was done
+should simply cease to exist because it is inconvenient to keep.
 
-2. Concealment: Each removal was covered by a substitute case closure -
-   an accelerated-growth clone certified as a natural death - so that
-   families and colonial administration would have no reason to
-   investigate. See CAIRN record 102 (Medical Annex, Dr. M. Castel).
+Determination: retained, not destroyed. Public disclosure deferred
+indefinitely. No further declassification review is scheduled at this
+time.
 
-3. Outcome: Of the SPINDLE-era candidates cross-referenced in this
-   review (Okafor, Wren, Farrow, Voight - see LEDGER case index and the
-   backups-share casualty log), two did not survive augmentation, one
-   was discharged with permanent disability, and two are recorded as
-   entering active service. Their subsequent record is sealed above
-   this office's clearance and is not reproduced here.
+This office is not positioned to decide whether the people this
+material describes are entitled to know their own history, or whether
+the public is entitled to know what it cost to produce the people it
+now calls heroes. That determination has not been made here, because
+no mechanism exists to make it here. It has not been made anywhere
+else either.
 
-4. Program continuation: The cohort trained under this directive later
-   became the personnel publicly known during the war against the
-   Covenant as the SPARTAN-II program. Their service record during that
-   war is public. Their origin, as described above, is not.
+If a future office is ever positioned to make that determination, this
+record should reach them intact, cross-references included. That is
+the only instruction this file carries.
 
-5. Disposition (Cmdr. I. Petrov, Section III, 2547): Material retained,
-   not destroyed, "in case a future office is required to answer for it."
-   No further guidance is given on when, or whether, that office should
-   exist.
-
-This office draws no conclusion here about whether that decision was
-correct. It only confirms that the question was asked, on the record,
-by the people who made it - and that the answer was to wait.
+- I. Petrov
 
 -- end of file --

@@ -16,7 +16,7 @@ const cases = {
        case_ref: "OCPA-R4-11902", transfer_ref: "SPINDLE-7-0119" },
   2: { id: 2, name: "Talia Wren", colony: "Madrigal", status: "Case Closed - Deceased (medical, age 6)",
        case_ref: "OCPA-R4-11944", transfer_ref: "SPINDLE-7-0142" },
-  3: { id: 3, name: "Dominic Farrow", colony: "Skopje", status: "Case Closed - Deceased (medical, age 7)",
+  3: { id: 3, name: "Dominic Farrow", colony: "Skopje", status: "Case Closed - Deceased (medical, age 6)",
        case_ref: "OCPA-R4-11887", transfer_ref: "SPINDLE-7-0087" },
   4: { id: 4, name: "Priya Anand", colony: "Eridanus II", status: "Active - standard dependent case",
        case_ref: "OCPA-R4-12210", transfer_ref: null },

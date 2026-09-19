@@ -1,6 +1,6 @@
 //CLASSIFIED - ONI SECTION III - EYES ONLY//
 AUGMENTATION PROGRAM - CASUALTY LOG (PARTIAL, BACKUP COPY)
-RE: SPINDLE candidate cohort, augmentation outcomes
+RE: SPINDLE candidate cohort, 2525 augmentation cycle, outcomes
 Left on the backups share during the 2547 migration. Should not be here.
 
 Candidate (case_ref OCPA-R4-11902 / Eli Okafor) ................ Augmentation failure, deceased

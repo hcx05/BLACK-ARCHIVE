@@ -94,7 +94,7 @@ curl "http://TARGET:8080/?page=notes&file=todo.txt"
 curl "http://TARGET:8080/notes/"
 curl "http://TARGET:8080/?page=notes&file=credential_rotation_status.txt"
 ```
-這份文件是整條 credential-reuse 鏈的**唯一合法起點**：列出 `sysadmin/admin123`、`devuser/devuser2024`、`backup/backup`、`deploy/deploy!` 四組帳號從來沒輪替過。
+這份文件是整條 credential-reuse 鏈的**唯一合法起點**：T.R. 在工單裡不小心貼上了一段舊的 provisioning script（`useradd`/`chpasswd`），內容就是 `sysadmin/admin123`、`devuser/devuser2024`、`backup/backup`、`deploy/deploy!` 四組帳密，並註明從未經過 first-login 輪替。
 
 ### 2.5 Webmail（8025）— 憑證重用的起點
 ```bash
@@ -156,14 +156,28 @@ SELECT * FROM service_accounts;
 | CAIRN Fileshare | sysadmin | admin123 | cairn.internal |
 | CAIRN Cache | (無) | (無) | cairn.internal:6379 |
 | Gateway Maintenance SSH | backup | backup | relay.internal |
-| CAIRN Records Terminal | administrator | Records!Access99 | cairn.internal:8080 |
+| Floor Print Server | printsvc | printsvc | printsvc.internal:9100（死線索，host 不回應） |
 
-**這是通往 ARCHIVE 的全部密碼**，而且再一次驗證「同一組密碼到處重複用」這個核心主題（Samba 密碼跟 SSH/webmail 密碼一樣）。
+CAIRN Fileshare 這筆再次驗證「同一組密碼到處重複用」（Samba 跟 SSH/webmail 共用）。**這張表不再直接給出 CAIRN Records Terminal 的帳密**——那組憑證要靠下一步的環境探索才找得到，不是單純 `SELECT *` 就拿到下一關全部鑰匙。
 
 ```sql
 SELECT * FROM dependent_case_index;   -- 背景資料，多一筆 Samuel Voight（沒有 transfer_ref 欄位但同模式）
 SELECT * FROM system_migration_log ORDER BY entry_date;
 ```
+
+### 3.3b CAIRN Records Terminal 憑證 — 要在檔案系統裡找
+relay API 的 `/api/cases/5` 已經提過有個叫 `ledger-cairn-sync` 的服務帳號負責 LEDGER↔CAIRN 同步。真正的憑證在 relay 本機的服務設定檔裡（拿到 shell 之後找）：
+```bash
+cat /etc/ledger/sync.conf
+```
+```
+sync_target_host = cairn.internal
+sync_target_service = records-terminal
+sync_target_port = 8080
+sync_user = administrator
+sync_pass = Records!Access99
+```
+這是「environment relationship → 找 config 檔 → 才發現憑證」，比一次 SQL SELECT 更貼近真實 pentest 的 credential discovery 手感。
 
 ### 3.4 【推理節點】官方稽核 vs 你自己找到的證據
 `system_migration_log` 第一筆（2540-08-02）是 Records Compliance Office 的正式結案回應：**「查過了，是批次匯入的假影，沒有異常」**。
@@ -231,15 +245,16 @@ curl -i -X POST http://cairn.internal:8080/login --data "username=administrator'
 
 ```bash
 curl http://cairn.internal:8080/dashboard
-# 列出 [101]~[105] 五份文件
+# 列出 [101]~[106] 六份文件
 ```
 | # | 標題 | 內容重點 |
 |---|---|---|
-| 101 | ONI Section III - Disposition Order 2547-014 | 解釋 LEDGER/CAIRN 為什麼分兩層；Cmdr. Petrov 的正式授權 |
+| 101 | ONI Section III - Disposition Order 2547-014 | 解釋 LEDGER/CAIRN 為什麼分兩層；Cmdr. Petrov 的正式授權；**註明這個節點只是待轉移的 staging mirror**，不是現役最高機密資料中心（解釋了為什麼這台機器資安這麼糟） |
 | 102 | Flash-Clone Substitution Protocol - Medical Annex | 掩蓋機制本身；Dr. Castel 自白「我簽了三份」 |
 | 103 | Correspondence Fragment - C. Halsey to Section III, 2517 | 道德複雜性，不是反派台詞 |
 | 104 | Internal Memo - CPO M. Kade to Records, 2540 | 訓練者的矛盾情感 + 追加的「07-B」線索（見 4.4） |
 | 105 | Medical Certification Log Fragment | 解答 102 的「三份 vs 四筆案件」落差 |
+| 106 | Cryogenic Recovery Transfer Authorization - Subject 07-B | Farrow 矛盾的第三個來源（見 4.5） |
 
 ### 4.4 【推理節點 1】三份 vs 四筆
 102 說 Castel「簽了三份」死亡證明，但玩家在 Act II 已經看過**四筆**帶 `transfer_ref` 異常的案件（Okafor / Wren / Farrow / Voight）。這個落差不會自動被指出來——玩家要自己數。
@@ -260,13 +275,21 @@ OCPA-R4-10733  Dr. R. Achebe   <- 第四份是別人簽的
 `training_roster_fragment.txt`：
 ```
 07-A  Eridanus II  6
-07-B  Skopje       7
+07-B  Skopje       6
 07-C  Madrigal     6
-07-D  Eridanus II  8
+07-D  Eridanus II  7
 ```
 Skopje 只有一筆案例 → 07-B = Dominic Farrow（`OCPA-R4-11887`）。但 `casualty_log_partial.txt` 明明寫 Farrow 是「discharged, permanent disability」——跟 Kade 的說法直接矛盾。
 
-**遊戲不裁決哪個是真的。** 這是唯一一個刻意設計成「兩份可信來源互相矛盾」的節點，玩家自己決定要信官方紀錄還是信在場的人。
+### 4.5b 【推理節點 3】第三個來源，矛盾升級成真正的 forensic ambiguity
+CAIRN record 106（Cryogenic Recovery Transfer Authorization - Subject 07-B）又給出第三種說法：他當時被判定「臨床上無法存活」，轉入低溫懸置，之後沒有追蹤紀錄。
+
+三份來源現在是：
+1. 官方 casualty log：殘障、除役。
+2. Kade：親眼看到他死。
+3. 醫療轉移授權：臨床無法存活、轉入懸置、後續不明。
+
+**遊戲永遠不裁決哪個是真的，任何文件都不會給答案。** 這是刻意設計成「多份可信來源互相矛盾」的節點，玩家自己決定要信哪一個，或者接受它本來就沒有乾淨答案。
 
 ### 4.6 本機提權（writable cron，root）
 ```bash
@@ -280,7 +303,7 @@ echo 'cp /bin/bash /tmp/rootbash; chmod u+s /tmp/rootbash' >> /opt/healthcheck.s
 ```bash
 cat /root/cairn_disposition_review.txt
 ```
-這是整個案件唯一一份把所有分散線索正式串起來的文件：acquisition → flash-clone → augmentation 結果 → ONI 授權 → 現在的處置決定（「保留但不公開，等一個未來的人去回答」）。檔名刻意取成跟其他 CAIRN 文件一致的風格（不叫 `final_*`），內容本身也不是一句「SPARTAN-II 綁架兒童」講完，而是把玩家已經看過的碎片重新對照一次、補上結論性的授權細節。
+檔名刻意取成跟其他 CAIRN 文件一致的風格（不叫 `final_*`）。**內容不重講整個陰謀**——acquisition、flash-clone、augmentation 結果玩家此時應該已經自己拼出來了。這份文件只回答一個之前沒人回答過的問題：**Petrov 當初為什麼決定保留這批資料而不銷毀**，以及他自己承認「沒有機制可以決定要不要公開」。是最後一塊拼圖，不是一張把全部劇情倒出來的答案卷。
 
 ---
 
@@ -299,9 +322,10 @@ cat /root/cairn_disposition_review.txt
 | `sysadmin/admin123`（webmail + relay SSH + archive SMB） | frontier `/notes/` 目錄列出的 `credential_rotation_status.txt` |
 | `root/S3cretDB!2024`（relay MariaDB） | frontier webmail inbox 第二封信；relay `service_accounts` 沒有這筆但 MariaDB 連線本身就是憑證來源 |
 | `duty.admin/MailP@ss2024`（webmail） | frontier webmail `/debug` 環境變數洩漏 |
-| CAIRN 全部帳密（Fileshare / Records Terminal） | relay MariaDB `service_accounts` 表 |
+| CAIRN Fileshare 帳密 | relay MariaDB `service_accounts` 表（密碼重用印證） |
+| CAIRN Records Terminal 帳密 | relay 檔案系統 `/etc/ledger/sync.conf`（呼應 API record id 5） |
 | CAIRN Records Terminal 的替代路徑 | SQL injection（不需要密碼） |
 
 ## 附錄 C：完整時間軸 / 真相
 
-見 `timeline.md`、`truth-map.md`。簡述：2517 年 ONI Section III 因殖民地叛亂風險發起 SPARTAN-II 計畫 → 用 flash-clone 掩蓋兒童失蹤 → Reach 訓練 + augmentation（死傷不一）→ 星盟戰爭爆發後這批人成為公開英雄，起源持續保密 → 2547 年舊系統 SPINDLE 退役，資料分流進 LEDGER（一般）與 CAIRN（機密），正式授權「保留但不公開」。
+遊戲現在時間點：**2555 年**。見 `timeline.md`、`truth-map.md`。簡述：2517 年 ONI Section III 因殖民地叛亂風險發起 SPARTAN-II 計畫（候選人徵召時約 6 歲）→ 用 flash-clone 掩蓋兒童失蹤 → Reach 訓練 + 2525 年 augmentation（死傷不一，Farrow 的結局有三份互相矛盾的來源，永遠不解答）→ 2552 年星盟戰爭結束後這批人成為公開英雄，起源持續保密 → 2547 年舊系統 SPINDLE 退役，資料分流進 LEDGER（一般）與待轉移的 CAIRN staging mirror（機密），正式授權「保留但不公開」→ LONGSHORE（Naomi Okafor）在這次 migration 中意外發現異常，花約 8 年查證後於 2555 年聯絡玩家。

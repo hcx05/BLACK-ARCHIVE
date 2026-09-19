@@ -8,10 +8,11 @@
 獨立駭客／數位調查者。無代號固定名稱（由玩家自行想像），故事中以「你」稱呼。
 
 ## 委託人 — 代號 LONGSHORE
-- 一開始只用加密通訊代號 LONGSHORE 聯絡玩家，語氣簡短、謹慎。
-- 只提供一批兒童紀錄與一句話任務：「Find out what happened to them.」
-- **真實身分（後期揭露，不強制玩家發現，可留在 story-dev 供未來內容使用）**：Naomi Okafor，殖民地記錄職員，Eli Okafor 的母親。她從未真正相信兒子是病死。
-- 目前 repo 的技術內容（frontier/relay/archive）尚未直接置入 LONGSHORE 的訊息文本——這屬於 Phase 5 之後可以擴充的「委託對話」層，目前先確保環境內部證據自洽。
+- 一開始只用加密通訊代號 LONGSHORE 聯絡玩家，語氣簡短、謹慎（見 `briefing/00_longshore_contact.html`）。
+- 只提供三個名字（Eli Okafor / Talia Wren / Dominic Farrow）與一句話任務：「Find out what happened to them.」——**只有三個，不是四個**：她自己也沒查到 Samuel Voight，這是刻意的（見下方「為什麼是現在」）。
+- **真實身分（後期揭露，不強制玩家發現）**：Naomi Okafor，殖民地 records clerk，Eli Okafor 的母親。她從未真正相信兒子是病死。
+- **為什麼是現在**（解決「等了將近 40 年才找 hacker」這個動機漏洞）：Naomi 不是在 Eli 消失 38 年後突然心血來潮。約 2547 年 SPINDLE 系統退役／資料遷移時，她因為工作關係接觸到 Eli 的舊 case 被重新索引，意外看到一個不該存在的 `transfer_ref`。她沒有權限進入限閱系統，只能用自己的 records 職權，花了約 8 年時間安靜地用同樣的 pattern 交叉搜尋，才陸續找到 Wren、Farrow 的案例（沒找到 Voight——她的搜尋管道本來就有限）。2555 年她終於累積到足夠信心，透過 LONGSHORE 這個代號找上玩家。真正的觸發點是**系統遷移意外讓一個不該存在的痕跡露出來**，不是單純的母親直覺。
+- 目前 repo 的技術內容（frontier/relay/archive）尚未直接置入 LONGSHORE 的訊息文本以外的委託對話——這屬於未來可以擴充的「委託人互動」層，目前先確保環境內部證據自洽。
 
 ## Tobias Reyes（T.R.）— 系統管理員
 - 維護 ROSTER（frontier）與 LEDGER（relay）的 sysadmin。
@@ -42,15 +43,18 @@
 - 存在目的：讓玩家發現「Castel 說她簽了三份，但案件明明有四份」的落差有一個具體、可查證的解答——不只 Castel 一個人涉入，這件事牽涉的醫療人員比她的自白信讓人以為的更多。
 - 不需要展開背景故事，維持「一個名字」的份量即可，避免人物數量膨脹。
 
-## 候選人／失蹤兒童（案件核心）
-| 姓名 | 殖民地 | LEDGER 狀態 | 官方紀錄結果 | 有爭議的第二來源 |
+## 候選人／失蹤兒童（案件核心，四人在 2517 徵召時皆約 6 歲，貼近 canon 設定）
+| 姓名 | 殖民地 | LEDGER 狀態 | 官方紀錄結果 | 其他來源 |
 |---|---|---|---|---|
 | Eli Okafor | Eridanus II | Case Closed - Deceased | Augmentation failure, deceased | 無爭議 |
 | Talia Wren | Madrigal | Case Closed - Deceased | Augmentation successful, active service | 無爭議 |
-| Dominic Farrow | Skopje | Case Closed - Deceased | 官方 casualty log：discharged, permanent disability | CPO Kade 備忘錄（CAIRN record 104）暗示他其實死於 augmentation，官方紀錄被動過手腳——**兩份來源互相矛盾，遊戲不解答哪個對**，玩家要自己判斷 |
+| Dominic Farrow | Skopje | Case Closed - Deceased | 官方 casualty log：discharged, permanent disability | 三份來源互相牴觸，**遊戲永遠不解答哪個對**：(1) CPO Kade 備忘錄（CAIRN 104）聲稱親眼看到他死於 augmentation；(2) CAIRN 106「07-B 低溫恢復艙轉移授權」記載他被判定臨床無法存活、轉入懸置、之後無追蹤紀錄 |
 | Samuel Voight | Eridanus II | （僅在 relay DB 背景資料出現，無 API record）Closed - Deceased | Augmentation successful, active service | 無爭議，但死亡證明簽署人是 Dr. Achebe 而非 Castel（見上） |
 | Priya Anand | Eridanus II | Active（對照組，證明不是所有案件都異常） | 未涉入計畫 | 純粹作為「不是每筆資料都有問題」的對照 |
 
-Farrow 案是目前唯一一個刻意設計成「兩份可信來源互相矛盾、遊戲不裁決真假」的節點，對應作品核心要求「有些 evidence 可以…看似矛盾…玩家應該會建立 hypothesis，再用 hacking 去驗證」。線索鏈：archive backups share 的 `training_roster_fragment.txt`（只給訓練代號 07-A~07-D + 殖民地 + 年齡，不給姓名）→ CPO Kade 備忘錄提到「07-B」的親眼見聞 → 玩家要自己用殖民地（Skopje 只有 Farrow 一筆）交叉比對回真實姓名，才能發現這條反駁官方紀錄的線索——不是單純字串比對，是要跨兩份文件做身分還原。
+Farrow 案是目前唯一一個刻意設計成「多份可信來源互相矛盾、遊戲不裁決真假」的節點，對應作品核心要求「有些 evidence 可以…看似矛盾…玩家應該會建立 hypothesis，再用 hacking 去驗證」。線索鏈：archive backups share 的 `training_roster_fragment.txt`（只給訓練代號 07-A~07-D + 殖民地 + 年齡，不給姓名）→ CPO Kade 備忘錄提到「07-B」的親眼見聞 → 玩家要自己用殖民地（Skopje 只有 Farrow 一筆）交叉比對回真實姓名，才能發現這條反駁官方紀錄的線索；找到 CAIRN record 106 後，矛盾從「兩份資料一真一假」升級成「三份都不完整、可能都對也可能都不對」的真正 forensic ambiguity——不是單純字串比對，是要跨三份文件做身分還原與判斷。
+
+## CAIRN 的定位（世界觀 immersion 修正）
+CAIRN 不是「現役 ONI 最高機密資料中心」，而是 **2547 SPINDLE decommission 時留下的 staging mirror／recovery node**——正式資料應該全部轉移到別處、這個節點應該被除役，但除役排程沒有真的執行完。CAIRN record 101（Disposition Order）與 admin panel 的 Terminal Status 都已經明講這件事。這個設定解釋了為什麼同一台「機密檔案庫」會同時存在 guest SMB、明文憑證、SQLi、無 session check、Redis 無認證：玩家攻破的不是「ONI 資安爛得像學校電腦教室」，而是「ONI 四十年前留下的一具數位屍體，沒有人真的清乾淨」。
 
 人物總數：LONGSHORE、T. Reyes、Dr. Castel、Cmdr. Petrov、CPO Kade、Dr. Achebe + Halsey（克制引用）= 6 個原創 + 1 個 canon 引用，仍在作品要求「5–7 個有名字角色」範圍內。

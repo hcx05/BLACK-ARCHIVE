@@ -14,7 +14,7 @@ $DEPENDENT_INDEX = array(
     array('name' => 'Talia Wren', 'colony' => 'Madrigal', 'case_ref' => 'OCPA-R4-11944',
           'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_wren.png'),
     array('name' => 'Dominic Farrow', 'colony' => 'Skopje', 'case_ref' => 'OCPA-R4-11887',
-          'status' => 'Case Closed - Deceased (medical, age 7)', 'image' => 'case_farrow.png'),
+          'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_farrow.png'),
     array('name' => 'Priya Anand', 'colony' => 'Eridanus II', 'case_ref' => 'OCPA-R4-12210',
           'status' => 'Active - standard dependent case', 'image' => 'case_anand.png'),
 );

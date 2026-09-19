@@ -29,6 +29,12 @@ RUN chmod +x /opt/relay/scripts/run-mariadb.sh \
 
 RUN mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
 
+# ledger-cairn-sync service config (backs the account referenced in the
+# API's system record and by the sync service itself, not a bare DB dump)
+RUN mkdir -p /etc/ledger
+COPY etc-ledger/sync.conf /etc/ledger/sync.conf
+RUN chmod 644 /etc/ledger/sync.conf
+
 COPY config/supervisord.conf /etc/supervisor/conf.d/relay.conf
 
 EXPOSE 22

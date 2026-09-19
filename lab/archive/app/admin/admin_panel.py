@@ -20,8 +20,12 @@ RECORDS = [
      "2547 migration is reclassified RESTRICTED - DISPOSITION HOLD pending further\n"
      "review. Active dependent cases remain on LEDGER. All acquisition-era\n"
      "material, including subject transfer records and program correspondence,\n"
-     "is to be retained on CAIRN under this order and is not to be referenced\n"
-     "in any active OCPA case file.\n\n"
+     "is to be retained on this node pending full transfer to permanent\n"
+     "archival custody, and is not to be referenced in any active OCPA case\n"
+     "file in the interim.\n\n"
+     "Note for custodian: this is a staging mirror, not the permanent archive.\n"
+     "Full decommission of this node was scheduled following transfer\n"
+     "completion. Do not treat this system as production infrastructure.\n\n"
      "This order does not authorize destruction of the material. Retention only."),
 
     (102, "Flash-Clone Substitution Protocol - Medical Annex",
@@ -91,6 +95,20 @@ RECORDS = [
      "  OCPA-R4-11887    Dr. M. Castel\n"
      "  OCPA-R4-10733    Dr. R. Achebe\n\n"
      "Log fragment only - remaining entries lost in the SPINDLE migration."),
+
+    (106, "Cryogenic Recovery Transfer Authorization - Subject 07-B",
+     "//CLASSIFIED - ONI SECTION III - EYES ONLY//\n"
+     "TRANSFER AUTHORIZATION (MEDICAL)\n"
+     "RE: Post-augmentation recovery transfer, subject 07-B\n"
+     "DATE: 2525 (augmentation cycle)\n\n"
+     "Subject 07-B authorized for transfer to long-term cryogenic recovery\n"
+     "pending reassessment. Augmentation bay report on file lists subject as\n"
+     "clinically non-viable at time of transfer; recovery team elected to\n"
+     "proceed with suspension rather than log a field determination.\n\n"
+     "This authorization does not supersede or amend any existing case\n"
+     "closure. It is filed separately per standing medical procedure for\n"
+     "suspension-pending cases.\n\n"
+     "No follow-up reassessment record has been located in this archive."),
 ]
 
 
@@ -151,6 +169,8 @@ class AdminHandler(BaseHTTPRequestHandler):
             html += "</ul><h2>Terminal Status</h2><pre style=\"border:1px solid #7a5c00;padding:10px;background:#0a0a05\">"
             html += f"Hostname: {os.uname().nodename}\n"
             html += f"User: {os.getenv('USER', 'root')}\n"
+            html += "Role: staging mirror (post-SPINDLE migration, transfer pending)\n"
+            html += "Decommission: scheduled, not completed\n"
             html += "</pre></body></html>"
             self.wfile.write(html.encode())
         elif parsed.path.startswith("/records/"):
