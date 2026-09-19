@@ -1,0 +1,75 @@
+###############################################################################
+# BLACK ARCHIVE - A Halo Cyber Investigation
+# Derived from VulnCastle (https://github.com/0x6d61/vulncastle, MIT License)
+# by 0x6d61 - vulnerability mechanics preserved, architecture and narrative
+# reworked into a 3-host investigation. Educational use only.
+# DO NOT expose to the internet.
+###############################################################################
+
+services:
+  # ==========================================================================
+  # DMZ Network (172.20.1.0/24) - Attacker-accessible
+  # ==========================================================================
+
+  frontier:
+    build:
+      context: ./lab/frontier
+      dockerfile: Dockerfile
+    container_name: ba-frontier
+    hostname: frontier
+    networks:
+      dmz:
+        ipv4_address: 172.20.1.10
+    ports:
+      - "8080:80"
+      - "8025:8025"
+    restart: unless-stopped
+
+  # Dual-homed: pivot point between DMZ and Internal (LEDGER gateway + case API + DB)
+  relay:
+    build:
+      context: ./lab/relay
+      dockerfile: Dockerfile
+    container_name: ba-relay
+    hostname: relay
+    networks:
+      dmz:
+        ipv4_address: 172.20.1.12
+      internal:
+        ipv4_address: 10.10.0.12
+    ports:
+      - "2222:22"
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  # ==========================================================================
+  # Internal Network (10.10.0.0/24) - Requires pivoting through relay
+  # ==========================================================================
+
+  archive:
+    build:
+      context: ./lab/archive
+      dockerfile: Dockerfile
+    container_name: ba-archive
+    hostname: cairn
+    networks:
+      internal:
+        ipv4_address: 10.10.0.15
+    restart: unless-stopped
+
+networks:
+  dmz:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.1.0/24
+          gateway: 172.20.1.1
+
+  internal:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.10.0.0/24
+          gateway: 10.10.0.1

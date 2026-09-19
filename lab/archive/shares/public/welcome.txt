@@ -1,0 +1,5 @@
+Welcome to the CAIRN Records File Server.
+
+This share is for general disposition-team file exchange. Restricted
+material does not belong here - use the confidential share and the
+records terminal for anything under a disposition hold.

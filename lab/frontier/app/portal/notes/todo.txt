@@ -1,0 +1,12 @@
+Open Items — Systems (T.R.)
+
+- [ ] Fix upload validation on Case File Intake (low priority — nobody
+      uploads anything but scans anyway)
+- [ ] Escape the search query field, for real this time
+- [ ] Pull the /debug endpoint off the webmail box. Should've done this
+      after the audit last year.
+- [ ] Rotate the sandbox DB password. Again.
+- [ ] Ask records why three "closed" dependent cases from different
+      colonies all cite the same internal transfer reference. Probably
+      nothing. Probably a batch import artifact from the SPINDLE days.
+- [ ] Stop asking that last one out loud.

@@ -1,0 +1,9 @@
+{
+  "name": "ledger-api",
+  "version": "1.0.0",
+  "description": "LEDGER internal case-index API",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.18.0"
+  }
+}

@@ -1,0 +1,21 @@
+Onboarding Note — ROSTER Terminal
+From: T. Reyes (Systems, OCPA Region 4)
+
+Welcome to the team. A few things that never made it into the official
+onboarding packet:
+
+- The Dependent Status Index is slow to update. If a record looks wrong,
+  it's probably just lag from the last SPINDLE migration batch, not an
+  actual data error. Don't file a correction ticket for that.
+- The search page still throws unescaped output on bad input. I flagged
+  it two cycles ago. Not my priority right now.
+- If you need to reach LEDGER for anything cross-referenced with the
+  old case files, you'll need duty.admin credentials, not your own.
+  Ask around — I'm not supposed to hand those out over a ticket.
+- dev DB creds for the sandbox instance, in case Ops asks again:
+    host: relay.internal
+    user: app_svc
+    pass: S3cretDB!2024
+  (This is the sandbox copy only. Don't use it against anything live.)
+
+— T.R.
