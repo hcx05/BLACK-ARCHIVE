@@ -95,3 +95,14 @@
 - **webmail 套用同一套設計系統**（同樣的字體、色票、sidebar 折疊夾模式），視覺上跟 portal 是同一個機構的兩個系統，而不是兩套風格拼在一起。
 - **順手抓到一個真的 bug**：重寫時發現 `upload` 頁面的目標路徑寫的是 `/var/www/html/uploads/`，但 nginx 的 webroot 其實是 `/var/www/html/portal/`（跟先前修過的 notes LFI 是同一種路徑對不起來的問題）——上傳的檔案雖然「上傳成功」，但連結指到的網址其實 404，玩家永遠打不開自己剛上傳的檔案。已修正成 `/var/www/html/portal/uploads/`，實測上傳後連結可以正常開啟。
 - 全部用 headless Chromium 實際截圖驗證，不是憑空調整 CSS 數值。
+
+## 第三輪：右側留白、隱藏頁面稽核、人物照片能力、LONGSHORE 信件重做
+使用者反饋：dashboard 右半部太空、其他頁面要比照同等規格、要我檢查其他隱藏頁面夠不夠真實、問能不能用 AI 生成人物照片、LONGSHORE 那份信也不夠真實。
+
+- **右側留白**：加了一個常駐右側欄（`.rail`，跨所有頁面共用同一個 layout，不是只有首頁有），內容：(1) 一張用 Pillow 生成的 Region 4 網路節點參考圖（Reach Relay / Eridanus II / Madrigal / Skopje / Region 4 HQ 的連線圖，純粹是「這是一個真的有地理範圍的行政區」的世界觀細節，非安全相關）；(2) System Status 燈號列表（三個綠燈 + Case File Intake 故意留一個琥珀色「degraded」，比全綠更真實）；(3) Terminal Tip 小方塊，內容取材真實 IT 小提示，依日期輪換。980px 以下自動隱藏，不影響手機版面。
+- **隱藏頁面稽核**：
+  - `/notes/` 的 nginx 原始目錄列表**刻意不美化**——那本身就是「管理員忘記關掉 autoindex」的誤設，維持 nginx 預設無樣式的樣子反而比較真實，硬要美化它反而會讓人覺得是設計過的頁面而不是意外曝光。
+  - CAIRN admin panel（archive）：原本還在用系統預設等寬字體，也還留著一段舊版洗版前的霓虹紫紅配色殘留（`#1a1a2e`/`#e94560`，login 失敗跟 record not found 兩個分支忘記跟著改）——已經統一換成 IBM Plex Mono，並把顏色殘留修正成跟其餘 CAIRN 頁面一致的黑底琥珀/紅。這個過程中用 sed 批次替換時不小心把兩行的 HTML style 屬性單引號巢狀寫壞了（Python 語法沒錯，但 HTML 屬性會被提前截斷），已手動修正成雙引號外層、單引號內層。
+  - webmail `/debug`、relay 的 LEDGER API 原始 JSON、archive 的 SMB 分享——這些本來就該是「原始資料」的樣子（debug endpoint、REST API、檔案分享），沒有理由套用網頁美術風格，維持現狀。
+- **人物照片**：這個環境裡沒有可以生成照片級人像的工具（試過 `ToolSearch` 找不到對應的圖片生成能力，目前手上只有 Pillow 可以畫向量圖形/合成既有素材，沒辦法生成真人臉孔）。已經明確告知使用者這個限制，並重申一個刻意的設計決定：**案件裡的兒童（Eli/Talia/Dominic/Samuel/Priya）本來就不該有生成的擬真照片**——這是敏感題材（兒童失蹤/人體實驗故事），用「IMAGE CORRUPTED」雜訊取代人臉是刻意的倫理考量，不只是能力限制，即使未來有圖片生成能力也不會改變這個決定。如果要幫「成年」角色（T. Reyes、Dr. Castel、Petrov、Kade、Achebe）做識別證風格的頭像，可以用 Pillow 做縮寫字母 + 幾何底色的識別證佔位圖（像 webmail 郵件列表的寄件人縮寫頭像那樣），但這不是照片級人像；真的要照片，由使用者自己提供。
+- **LONGSHORE 信件重做**：原本的版本已經是深色終端機風格，但使用者覺得不夠真實。改動：(1) 加了終端機視窗外框（三個圓點的視窗列 + 標題列，模擬真的終端機應用程式視窗，不是一段裸露的文字）；(2) 加了很淡的掃描線紋理背景（`repeating-linear-gradient` 模擬 CRT 顯示器）跟文字的輕微 glow（`text-shadow`），這是真實終端機美術很常見的手法；(3) 用虛線分隔取代實線，強化「這是列印/擷取出來的東西」而非「網頁區塊」的感覺；(4) 字體改用 Google Fonts 的 JetBrains Mono（terminal.css 這類真實終端機風格框架公認的字體之一，先前已經在用，這次沒換）。同一份內容也同步更新到先前發布的 Claude Artifact 連結（version 2）。

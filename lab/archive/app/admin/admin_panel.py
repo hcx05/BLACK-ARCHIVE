@@ -140,8 +140,10 @@ class AdminHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b"""<html><head><title>CAIRN Records Terminal</title>
             <link rel="icon" type="image/png" href="/assets/oni_seal.png">
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
             <style>
-            body{font-family:'Consolas','DejaVu Sans Mono',monospace;background:#000;color:#ffb000;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;margin:0}
+            body{font-family:'IBM Plex Mono','Consolas',monospace;background:#000;color:#ffb000;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;margin:0}
             .classbar{position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:6px;font-size:0.75em;letter-spacing:2px;border-bottom:1px solid #ff3b30}
             .panel{background:#0a0a05;padding:40px;border:1px solid #ffb000;text-align:center}
             .seal{width:72px;opacity:0.9;margin-bottom:10px}
@@ -175,7 +177,7 @@ class AdminHandler(BaseHTTPRequestHandler):
             # No session validation (broken authentication)
             html = """<html><head><title>CAIRN Dashboard</title>
             <link rel="icon" type="image/png" href="/assets/oni_seal.png"></head>
-            <body style="background:#000;color:#ffb000;font-family:'Consolas','DejaVu Sans Mono',monospace;padding:60px 20px 20px">
+            <body style="background:#000;color:#ffb000;font-family:'IBM Plex Mono','Consolas',monospace;padding:60px 20px 20px">
             <div style="position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:6px;font-size:0.75em;letter-spacing:2px;border-bottom:1px solid #ff3b30">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
             <div style="display:flex;align-items:center;gap:14px"><img src="/assets/oni_seal.png" width="46" style="opacity:0.9"><h1 style="margin:0">DISPOSITION HOLD -- RECORD INDEX</h1></div>
             <ul>"""
@@ -199,12 +201,12 @@ class AdminHandler(BaseHTTPRequestHandler):
             self.end_headers()
             if record:
                 html = f"""<html><head><title>{record[1]}</title></head>
-                <body style="background:#000;color:#ffb000;font-family:'Consolas','DejaVu Sans Mono',monospace;padding:60px 20px 20px">
+                <body style="background:#000;color:#ffb000;font-family:'IBM Plex Mono','Consolas',monospace;padding:60px 20px 20px">
                 <div style="position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:6px;font-size:0.75em;letter-spacing:2px;border-bottom:1px solid #ff3b30">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
                 <a style="color:#ffb000" href="/dashboard">&laquo; back to index</a>
                 <h1>{record[1]}</h1><pre style="white-space:pre-wrap;border:1px solid #7a5c00;padding:10px;background:#0a0a05">{record[2]}</pre></body></html>"""
             else:
-                html = "<html><body style='background:#000;color:#ff3b30;font-family:monospace;padding:20px'>RECORD NOT FOUND / OUT OF SCOPE.</body></html>"
+                html = "<html><body style=\"background:#000;color:#ff3b30;font-family:'IBM Plex Mono',monospace;padding:20px\">RECORD NOT FOUND / OUT OF SCOPE.</body></html>"
             self.wfile.write(html.encode())
         else:
             self.send_response(404)
@@ -232,7 +234,7 @@ class AdminHandler(BaseHTTPRequestHandler):
                     self.send_response(200)
                     self.send_header("Content-Type", "text/html")
                     self.end_headers()
-                    self.wfile.write(b"<html><body style='background:#1a1a2e;color:#e94560;font-family:monospace;text-align:center;padding:50px'><h2>ACCESS DENIED</h2><a href='/' style='color:#e94560'>Back</a></body></html>")
+                    self.wfile.write(b"<html><body style=\"background:#000;color:#ff3b30;font-family:'IBM Plex Mono',monospace;text-align:center;padding:50px\"><h2>ACCESS DENIED</h2><a href='/' style='color:#ffb000'>Back</a></body></html>")
             except Exception as e:
                 self.send_response(500)
                 self.send_header("Content-Type", "text/plain")

@@ -8,8 +8,8 @@
   @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap');
 
   :root{
-    --bg:#0a0e13;
-    --panel:#11171e;
+    --bg:#07090c;
+    --panel:#10151b;
     --panel-2:#0a0e13;
     --border:#26333f;
     --border-soft:#1b242c;
@@ -24,11 +24,14 @@
   *{box-sizing:border-box;}
   html{background:var(--bg);}
   body{
-    background:var(--bg);
+    background:
+      repeating-linear-gradient(180deg, rgba(255,255,255,0.018) 0px, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 3px),
+      radial-gradient(ellipse at 50% -10%, #121922 0%, var(--bg) 60%);
     color:var(--text);
     font-family:var(--mono);
     margin:0;
-    padding:48px 0;
+    padding:36px 0 60px;
+    min-height:100vh;
   }
 
   .wrap{
@@ -37,51 +40,76 @@
     padding:0 20px;
   }
 
+  /* terminal window chrome */
+  .term{
+    border:1px solid var(--border);
+    border-radius:6px;
+    background:var(--panel);
+    box-shadow:0 0 0 1px #000, 0 20px 60px -20px rgba(0,0,0,0.6), 0 0 40px -20px rgba(255,107,82,0.08);
+    overflow:hidden;
+  }
+  .term-bar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:9px 14px;
+    background:var(--panel-2);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .term-bar .dot{width:9px;height:9px;border-radius:50%;background:#2a333d;}
+  .term-bar .title{
+    margin-left:8px;
+    font-family:var(--display);
+    font-size:11px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:var(--text-dim);
+  }
+  .term-body{padding:26px 28px 30px;}
+
   .meta{
     border:1px solid var(--border);
-    background:var(--panel);
-    border-radius:2px;
-    padding:14px 18px;
+    background:var(--panel-2);
+    padding:12px 16px;
     font-size:12px;
     color:var(--ok);
     display:grid;
     gap:4px;
-    margin-bottom:28px;
+    margin-bottom:24px;
   }
   .meta span.k{color:var(--text-dim);}
 
   h1{
     font-family:var(--display);
     font-weight:700;
-    font-size:clamp(20px,5vw,28px);
+    font-size:clamp(19px,4.6vw,26px);
     letter-spacing:0.06em;
     text-transform:uppercase;
     color:var(--accent);
-    margin:0 0 6px 0;
+    margin:0 0 4px 0;
     text-wrap:balance;
   }
   .subhead{
     font-family:var(--display);
-    font-size:12px;
-    letter-spacing:0.12em;
+    font-size:11.5px;
+    letter-spacing:0.14em;
     text-transform:uppercase;
     color:var(--text-dim);
     margin:0 0 20px 0;
-    padding-bottom:18px;
-    border-bottom:1px solid var(--border-soft);
+    padding-bottom:16px;
+    border-bottom:1px dashed var(--border);
   }
 
   .log{
     border:1px solid var(--border);
     background:var(--panel-2);
-    border-radius:3px;
-    padding:22px 24px;
+    padding:20px 22px;
     font-size:14.5px;
     line-height:1.75;
     white-space:pre-wrap;
-    box-shadow:0 0 0 1px #000, 0 0 40px -12px rgba(255,107,82,0.12) inset;
+    text-shadow:0 0 10px rgba(201,214,223,0.05);
   }
-  .log .who{color:var(--accent);font-weight:700;}
+  .log .who{color:var(--accent);font-weight:700;text-shadow:0 0 12px rgba(255,107,82,0.25);}
   .line{margin:0;}
   .gap{height:14px;}
   .attach{color:var(--ok);}
@@ -99,7 +127,7 @@
   @keyframes blink{ 50%{opacity:0;} }
 
   .notes{
-    margin-top:30px;
+    margin-top:26px;
     font-size:15px;
     line-height:1.7;
     color:var(--text);
@@ -107,87 +135,109 @@
   }
   .notes p{margin:0 0 14px 0;}
 
-  footer{
-    margin-top:34px;
-    padding-top:14px;
-    border-top:1px solid var(--border-soft);
+  .sig{
+    margin-top:22px;
+    padding-top:16px;
+    border-top:1px dashed var(--border);
+    font-family:var(--display);
     font-size:11px;
-    letter-spacing:0.04em;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
     color:var(--text-dim);
     display:flex;
     justify-content:space-between;
     flex-wrap:wrap;
     gap:8px;
   }
+  .sig b{color:var(--text-dim);}
+
+  footer{
+    max-width:760px;
+    margin:16px auto 0;
+    padding:0 20px;
+    font-size:10.5px;
+    color:var(--text-dim);
+    opacity:0.6;
+    text-align:center;
+    letter-spacing:0.04em;
+  }
 
   @media (max-width:480px){
+    .term-body{padding:20px 18px 24px;}
     .log{padding:16px;font-size:13.5px;}
-    body{padding:28px 0;}
+    body{padding:22px 0 40px;}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="meta">
-    <div><span class="k">channel:</span> established &middot; relay hops: 4 &middot; trace risk: low</div>
-    <div><span class="k">correspondent:</span> LONGSHORE</div>
-    <div><span class="k">encryption:</span> session key, non-recoverable after close</div>
-    <div><span class="k">capture:</span> saved locally &mdash; this is the only copy</div>
+  <div class="term">
+    <div class="term-bar">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <span class="title">secure channel &middot; session capture</span>
+    </div>
+    <div class="term-body">
+
+      <div class="meta">
+        <div><span class="k">channel:</span> established &middot; relay hops: 4 &middot; trace risk: low</div>
+        <div><span class="k">correspondent:</span> LONGSHORE</div>
+        <div><span class="k">encryption:</span> session key, non-recoverable after close</div>
+        <div><span class="k">capture:</span> saved locally &mdash; this is the only copy</div>
+      </div>
+
+      <h1>Incoming Transmission</h1>
+      <div class="subhead">Channel Unknown &middot; Session Log</div>
+
+      <div class="log"><span class="who">LONGSHORE&gt;</span> you were recommended. don't ask by who.
+<span class="who">LONGSHORE&gt;</span> I don't need a background check. I need a second opinion
+<span class="who">LONGSHORE&gt;</span> from someone who doesn't already believe the first answer they were given.
+
+<span class="who">LONGSHORE&gt;</span> attaching four names. colonial dependent records, all closed,
+<span class="who">LONGSHORE&gt;</span> all logged as deceased, all closed within about a decade of
+<span class="who">LONGSHORE&gt;</span> each other. different colonies. no family relation. nothing
+<span class="who">LONGSHORE&gt;</span> connects them on paper.
+
+<span class="attach">[attachment: dependent_records_partial.csv]
+  Eli Okafor       - Eridanus II  - closed, medical, age 6
+  Talia Wren       - Madrigal     - closed, medical, age 6
+  Dominic Farrow   - Skopje       - closed, medical, age 6</span>
+
+<span class="who">LONGSHORE&gt;</span> I think at least one of those closures is wrong. I can't prove
+<span class="who">LONGSHORE&gt;</span> it through channels that leave a signature. You can.
+
+<span class="who">LONGSHORE&gt;</span> there's an old UNSC personnel/medical terminal still answering
+<span class="who">LONGSHORE&gt;</span> on the network - regional, low priority, nobody's rotated its
+<span class="who">LONGSHORE&gt;</span> access controls in years because nobody thinks it matters
+<span class="who">LONGSHORE&gt;</span> anymore. that's your way in. I'm not giving you a login. figure
+<span class="who">LONGSHORE&gt;</span> that part out yourself, that's the job.
+
+<span class="who">LONGSHORE&gt;</span> I'm not going to tell you what I think you'll find. If I'm
+<span class="who">LONGSHORE&gt;</span> wrong I don't want to have talked you into seeing it my way
+<span class="who">LONGSHORE&gt;</span> first. Just look.
+
+<span class="who">LONGSHORE&gt;</span> one condition. whatever you find, you tell me before you tell
+<span class="who">LONGSHORE&gt;</span> anyone else. I have my reasons. you'll understand if you get
+<span class="who">LONGSHORE&gt;</span> far enough to need to ask why.
+
+<span class="who">LONGSHORE&gt;</span> find out what happened to them.
+
+<span class="sys">[channel closed by correspondent]
+[no further contact information retained]</span><span class="cursor"></span></div>
+
+      <div class="notes">
+        <p>That's the whole job. No org chart, no case number, no explanation for why a stranger is paying &mdash; if they're even paying &mdash; an independent to look into three dead six-year-olds from three colonies that have nothing to do with each other.</p>
+        <p>You have three names, three colonies, and the fact that all three cases were processed through the same category of records system. That's the only thread in your hand.</p>
+        <p>Start there. See where it goes.</p>
+      </div>
+
+      <div class="sig">
+        <span>local capture &middot; unverified source</span>
+        <span><b>retain until case closed</b></span>
+      </div>
+
+    </div>
   </div>
-
-  <h1>Incoming Transmission</h1>
-  <div class="subhead">Channel Unknown &middot; Session Log</div>
-
-  <div class="log">
-<p class="line"><span class="who">LONGSHORE&gt;</span> you were recommended. don't ask by who.</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> I don't need a background check. I need a second opinion</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> from someone who doesn't already believe the first answer they were given.</p>
-<div class="gap"></div>
-<p class="line"><span class="who">LONGSHORE&gt;</span> attaching four names. colonial dependent records, all closed,</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> all logged as deceased, all closed within about a decade of</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> each other. different colonies. no family relation. nothing</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> connects them on paper.</p>
-<div class="gap"></div>
-<div class="attach">
-<p class="row line">[attachment: dependent_records_partial.csv]</p>
-<p class="row line">  Eli Okafor       - Eridanus II  - closed, medical, age 6</p>
-<p class="row line">  Talia Wren       - Madrigal     - closed, medical, age 6</p>
-<p class="row line">  Dominic Farrow   - Skopje       - closed, medical, age 7</p>
-</div>
-<div class="gap"></div>
-<p class="line"><span class="who">LONGSHORE&gt;</span> I think at least one of those closures is wrong. I can't prove</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> it through channels that leave a signature. You can.</p>
-<div class="gap"></div>
-<p class="line"><span class="who">LONGSHORE&gt;</span> there's an old UNSC personnel/medical terminal still answering</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> on the network - regional, low priority, nobody's rotated its</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> access controls in years because nobody thinks it matters</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> anymore. that's your way in. I'm not giving you a login. figure</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> that part out yourself, that's the job.</p>
-<div class="gap"></div>
-<p class="line"><span class="who">LONGSHORE&gt;</span> I'm not going to tell you what I think you'll find. If I'm</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> wrong I don't want to have talked you into seeing it my way</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> first. Just look.</p>
-<div class="gap"></div>
-<p class="line"><span class="who">LONGSHORE&gt;</span> one condition. whatever you find, you tell me before you tell</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> anyone else. I have my reasons. you'll understand if you get</p>
-<p class="line"><span class="who">LONGSHORE&gt;</span> far enough to need to ask why.</p>
-<div class="gap"></div>
-<p class="line"><span class="who">LONGSHORE&gt;</span> find out what happened to them.</p>
-<div class="gap"></div>
-<p class="line sys">[channel closed by correspondent]</p>
-<p class="line sys">[no further contact information retained]<span class="cursor"></span></p>
-  </div>
-
-  <div class="notes">
-    <p>That's the whole job. No org chart, no case number, no explanation for why a stranger is paying &mdash; if they're even paying &mdash; an independent to look into three dead six-year-olds from three colonies that have nothing to do with each other.</p>
-    <p>You have three names, three colonies, and the fact that all three cases were processed through the same category of records system. That's the only thread in your hand.</p>
-    <p>Start there. See where it goes.</p>
-  </div>
-
-  <footer>
-    <span>local capture &middot; unverified source</span>
-    <span>retain until case closed</span>
-  </footer>
+  <footer>this file is not linked from any system referenced within it</footer>
 </div>
 </body>
 </html>

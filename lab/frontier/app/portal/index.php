@@ -27,6 +27,20 @@ $NAV = array(
     'notes' => 'Support Tickets',
 );
 $page_title = isset($NAV[$page]) ? $NAV[$page] : 'Not Found';
+
+$SERVICES = array(
+    array('name' => 'ROSTER Terminal', 'status' => 'ok'),
+    array('name' => 'Webmail Gateway', 'status' => 'ok'),
+    array('name' => 'LEDGER Sync', 'status' => 'ok'),
+    array('name' => 'Case File Intake', 'status' => 'degraded'),
+);
+$TIPS = array(
+    'Case reference numbers follow OCPA-R{region}-{5 digits}. Bookmark frequent lookups instead of re-searching each time.',
+    'Terminal sessions expire after 20 minutes idle. Save case notes before stepping away.',
+    'Support Tickets is monitored by Systems on business days only. For urgent access issues, use the Building 2 helpdesk in person.',
+    'Scanned intake files over 25MB may time out on upload. Split large case files before submitting.',
+);
+$tip = $TIPS[intval(date('j')) % count($TIPS)];
 ?>
 <!DOCTYPE html>
 <html>
@@ -129,7 +143,25 @@ $page_title = isset($NAV[$page]) ? $NAV[$page] : 'Not Found';
         .crumb { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.5px; }
         .crumb b { color: var(--text-dim); }
         h1.page-title { font-size: 18px; font-weight: 600; margin: 2px 0 0 0; color: var(--text); }
-        .content { padding: 22px 28px 40px; max-width: 980px; }
+        .body-row { display: flex; align-items: flex-start; }
+        .content { flex: 1; min-width: 0; padding: 22px 28px 40px; }
+
+        /* Right rail */
+        .rail { width: 260px; flex-shrink: 0; padding: 22px 24px 40px 0; }
+        .rail-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 16px; overflow: hidden; }
+        .rail-card h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-faint); font-weight: 600; margin: 0; padding: 10px 14px; border-bottom: 1px solid var(--border-soft); }
+        .rail-card .body { padding: 12px 14px; }
+        .rail-card img { width: 100%; display: block; }
+        .status-row { display: flex; align-items: center; gap: 8px; padding: 7px 14px; font-size: 12px; color: var(--text-dim); }
+        .status-row .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .status-row .dot.ok { background: #5fb37e; box-shadow: 0 0 5px rgba(95,179,126,0.6); }
+        .status-row .dot.degraded { background: #d1a95f; box-shadow: 0 0 5px rgba(209,169,95,0.6); }
+        .tip-card { background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%); }
+        .tip-card .body { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+        .tip-label { color: var(--accent); font-weight: 600; letter-spacing: 0.4px; }
+        @media (max-width: 980px) {
+            .rail { display: none; }
+        }
         h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-dim); font-weight: 600; margin: 26px 0 10px; }
         h2:first-child { margin-top: 0; }
         p { color: var(--text-dim); }
@@ -208,6 +240,7 @@ $page_title = isset($NAV[$page]) ? $NAV[$page] : 'Not Found';
                 <h1 class="page-title"><?php echo htmlspecialchars($page_title); ?></h1>
             </div>
         </div>
+        <div class="body-row">
         <div class="content">
 <?php
 switch($page) {
@@ -333,6 +366,25 @@ switch($page) {
 }
 ?>
             <footer>ROSTER Terminal v2.1 &mdash; OCPA Region 4 &middot; Do not forward case material off-network.</footer>
+        </div>
+        <aside class="rail">
+            <div class="rail-card">
+                <h3>Regional Network</h3>
+                <img src="assets/region_map.png" alt="OCPA Region 4 network reference">
+            </div>
+            <div class="rail-card">
+                <h3>System Status</h3>
+                <div class="body" style="padding:6px 0">
+<?php foreach ($SERVICES as $svc): ?>
+                    <div class="status-row"><span class="dot <?php echo $svc['status']; ?>"></span><?php echo htmlspecialchars($svc['name']); ?></div>
+<?php endforeach; ?>
+                </div>
+            </div>
+            <div class="rail-card tip-card">
+                <h3>Terminal Tip</h3>
+                <div class="body"><span class="tip-label">TIP&nbsp;&mdash;</span> <?php echo htmlspecialchars($tip); ?></div>
+            </div>
+        </aside>
         </div>
     </main>
 </div>
