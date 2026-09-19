@@ -37,6 +37,15 @@
 
 **格式多樣性說明**：不是所有文件都改成 PDF/HTML——保留 `.txt` 的地方（`legacy_service_credentials.txt`、`casualty_log_partial.txt`、`training_roster_fragment.txt`、frontier notes、CAIRN admin panel 內文）都是因為那些情境下純文字本身就更真實（內部日誌、備份殘留、支援工單、web app 動態內容），只有「正式簽署的官方文件」轉成 PDF、「玩家會實際打開閱讀的委託信」轉成風格化網頁，避免為了多樣性而多樣性。
 
+## 網站真實感翻修（讓一般人看不出來這是靶機）
+使用者的標準：「一般人根本看不出來是靶機的網站」。原本 frontier 的設計雖然有 UNSC 風格外皮，但骨子裡還是「一個頁面對應一個漏洞」的典型靶機結構，首頁只有兩句話 + `php_uname()`，webmail 是單欄純列表。修改內容：
+- **frontier 首頁改成真的 dashboard**：案件統計數字（active/closed/pending，純假數據，非安全相關）、System Notices 公告板（重用已建立的世界觀細節：SPINDLE 清理公告、停水通知）、Quick Links。拿掉了 `php_uname()` 這種一眼就會被辨識成「測試機」的資訊洩漏。
+- **加了 session/utility bar**（`SESSION: duty-terminal-04 · REGION 4` + 假的 last login 時間）、favicon（用 OCPA 徽記）、細微的網格紋理背景——這些是真實內部系統會有、但原本完全沒做的視覺細節。
+- **webmail 從單欄列表改成真的信箱介面**：左側資料夾側邊欄（Inbox/Sent/Drafts/Trash，只有 Inbox 有內容）、寄件人姓名縮寫頭像、主旨/日期欄位對齊，信件補上日期並依時間排序。
+- **修掉一個真的 encoding bug**：webmail 原本沒有在 `Content-Type` 宣告 `charset=utf-8`，導致內文的 em dash（—）在瀏覽器裡顯示成亂碼 `â€"`——這種亂碼本身就是「這是隨手寫的測試程式」的破綻，已修正所有 response header。
+- 所有修改都用 headless Chromium 實際截圖驗證過畫面，不是憑空猜測 CSS 效果。
+- **關於「上網找 Halo 素材」**：沒有採用，改用一直在用的方式（Pillow 生成原創圖片）。真人拍攝/遊戲擷取的 Halo 美術資源是 Microsoft/343 的著作權本體，跟本專案的原創同人散文性質不同，直接下載嵌入公開 repo 的風險明顯更高，所以維持「原創但風格致敬」的做法。
+
 ## 無關緊要的填充內容（增加真實感，不是線索）
 刻意加了幾筆跟案件完全無關的雜訊，讓「找線索」不是無腦把每個檔案都當成有意義的提示：
 - frontier webmail 多兩封信：Building 4 停水通知、二樓印表機缺碳粉的閒聊回覆。

@@ -22,14 +22,25 @@ $DEPENDENT_INDEX = array(
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <title>ROSTER :: OCPA Regional Terminal</title>
+    <link rel="icon" type="image/png" href="assets/ocpa_seal.png">
     <style>
         * { box-sizing: border-box; }
-        body { font-family: 'Consolas', 'DejaVu Sans Mono', monospace; margin: 0; background: #0b0f14; color: #c9d6df; }
+        body {
+            font-family: 'Consolas', 'DejaVu Sans Mono', monospace; margin: 0; background: #0b0f14; color: #c9d6df;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
         .banner { background: #2a1010; color: #ff6b5e; text-align: center; padding: 6px; font-size: 0.75em; letter-spacing: 1px; border-bottom: 1px solid #ff6b5e; }
-        .container { max-width: 860px; margin: 30px auto; background: #10161d; padding: 20px 25px; border: 1px solid #1f2b38; box-shadow: 0 0 0 1px #050708; }
+        .utilbar { background: #05070a; color: #4c5a68; font-size: 0.72em; padding: 4px 14px; display: flex; justify-content: space-between; border-bottom: 1px solid #1f2b38; }
+        .utilbar span { margin-right: 16px; }
+        .container { max-width: 900px; margin: 30px auto; background: #10161d; padding: 20px 25px; border: 1px solid #1f2b38; box-shadow: 0 0 0 1px #050708; }
         h1 { color: #7fd1e0; font-size: 1.05em; letter-spacing: 0.5px; border-bottom: 1px solid #1f2b38; padding-bottom: 10px; margin-top: 0; text-transform: uppercase; }
         h2 { color: #7fd1e0; font-size: 1em; text-transform: uppercase; letter-spacing: 0.5px; }
+        h3 { color: #9db3c2; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
         nav { background: #131b23; padding: 10px; margin-bottom: 20px; border: 1px solid #1f2b38; }
         nav a { color: #7fd1e0; margin-right: 18px; text-decoration: none; font-size: 0.85em; }
         nav a:hover { text-decoration: underline; }
@@ -40,10 +51,25 @@ $DEPENDENT_INDEX = array(
         pre { background: #05070a; color: #9adfc2; padding: 15px; border: 1px solid #1f2b38; overflow-x: auto; }
         .warning { color: #ff6b5e; }
         footer { font-size: 0.7em; color: #4c5a68; margin-top: 20px; border-top: 1px solid #1f2b38; padding-top: 10px; }
+        .dash-grid { display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0 22px; }
+        .stat { flex: 1 1 140px; background: #131b23; border: 1px solid #1f2b38; padding: 12px 14px; }
+        .stat .num { font-size: 1.6em; color: #7fd1e0; font-variant-numeric: tabular-nums; }
+        .stat .lbl { font-size: 0.72em; color: #7290a3; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+        .board { background: #0e141a; border: 1px solid #1f2b38; margin-bottom: 18px; }
+        .board-item { padding: 9px 14px; border-bottom: 1px solid #1a232c; font-size: 0.85em; display: flex; justify-content: space-between; gap: 10px; }
+        .board-item:last-child { border-bottom: none; }
+        .board-item .tag { color: #54697a; font-size: 0.85em; white-space: nowrap; }
+        .quicklinks { display: flex; gap: 10px; flex-wrap: wrap; }
+        .quicklinks a { background: #131b23; border: 1px solid #1f2b38; color: #9db3c2; padding: 8px 12px; text-decoration: none; font-size: 0.82em; }
+        .quicklinks a:hover { color: #7fd1e0; border-color: #2a3b4a; }
     </style>
 </head>
 <body>
 <div class="banner">UNSC OCPA NETWORK -- AUTHORIZED PERSONNEL ONLY -- ACTIVITY IS LOGGED (Reg. 4 Systems Directive 09)</div>
+<div class="utilbar">
+    <span>SESSION: duty-terminal-04 &middot; REGION 4</span>
+    <span>LAST LOGIN: 2547-02-19 06:12</span>
+</div>
 <div class="container">
     <h1><img src="assets/ocpa_seal.png" width="28" style="vertical-align:middle;margin-right:8px"> ROSTER :: Office of Colonial Personnel Affairs -- Regional Support Terminal</h1>
     <nav>
@@ -57,9 +83,29 @@ $DEPENDENT_INDEX = array(
 <?php
 switch($page) {
     case 'home':
-        echo "<h2>Welcome</h2>";
-        echo "<p>Regional terminal for colonial personnel and dependent records. For onboarding, see Support Tickets.</p>";
-        echo "<p>Host: " . php_uname() . "</p>";
+        echo "<h2>Dashboard</h2>";
+        echo '<div class="dash-grid">';
+        echo '<div class="stat"><div class="num">142</div><div class="lbl">Active dependent cases</div></div>';
+        echo '<div class="stat"><div class="num">38</div><div class="lbl">Closed this quarter</div></div>';
+        echo '<div class="stat"><div class="num">6</div><div class="lbl">Pending review</div></div>';
+        echo '<div class="stat"><div class="num">3</div><div class="lbl">Open support tickets</div></div>';
+        echo '</div>';
+
+        echo '<h3>System Notices</h3>';
+        echo '<div class="board">';
+        echo '<div class="board-item"><span>Scheduled maintenance window, Sun 0200-0400 - terminal may be briefly unavailable.</span><span class="tag">2547-02-18</span></div>';
+        echo '<div class="board-item"><span>SPINDLE migration cleanup ongoing. Report stale references to Systems, do not self-correct case data.</span><span class="tag">2547-02-11</span></div>';
+        echo '<div class="board-item"><span>Water shutoff, Building 4, Tue 0600-0900 - see Support Tickets for details.</span><span class="tag">2547-02-09</span></div>';
+        echo '<div class="board-item"><span>Reminder: case file intake accepts scanned correspondence and transfer notes only.</span><span class="tag">2547-01-30</span></div>';
+        echo '</div>';
+
+        echo '<h3>Quick Links</h3>';
+        echo '<div class="quicklinks">';
+        echo '<a href="?page=search">Dependent Status Index</a>';
+        echo '<a href="?page=upload">Case File Intake</a>';
+        echo '<a href="?page=notes">Support Tickets</a>';
+        echo '<a href="http://localhost:8025">Webmail</a>';
+        echo '</div>';
         break;
 
     case 'search':
