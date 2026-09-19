@@ -35,8 +35,12 @@ services:
     networks:
       dmz:
         ipv4_address: 172.20.1.12
+        aliases:
+          - relay.internal
       internal:
         ipv4_address: 10.10.0.12
+        aliases:
+          - relay.internal
     ports:
       - "2222:22"
     cap_add:
@@ -56,6 +60,8 @@ services:
     networks:
       internal:
         ipv4_address: 10.10.0.15
+        aliases:
+          - cairn.internal
     restart: unless-stopped
 
 networks:

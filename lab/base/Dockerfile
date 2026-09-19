@@ -21,7 +21,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Legacy UNSC logistics-network accounts. Original provisioning script is long gone;
 # these were never rotated after the migration off the old personnel system.
-RUN useradd -m -s /bin/bash sysadmin && echo "sysadmin:admin123" | chpasswd \
+# Ubuntu ships a system "backup" account with no shell/home - remove it first so
+# our login-capable version can take the name.
+RUN userdel -r backup 2>/dev/null; \
+    useradd -m -s /bin/bash sysadmin && echo "sysadmin:admin123" | chpasswd \
     && useradd -m -s /bin/bash devuser && echo "devuser:devuser2024" | chpasswd \
     && useradd -m -s /bin/bash backup  && echo "backup:backup"      | chpasswd \
     && useradd -m -s /bin/bash deploy  && echo "deploy:deploy!"     | chpasswd
