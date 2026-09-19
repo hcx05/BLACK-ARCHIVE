@@ -86,39 +86,38 @@ EMAILS = [
 STYLE = b"""<html><head><title>OCPA Webmail</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 :root {
-  --bg: #0a0d11; --surface: #131920; --surface-2: #1a212a; --surface-hover: #1f2731;
-  --border: #232c36; --border-soft: #1a2129; --text: #d7dee4; --text-dim: #8a97a3;
-  --text-faint: #55616c; --accent: #5fb3d1; --accent-soft: rgba(95,179,209,0.12);
-  --danger: #c96560; --danger-bg: #2a1414;
-  --sans: 'IBM Plex Sans', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --bg: #000000; --surface: #05140a; --surface-2: #0a2013; --surface-hover: #0f2a18;
+  --border: #204d2c; --border-soft: #163a21; --text: #4fbf6e; --text-dim: #338f4c;
+  --text-faint: #235f37; --accent: #8beca3; --accent-soft: rgba(139,236,163,0.10);
+  --danger: #e8564a; --danger-bg: #2a0f0c;
   --mono: 'IBM Plex Mono', 'Consolas', monospace;
 }
 * { box-sizing: border-box; }
 html { background: var(--bg); }
-body { font-family: var(--sans); margin: 0; background: var(--bg); color: var(--text); font-size: 14px; }
-.banner { background: var(--danger-bg); color: var(--danger); text-align: center; padding: 6px 12px; font-size: 11.5px; letter-spacing: 0.4px; border-bottom: 1px solid #3a1d1d; }
-.shell { max-width: 900px; margin: 0 auto; border: 1px solid var(--border); border-top: none; display: flex; background: var(--bg); min-height: calc(100vh - 27px); }
-.sidebar { width: 170px; background: var(--surface); border-right: 1px solid var(--border); flex-shrink: 0; }
-.brand { display: flex; align-items: center; gap: 9px; padding: 16px 14px; border-bottom: 1px solid var(--border-soft); }
-.brand img { width: 26px; opacity: 0.92; }
-.brand div { font-weight: 600; font-size: 12.5px; }
-.folder { padding: 9px 16px; font-size: 13px; color: var(--text-dim); border-left: 2px solid transparent; }
-.folder.active { color: var(--accent); background: var(--accent-soft); border-left-color: var(--accent); font-weight: 500; }
-.main { flex: 1; padding: 22px 26px; min-width: 0; }
-h1 { font-size: 16px; font-weight: 600; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin: 0 0 16px; }
-input { display: block; margin: 10px 0; padding: 8px 10px; width: 260px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; color: var(--text); font-family: var(--sans); font-size: 13px; }
-button { padding: 8px 16px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 3px; cursor: pointer; font-family: var(--sans); font-size: 13px; }
-button:hover { border-color: var(--accent); color: var(--accent); }
-.msg { border: 1px solid var(--border); border-radius: 4px; margin: 0 0 10px; background: var(--surface); }
-.msg .hdr { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border-soft); }
-.msg .avatar { width: 26px; height: 26px; border-radius: 3px; background: var(--surface-2); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
-.msg .from { font-weight: 600; color: var(--text); font-size: 13px; }
-.msg .subj { color: var(--text-dim); font-size: 13px; }
-.msg .date { margin-left: auto; color: var(--text-faint); font-family: var(--mono); font-size: 11.5px; white-space: nowrap; }
-pre { font-family: var(--mono); font-size: 12.5px; background: #05070a; color: #9ad0c9; padding: 12px 14px; margin: 0; overflow-x: auto; line-height: 1.6; border-radius: 0 0 4px 4px; }
+body { font-family: var(--mono); margin: 0; background: var(--bg); color: var(--text); font-size: 15.5px; }
+.banner { background: var(--danger-bg); color: var(--danger); text-align: center; padding: 7px 12px; font-size: 12px; letter-spacing: 0.6px; text-transform: uppercase; border-bottom: 1px solid #3a1d1d; }
+.shell { max-width: 960px; margin: 0 auto; border: 1px solid var(--border); border-top: none; display: flex; background: var(--bg); min-height: calc(100vh - 30px); }
+.sidebar { width: 190px; background: var(--surface); border-right: 1px solid var(--border); flex-shrink: 0; }
+.brand { display: flex; align-items: center; gap: 11px; padding: 18px 14px; border-bottom: 1px solid var(--border-soft); }
+.brand img { width: 44px; opacity: 0.95; }
+.brand div { font-weight: 600; font-size: 13.5px; }
+.folder { padding: 10px 16px; font-size: 14px; color: var(--text-dim); border-left: 3px solid transparent; }
+.folder.active { color: #04140a; background: var(--text); border-left-color: var(--accent); font-weight: 600; }
+.main { flex: 1; padding: 24px 26px; min-width: 0; }
+h1 { font-size: 17px; font-weight: 600; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 12px; margin: 0 0 16px; }
+input { display: block; margin: 10px 0; padding: 9px 10px; width: 260px; background: var(--bg); border: 1px solid var(--border); border-radius: 0; color: var(--text); font-family: var(--mono); font-size: 14px; }
+button { padding: 9px 18px; background: var(--surface-2); color: var(--text); border: 1px solid var(--border); border-radius: 0; cursor: pointer; font-family: var(--mono); font-size: 13.5px; letter-spacing: 0.4px; text-transform: uppercase; }
+button:hover { border-color: var(--text); background: var(--text); color: #04140a; }
+.msg { border: 1px solid var(--border); border-radius: 0; margin: 0 0 10px; background: var(--surface); }
+.msg .hdr { display: flex; align-items: center; gap: 11px; padding: 11px 14px; border-bottom: 1px solid var(--border-soft); }
+.msg .avatar { width: 34px; height: 34px; border-radius: 0; background: var(--surface-2); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; border: 1px solid var(--border); }
+.msg .from { font-weight: 600; color: var(--text); font-size: 14px; }
+.msg .subj { color: var(--text-dim); font-size: 14px; }
+.msg .date { margin-left: auto; color: var(--text-faint); font-size: 12px; white-space: nowrap; }
+pre { font-family: var(--mono); font-size: 13.5px; background: #030a05; color: #6fd48b; padding: 13px 14px; margin: 0; overflow-x: auto; line-height: 1.6; border-radius: 0; }
 </style></head><body>"""
 
 def initials(addr):

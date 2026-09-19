@@ -56,50 +56,50 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
     <title>ROSTER :: OCPA Regional Terminal</title>
     <link rel="icon" type="image/png" href="assets/ocpa_seal.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
     <style>
         :root {
-            --bg: #0a0d11;
-            --surface: #131920;
-            --surface-2: #1a212a;
-            --surface-hover: #1f2731;
-            --border: #232c36;
-            --border-soft: #1a2129;
-            --text: #d7dee4;
-            --text-dim: #8a97a3;
-            --text-faint: #55616c;
-            --accent: #5fb3d1;
-            --accent-soft: rgba(95, 179, 209, 0.12);
-            --danger: #c96560;
-            --danger-bg: #2a1414;
-            --sans: 'IBM Plex Sans', -apple-system, 'Segoe UI', Roboto, sans-serif;
+            --bg: #000000;
+            --surface: #05140a;
+            --surface-2: #0a2013;
+            --surface-hover: #0f2a18;
+            --border: #204d2c;
+            --border-soft: #163a21;
+            --text: #4fbf6e;
+            --text-dim: #338f4c;
+            --text-faint: #235f37;
+            --accent: #8beca3;
+            --accent-soft: rgba(139, 236, 163, 0.10);
+            --danger: #e8564a;
+            --danger-bg: #2a0f0c;
             --mono: 'IBM Plex Mono', 'Consolas', monospace;
         }
         * { box-sizing: border-box; }
         html { background: var(--bg); }
         body {
-            font-family: var(--sans);
+            font-family: var(--mono);
             margin: 0;
             background: var(--bg);
             color: var(--text);
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 15.5px;
+            line-height: 1.55;
         }
         a { color: var(--accent); }
         .topbar {
             background: var(--danger-bg);
             color: var(--danger);
             text-align: center;
-            padding: 6px 12px;
-            font-size: 11.5px;
-            letter-spacing: 0.4px;
+            padding: 7px 12px;
+            font-size: 12px;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
             border-bottom: 1px solid #3a1d1d;
         }
-        .shell { display: flex; min-height: calc(100vh - 27px); }
+        .shell { display: flex; min-height: calc(100vh - 30px); }
 
         /* Sidebar */
         .sidebar {
-            width: 240px;
+            width: 260px;
             flex-shrink: 0;
             background: var(--surface);
             border-right: 1px solid var(--border);
@@ -109,28 +109,28 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
         .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 18px 16px;
+            gap: 12px;
+            padding: 20px 16px;
             border-bottom: 1px solid var(--border-soft);
         }
-        .brand img { width: 34px; opacity: 0.92; flex-shrink: 0; }
-        .brand .name { font-weight: 600; font-size: 13.5px; letter-spacing: 0.3px; color: var(--text); }
-        .brand .sub { font-size: 11px; color: var(--text-faint); letter-spacing: 0.5px; text-transform: uppercase; }
+        .brand img { width: 56px; opacity: 0.95; flex-shrink: 0; filter: grayscale(0.2); }
+        .brand .name { font-weight: 600; font-size: 15px; letter-spacing: 0.3px; color: var(--text); }
+        .brand .sub { font-size: 12px; color: var(--text-faint); letter-spacing: 0.5px; text-transform: uppercase; }
         .sidenav { padding: 10px 0; flex: 1; }
         .sidenav a {
             display: block;
-            padding: 9px 18px;
-            font-size: 13px;
+            padding: 10px 18px;
+            font-size: 14px;
             color: var(--text-dim);
             text-decoration: none;
-            border-left: 2px solid transparent;
+            border-left: 3px solid transparent;
         }
         .sidenav a:hover { background: var(--surface-hover); color: var(--text); }
-        .sidenav a.active { color: var(--accent); background: var(--accent-soft); border-left-color: var(--accent); font-weight: 500; }
+        .sidenav a.active { color: #04140a; background: var(--text); border-left-color: var(--accent); font-weight: 600; }
         .sidefoot {
-            padding: 12px 16px;
+            padding: 14px 16px;
             border-top: 1px solid var(--border-soft);
-            font-size: 10.5px;
+            font-size: 11.5px;
             color: var(--text-faint);
             line-height: 1.6;
         }
@@ -138,7 +138,7 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
         /* Main */
         .main { flex: 1; min-width: 0; }
         .pagebar {
-            padding: 14px 28px;
+            padding: 16px 28px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
@@ -146,67 +146,67 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
             flex-wrap: wrap;
             gap: 8px;
         }
-        .crumb { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.5px; }
+        .crumb { font-size: 12px; color: var(--text-faint); letter-spacing: 0.5px; }
         .crumb b { color: var(--text-dim); }
-        h1.page-title { font-size: 18px; font-weight: 600; margin: 2px 0 0 0; color: var(--text); }
+        h1.page-title { font-size: 20px; font-weight: 600; margin: 3px 0 0 0; color: var(--text); }
         .body-row { display: flex; align-items: flex-start; }
-        .content { flex: 1; min-width: 0; padding: 22px 28px 40px; }
+        .content { flex: 1; min-width: 0; padding: 24px 28px 40px; }
 
         /* Right rail */
-        .rail { width: 260px; flex-shrink: 0; padding: 22px 24px 40px 0; }
-        .rail-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 16px; overflow: hidden; }
-        .rail-card h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-faint); font-weight: 600; margin: 0; padding: 10px 14px; border-bottom: 1px solid var(--border-soft); }
+        .rail { width: 280px; flex-shrink: 0; padding: 24px 24px 40px 0; }
+        .rail-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0; margin-bottom: 16px; overflow: hidden; }
+        .rail-card h3 { font-size: 12px; letter-spacing: 0.5px; color: var(--text-faint); font-weight: 600; margin: 0; padding: 10px 14px; border-bottom: 1px solid var(--border-soft); }
         .rail-card .body { padding: 12px 14px; }
         .rail-card img { width: 100%; display: block; }
-        .status-row { display: flex; align-items: center; gap: 8px; padding: 7px 14px; font-size: 12px; color: var(--text-dim); }
-        .status-row .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-        .status-row .dot.ok { background: #5fb37e; box-shadow: 0 0 5px rgba(95,179,126,0.6); }
-        .status-row .dot.degraded { background: #d1a95f; box-shadow: 0 0 5px rgba(209,169,95,0.6); }
-        .tip-card { background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%); }
-        .tip-card .body { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+        .status-row { display: flex; align-items: center; gap: 9px; padding: 8px 14px; font-size: 13px; color: var(--text-dim); }
+        .status-row .dot { width: 10px; height: 10px; border-radius: 0; flex-shrink: 0; }
+        .status-row .dot.ok { background: var(--text); }
+        .status-row .dot.degraded { background: #d1a95f; }
+        .tip-card .body { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
         .tip-label { color: var(--accent); font-weight: 600; letter-spacing: 0.4px; }
         @media (max-width: 980px) {
             .rail { display: none; }
         }
-        h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-dim); font-weight: 600; margin: 26px 0 10px; }
+        h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); font-weight: 600; margin: 28px 0 10px; }
         h2:first-child { margin-top: 0; }
         p { color: var(--text-dim); }
 
         /* Components */
         .dash-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
-        .stat { flex: 1 1 150px; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; }
-        .stat .num { font-family: var(--mono); font-size: 24px; font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
-        .stat .lbl { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 3px; }
-        .board { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-        .board-item { padding: 10px 14px; border-bottom: 1px solid var(--border-soft); font-size: 13px; display: flex; justify-content: space-between; gap: 14px; color: var(--text-dim); }
+        .stat { flex: 1 1 150px; background: var(--surface); border: 1px solid var(--border); border-radius: 0; padding: 16px 18px; }
+        .stat .num { font-size: 28px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+        .stat .lbl { font-size: 12px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 4px; }
+        .board { background: var(--surface); border: 1px solid var(--border); border-radius: 0; overflow: hidden; }
+        .board-item { padding: 11px 14px; border-bottom: 1px solid var(--border-soft); font-size: 14px; display: flex; justify-content: space-between; gap: 14px; color: var(--text-dim); }
         .board-item:last-child { border-bottom: none; }
-        .board-item .tag { color: var(--text-faint); font-family: var(--mono); font-size: 11.5px; white-space: nowrap; }
+        .board-item .tag { color: var(--text-faint); font-size: 12px; white-space: nowrap; }
         .quicklinks { display: flex; gap: 8px; flex-wrap: wrap; }
-        .quicklinks a { background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); padding: 8px 14px; border-radius: 4px; text-decoration: none; font-size: 12.5px; }
-        .quicklinks a:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+        .quicklinks a { background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); padding: 9px 14px; border-radius: 0; text-decoration: none; font-size: 13.5px; }
+        .quicklinks a:hover { color: #04140a; border-color: var(--text); background: var(--text); }
 
-        .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 18px 20px; }
-        input[type="text"], input[type="file"] { font-family: var(--sans); padding: 8px 10px; width: 320px; max-width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; color: var(--text); font-size: 13px; }
+        .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 0; padding: 20px 22px; }
+        input[type="text"], input[type="file"] { font-family: var(--mono); padding: 9px 10px; width: 320px; max-width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 0; color: var(--text); font-size: 14px; }
         input[type="submit"], button {
-            font-family: var(--sans); padding: 8px 16px; background: var(--surface-2); color: var(--text);
-            border: 1px solid var(--border); border-radius: 3px; cursor: pointer; font-size: 13px;
+            font-family: var(--mono); padding: 9px 18px; background: var(--surface-2); color: var(--text);
+            border: 1px solid var(--border); border-radius: 0; cursor: pointer; font-size: 13.5px;
+            letter-spacing: 0.4px; text-transform: uppercase;
         }
-        input[type="submit"]:hover, button:hover { border-color: var(--accent); color: var(--accent); }
+        input[type="submit"]:hover, button:hover { border-color: var(--text); background: var(--text); color: #04140a; }
         pre {
-            font-family: var(--mono); font-size: 12.5px; background: #05070a; color: #9ad0c9;
-            padding: 14px 16px; border: 1px solid var(--border); border-radius: 4px; overflow-x: auto; line-height: 1.6;
+            font-family: var(--mono); font-size: 13.5px; background: #030a05; color: #6fd48b;
+            padding: 16px 18px; border: 1px solid var(--border); border-radius: 0; overflow-x: auto; line-height: 1.6;
         }
         .warning { color: var(--danger); }
-        .result-card { display: flex; gap: 14px; border: 1px solid var(--border); border-radius: 4px; padding: 12px; margin: 10px 0; background: var(--surface); }
-        .result-card img { border: 1px solid var(--border-soft); border-radius: 3px; }
-        .result-card .name { font-weight: 600; color: var(--text); margin-bottom: 2px; }
-        .result-card .field { font-size: 12.5px; color: var(--text-dim); }
+        .result-card { display: flex; gap: 16px; border: 1px solid var(--border); border-radius: 0; padding: 14px; margin: 10px 0; background: var(--surface); }
+        .result-card img { border: 1px solid var(--border-soft); border-radius: 0; }
+        .result-card .name { font-weight: 600; color: var(--text); margin-bottom: 3px; font-size: 15px; }
+        .result-card .field { font-size: 13px; color: var(--text-dim); }
         ul.ticket-list { list-style: none; padding: 0; margin: 0 0 16px; }
-        ul.ticket-list li { border: 1px solid var(--border); border-radius: 4px; margin-bottom: 6px; background: var(--surface); }
-        ul.ticket-list a { display: block; padding: 10px 14px; font-size: 13px; text-decoration: none; color: var(--text-dim); }
+        ul.ticket-list li { border: 1px solid var(--border); border-radius: 0; margin-bottom: 6px; background: var(--surface); }
+        ul.ticket-list a { display: block; padding: 11px 14px; font-size: 14px; text-decoration: none; color: var(--text-dim); }
         ul.ticket-list a:hover { color: var(--accent); }
 
-        footer { font-size: 11px; color: var(--text-faint); margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--border-soft); }
+        footer { font-size: 12px; color: var(--text-faint); margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--border-soft); }
 
         @media (max-width: 720px) {
             .shell { flex-direction: column; }
@@ -302,7 +302,7 @@ switch($page) {
             if (count($hits) > 0) {
                 foreach ($hits as $rec) {
                     echo '<div class="result-card">';
-                    echo '<img src="assets/' . $rec['image'] . '" width="90">';
+                    echo '<img src="assets/' . $rec['image'] . '" width="140">';
                     echo '<div>';
                     echo '<div class="name">' . htmlspecialchars($rec['name']) . '</div>';
                     echo '<div class="field">Colony of record: ' . htmlspecialchars($rec['colony']) . '</div>';
@@ -368,8 +368,8 @@ switch($page) {
         $reyes_files = array('welcome.txt', 'todo.txt', 'credential_rotation_status.txt');
         if (in_array($file, $reyes_files, true)) {
             echo '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">';
-            echo '<img src="assets/t_reyes.jpg" width="36" style="border-radius:4px;border:1px solid var(--border)">';
-            echo '<div><div style="font-size:13px;font-weight:600;color:var(--text)">T. Reyes</div><div style="font-size:11px;color:var(--text-faint)">Systems &middot; ROSTER / LEDGER</div></div>';
+            echo '<img src="assets/t_reyes.jpg" width="60" style="border-radius:0;border:1px solid var(--border)">';
+            echo '<div><div style="font-size:14.5px;font-weight:600;color:var(--text)">T. Reyes</div><div style="font-size:12px;color:var(--text-faint)">Systems &middot; ROSTER / LEDGER</div></div>';
             echo '</div>';
         }
         if (file_exists($filepath)) {

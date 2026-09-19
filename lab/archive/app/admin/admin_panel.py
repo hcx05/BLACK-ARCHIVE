@@ -152,17 +152,18 @@ class AdminHandler(BaseHTTPRequestHandler):
             <link rel="preconnect" href="https://fonts.googleapis.com">
             <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
             <style>
-            body{font-family:'IBM Plex Mono','Consolas',monospace;background:#000;color:#ffb000;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;margin:0}
-            .classbar{position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:6px;font-size:0.75em;letter-spacing:2px;border-bottom:1px solid #ff3b30}
-            .panel{background:#0a0a05;padding:40px;border:1px solid #ffb000;text-align:center}
-            .seal{width:72px;opacity:0.9;margin-bottom:10px}
-            h1{margin:6px 0}
-            input{display:block;margin:10px 0;padding:8px;width:220px;background:#000;border:1px solid #7a5c00;color:#ffb000;font-family:inherit}
-            button{padding:10px 20px;background:#1a1200;color:#ffb000;border:1px solid #ffb000;cursor:pointer;width:100%;font-family:inherit}
+            body{font-family:'IBM Plex Mono','Consolas',monospace;background:#000;color:#ffb000;font-size:16px;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;margin:0}
+            .classbar{position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:8px;font-size:0.8em;letter-spacing:2px;border-bottom:1px solid #ff3b30}
+            .panel{background:#0a0a05;padding:48px;border:1px solid #ffb000;text-align:center}
+            .seal{width:100px;opacity:0.92;margin-bottom:14px}
+            h1{margin:8px 0;font-size:1.4em}
+            input{display:block;margin:12px 0;padding:10px;width:240px;background:#000;border:1px solid #7a5c00;color:#ffb000;font-family:inherit;font-size:1em}
+            button{padding:12px 20px;background:#1a1200;color:#ffb000;border:1px solid #ffb000;cursor:pointer;width:100%;font-family:inherit;font-size:1em;letter-spacing:1px}
+            button:hover{background:#ffb000;color:#000}
             </style></head>
             <body><div class="classbar">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
             <div class="panel"><img class="seal" src="/assets/oni_seal.png"><h1>CAIRN RECORDS TERMINAL</h1>
-            <p style="font-size:0.8em">DISPOSITION HOLD ACCESS ONLY -- UNAUTHORIZED ACCESS IS A VIOLATION OF UNSC MILITARY CODE ART. 12</p>
+            <p style="font-size:0.85em">DISPOSITION HOLD ACCESS ONLY -- UNAUTHORIZED ACCESS IS A VIOLATION OF UNSC MILITARY CODE ART. 12</p>
             <form method="POST" action="/login">
             <input name="username" placeholder="Username">
             <input name="password" type="password" placeholder="Password">
@@ -188,13 +189,13 @@ class AdminHandler(BaseHTTPRequestHandler):
             # No session validation (broken authentication)
             html = """<html><head><title>CAIRN Dashboard</title>
             <link rel="icon" type="image/png" href="/assets/oni_seal.png"></head>
-            <body style="background:#000;color:#ffb000;font-family:'IBM Plex Mono','Consolas',monospace;padding:60px 20px 20px">
-            <div style="position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:6px;font-size:0.75em;letter-spacing:2px;border-bottom:1px solid #ff3b30">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
-            <div style="display:flex;align-items:center;gap:14px"><img src="/assets/oni_seal.png" width="46" style="opacity:0.9"><h1 style="margin:0">DISPOSITION HOLD -- RECORD INDEX</h1></div>
-            <ul>"""
+            <body style="background:#000;color:#ffb000;font-family:'IBM Plex Mono','Consolas',monospace;font-size:16px;line-height:1.6;padding:70px 24px 24px">
+            <div style="position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:8px;font-size:0.8em;letter-spacing:2px;border-bottom:1px solid #ff3b30">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
+            <div style="display:flex;align-items:center;gap:16px"><img src="/assets/oni_seal.png" width="64" style="opacity:0.92"><h1 style="margin:0;font-size:1.4em">DISPOSITION HOLD -- RECORD INDEX</h1></div>
+            <ul style="font-size:1.05em;line-height:2">"""
             for rid, title, _ in RECORDS:
                 html += f'<li><a style="color:#ffb000" href="/records/{rid}">[{rid}] {title}</a></li>'
-            html += "</ul><h2>Terminal Status</h2><pre style=\"border:1px solid #7a5c00;padding:10px;background:#0a0a05\">"
+            html += "</ul><h2>Terminal Status</h2><pre style=\"border:1px solid #7a5c00;padding:14px;background:#0a0a05;font-size:1em\">"
             html += f"Hostname: {os.uname().nodename}\n"
             html += f"User: {os.getenv('USER', 'root')}\n"
             html += "Role: staging mirror (post-SPINDLE migration, transfer pending)\n"
@@ -215,16 +216,16 @@ class AdminHandler(BaseHTTPRequestHandler):
                 if record[0] in RECORD_PHOTOS:
                     fname, pname = RECORD_PHOTOS[record[0]]
                     photo_html = (
-                        f'<div style="display:flex;align-items:center;gap:12px;margin:14px 0">'
-                        f'<img src="/assets/{fname}" width="64" style="border:1px solid #7a5c00;filter:sepia(0.15) contrast(1.05)">'
-                        f'<div><div style="font-size:13px;color:#ffb000">{pname}</div>'
-                        f'<div style="font-size:11px;color:#7a5c00">personnel photo on file</div></div></div>'
+                        f'<div style="display:flex;align-items:center;gap:16px;margin:18px 0">'
+                        f'<img src="/assets/{fname}" width="92" style="border:1px solid #7a5c00;filter:sepia(0.15) contrast(1.05)">'
+                        f'<div><div style="font-size:15px;color:#ffb000">{pname}</div>'
+                        f'<div style="font-size:12.5px;color:#a37c00">personnel photo on file</div></div></div>'
                     )
                 html = f"""<html><head><title>{record[1]}</title></head>
-                <body style="background:#000;color:#ffb000;font-family:'IBM Plex Mono','Consolas',monospace;padding:60px 20px 20px">
-                <div style="position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:6px;font-size:0.75em;letter-spacing:2px;border-bottom:1px solid #ff3b30">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
+                <body style="background:#000;color:#ffb000;font-family:'IBM Plex Mono','Consolas',monospace;font-size:16px;line-height:1.6;padding:70px 24px 24px">
+                <div style="position:fixed;top:0;left:0;right:0;background:#3a0000;color:#ff3b30;text-align:center;padding:8px;font-size:0.8em;letter-spacing:2px;border-bottom:1px solid #ff3b30">CLASSIFIED // ONI SECTION III // EYES ONLY</div>
                 <a style="color:#ffb000" href="/dashboard">&laquo; back to index</a>
-                <h1>{record[1]}</h1>{photo_html}<pre style="white-space:pre-wrap;border:1px solid #7a5c00;padding:10px;background:#0a0a05">{record[2]}</pre></body></html>"""
+                <h1 style="font-size:1.3em">{record[1]}</h1>{photo_html}<pre style="white-space:pre-wrap;border:1px solid #7a5c00;padding:14px;background:#0a0a05;font-size:1em;line-height:1.6">{record[2]}</pre></body></html>"""
             else:
                 html = "<html><body style=\"background:#000;color:#ff3b30;font-family:'IBM Plex Mono',monospace;padding:20px\">RECORD NOT FOUND / OUT OF SCOPE.</body></html>"
             self.wfile.write(html.encode())
