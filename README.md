@@ -17,10 +17,30 @@
 
 ## 快速開始
 
-### 需求
-- [Docker](https://docs.docker.com/get-docker/)（含 Docker Compose v2）
+### 1. 在受害機上裝好 Docker（第一次設置才需要）
 
-### 啟動
+這台機器（跑 lab 的那台，不是攻擊機）要有 Docker + Docker Compose v2。Kali / Debian / Ubuntu 系統：
+
+```bash
+sudo apt update
+sudo apt install -y docker.io docker-compose
+sudo usermod -aG docker $USER
+```
+
+`usermod` 之後**要重新登入這個 shell session 才會生效**（登出重進，或開一個新的終端機視窗；只是 `su - $USER` 也可以）。如果不想重開 session，可以在單一指令前面暫時借用 docker 群組權限：
+
+```bash
+sg docker -c "docker info"
+```
+
+確認裝好了：
+```bash
+docker --version
+docker compose version
+docker info      # 這行如果報錯，通常是 docker daemon 沒啟動或群組權限還沒生效
+```
+
+### 2. 啟動 lab
 ```bash
 chmod +x start.sh stop.sh
 ./start.sh
@@ -32,15 +52,23 @@ docker build -t black-archive-base:latest ./lab/base/
 docker compose up -d --build
 ```
 
-### 停止
+第一次啟動要抓套件、裝 nginx/php/mariadb/samba 這些東西，會花幾分鐘。看到三個 container 都是 `Up` 就代表好了：
 ```bash
-./stop.sh
+docker compose ps
 ```
-或 `docker compose down`
+
+### 3. 停止 / 重啟
+```bash
+./stop.sh                          # 或 docker compose down
+docker compose up -d --build       # 改過程式碼後要重新 build 再啟動
+docker compose up -d --force-recreate   # 沒改程式碼，只是想重置成乾淨狀態
+```
 
 ### 開始之前
 
-在碰任何 exploit 之前，先讀 [`briefing/00_longshore_contact.pdf`](briefing/00_longshore_contact.pdf)（純文字版在同資料夾的 `.md`）——那是你唯一會拿到的委託內容，之後不會再有人告訴你下一步該做什麼。FRONTIER 預設對外開在 `8080`（portal）、`8025`（webmail），RELAY 開在 `2222`（SSH）；如果是從另一台攻擊機打，把 `localhost` 換成跑 docker 那台機器的 IP 就好。
+在碰任何 exploit 之前，先看 [`briefing/00_longshore_contact.html`](briefing/00_longshore_contact.html)（純文字來源在同資料夾的 `.md`）——那是你唯一會拿到的委託內容，之後不會再有人告訴你下一步該做什麼。這是一個純靜態網頁，不需要架任何伺服器：把檔案下載下來直接用瀏覽器打開（`file://` 路徑）就能看，跟開一個 PDF 一樣，只是格式是 HTML。如果想要一個可以直接分享的連結而不想自己架站，也可以參考線上版本：https://claude.ai/artifact/3Wy9d8TySzLM5yFcqMnK8t
+
+FRONTIER 預設對外開在 `8080`（portal）、`8025`（webmail），RELAY 開在 `2222`（SSH）；如果是從另一台攻擊機打，把 `localhost` 換成跑 docker 那台受害機的 IP 就好（兩台機器要能互相 ping 通）。
 
 ## 架構
 

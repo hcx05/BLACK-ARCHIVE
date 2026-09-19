@@ -1,0 +1,8 @@
+IT Acceptable Use Reminder
+
+- Do not install unapproved software on terminal workstations.
+- Report lost badges to Facilities within 24 hours.
+- Personal storage devices are not permitted on the internal network.
+- Helpdesk hours: 0800-1700, Region 4 standard time.
+
+Questions: route through the usual ticketing system, not this share.

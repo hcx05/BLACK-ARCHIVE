@@ -34,6 +34,17 @@ EMAILS = [
               "case cites a transfer reference that doesn't resolve to anything in the\n"
               "current system, that's expected. It's a decommissioned system, not an\n"
               "active investigation. Please stop opening tickets about it.")},
+    {"from": "facilities@ocpa.unsc.mil", "to": "all-staff@ocpa.unsc.mil",
+     "subject": "Water shutoff - Building 4, Tuesday 0600-0900",
+     "body": ("Maintenance is replacing a valve on the third floor. Water will be\n"
+              "unavailable in Building 4 (this includes the break room and both\n"
+              "restrooms on our floor) from 0600 to approximately 0900 local.\n"
+              "Building 2 facilities are unaffected if you need to relocate.")},
+    {"from": "t.reyes@ocpa.unsc.mil", "to": "duty.admin@ocpa.unsc.mil",
+     "subject": "re: printer on 2nd floor again",
+     "body": ("Yeah I know. It's out of the darker toner cartridge, not the standard\n"
+              "one, so it's going to be a few days - vendor doesn't stock it locally.\n"
+              "Use the one by the break room until then. Sorry.")},
 ]
 
 

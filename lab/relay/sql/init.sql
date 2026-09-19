@@ -35,7 +35,8 @@ INSERT INTO service_accounts (service_name, username, password, host, notes) VAL
 ('CAIRN Fileshare', 'sysadmin', 'admin123', 'cairn.internal', 'Same login as the gateway account (reused, never rotated per-service)'),
 ('CAIRN Cache', '', '', 'cairn.internal:6379', 'No authentication required'),
 ('Gateway Maintenance SSH', 'backup', 'backup', 'relay.internal', 'Used for automated backups'),
-('CAIRN Records Terminal', 'administrator', 'Records!Access99', 'cairn.internal:8080', 'Disposition/records interface, restricted');
+('CAIRN Records Terminal', 'administrator', 'Records!Access99', 'cairn.internal:8080', 'Disposition/records interface, restricted'),
+('Floor Print Server', 'printsvc', 'printsvc', 'printsvc.internal:9100', 'Decommissioned with the old floor plan, host no longer answers');
 
 -- Migration history (why LEDGER and CAIRN exist as separate tiers)
 CREATE TABLE system_migration_log (
