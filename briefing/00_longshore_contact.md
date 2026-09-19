@@ -21,7 +21,7 @@ LONGSHORE> connects them on paper.
 LONGSHORE> [attachment: dependent_records_partial.csv]
 LONGSHORE>   Eli Okafor       - Eridanus II  - closed, medical, age 6
 LONGSHORE>   Talia Wren       - Madrigal     - closed, medical, age 6
-LONGSHORE>   Dominic Farrow   - Skopje       - closed, medical, age 7
+LONGSHORE>   Dominic Farrow   - Skopje       - closed, medical, age 6
 
 LONGSHORE> I think at least one of those closures is wrong. I can't prove
 LONGSHORE> it through channels that leave a signature. You can.

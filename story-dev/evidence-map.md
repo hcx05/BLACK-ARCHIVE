@@ -114,3 +114,10 @@
   - `t_reyes.jpg` → frontier `assets/`，掛在 Support Tickets 頁面：只要載入的是他寫的三份文件（welcome/todo/credential_rotation），就會在內文上方出現一張小的「作者卡」（照片 + 姓名 + 職稱），其他人寫的（如停車證通知）不會出現他的照片。
   - `i_petrov.jpg` / `m_castel.jpg` / `m_kade.jpg` / `r_achebe.jpg` → archive `assets/`，掛在各自簽署/提到的 CAIRN record（101/102/104/105）上，用 sepia 濾鏡處理成「機密檔案裡附的人事照片」質感，不是乾淨的現代照片感。admin_panel.py 的靜態檔案 route 從只認 `oni_seal.png` 改成通用的 `/assets/<filename>`（有做 `os.path.basename` 防止路徑穿越，避免意外變成新的檔案讀取漏洞）。
   - `n_okafor.jpg`（Naomi/LONGSHORE）**先不掛進遊戲**——目前沒有任何遊戲內介面會揭露 LONGSHORE 的真實身分，硬塞一張沒有敘事連結的照片只會顯得莫名其妙。已經跟使用者說明這個狀況，等對方決定要不要設計一個「發現真相」的機制再接。
+
+## 第五輪：全專案邏輯層面稽核
+使用者要求「先跑一次邏輯層面的完整檢查」，針對全 repo 做事實一致性交叉比對（年齡、日期、case_ref、transfer_ref、憑證、殖民地名稱拼法、人物-文件對應），不只是攻擊鏈功能測試。抓到兩個真的不一致：
+
+- **`briefing/00_longshore_contact.md` 的 Dominic Farrow 還寫著 age 7**：先前只改了 `.html` 版本跟 relay/frontier 的資料，`.md` 純文字備份版漏改，導致同一份委託信的兩種格式互相矛盾。已修正為 age 6，跟其他所有來源一致。
+- **`disposition_order_2547-014.pdf`（掃描版）內容跟 admin panel 的 record 101 文字對不起來**：CAIRN 重新定位成「staging mirror」那段說明（解釋為什麼這台機器資安這麼糟）只加進了 `admin_panel.py` 的文字版，PDF 生成腳本（`gen_disposition_order.py`）是獨立的硬寫死文字，沒有同步更新——玩家如果先看 PDF 版本，會完全看不到這個關鍵的世界觀說明。已經讓 PDF 文字跟 record 101 逐字對齊，重新產生 PDF（保留 ONI 信頭浮水印跟 RESTRICTED 印章），並確認 `acquisition_directive_scan.pdf` 跟對應的 `.txt` 版本本來就沒有這個問題（沒有在後續修訂中被單獨改過）。
+- 其餘交叉比對過的項目全部一致，沒有發現新問題：`OCPA-R4-XXXXX` case_ref 在 frontier/relay/archive/briefing 四處出現次數合理且對得上；`SPINDLE-7-XXXX` transfer_ref 只在該有的三筆案件（Okafor/Wren/Farrow）出現；四組關鍵密碼（`S3cretDB!2024`／`admin123`／`Records!Access99`／`MailP@ss2024`）在該出現的檔案裡都對得上；殖民地名稱（Eridanus II / Madrigal / Skopje）拼法全專案一致，沒有變體；`archive/shares/confidential/legacy_service_credentials.txt` 跟 `lab/base/Dockerfile` 的四組帳密完全吻合；`RECORD_PHOTOS` 的人物-文件對應（101 Petrov／102 Castel／104 Kade／105 Achebe）跟 `RECORDS` 陣列內容檢查過都正確，103（Halsey）刻意沒有照片，106（低溫轉移授權）也刻意沒有照片，都符合設計。
