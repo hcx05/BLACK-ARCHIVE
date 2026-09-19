@@ -32,7 +32,10 @@
 | archive `/root/cairn_disposition_review.txt`（root only，已改名，見下方 bug 修正） | 最終整合摘要 | 把 acquisition → flash-clone → augmentation → ONI 授權 → 現狀處置串成完整事件，並提出核心主題問句 |
 | relay `system_migration_log` 新增一列（2540 稽核回應） | Records Compliance Office 的官方結案回應 | **主動推理節點**：玩家已經從 API IDOR 親眼看過 transfer_ref 異常，這裡卻是官方「查過了，沒問題，是批次匯入的假影」的正式結論——玩家要自己判斷這份官方紀錄是失職還是刻意淡化，遊戲不給答案 |
 | frontier `?page=search`（改版） | 真正查得到資料的 Dependent Status Index（4 筆真實記錄 + 對應照片欄位圖片） | 修正「網站內容只是為了塞漏洞存在」的問題：查 LONGSHORE 信裡給的名字會回傳真的案件卡（含 case_ref，供之後跨系統比對），查不到的名字（如 Voight）也會誠實回「查無資料」，不再是萬用的假回應 |
-| frontier / archive 圖片（`assets/*.png`、`acquisition_directive_scan.jpg`） | 案件卡（照片欄位標示「IMAGE CORRUPTED」）、OCPA 徽記、掃描版徵召指令 | 補上真實感缺口：舊系統的照片欄位損毀是合理的世界觀理由，避免需要生成兒童肖像這種不恰當的內容，同時掃描版文件讓「這是紙本舊紀錄」的設定更可信 |
+| frontier / archive 圖片（`assets/*.png`、`acquisition_directive_scan.pdf`、`disposition_order_2547-014.pdf`） | 案件卡（照片欄位標示「IMAGE CORRUPTED」）、OCPA 徽記、掃描版徵召指令、Petrov 簽署的處置令掃描件 | 補上真實感缺口：舊系統的照片欄位損毀是合理的世界觀理由，避免需要生成兒童肖像這種不恰當的內容，同時掃描版文件讓「這是紙本舊紀錄」的設定更可信 |
+| `briefing/00_longshore_contact.pdf` | LONGSHORE 開場委託信的正式版本 | 玩家實際會打開的檔案不再只是純文字 `.md`，而是一份風格化的「加密通訊擷取」PDF，跟 `.md` 內容一致但呈現更真實；`.md` 保留作為純文字備份 |
+
+**格式多樣性說明**：不是所有文件都改成 PDF——保留 `.txt` 的地方（`legacy_service_credentials.txt`、`casualty_log_partial.txt`、`training_roster_fragment.txt`、frontier notes、CAIRN admin panel 內文）都是因為那些情境下純文字本身就更真實（內部日誌、備份殘留、支援工單、web app 動態內容），只有「正式簽署的官方文件／委託信」這種本來就該是 PDF/掃描件的東西才轉成 PDF，避免為了多樣性而多樣性。
 
 ## 目前刻意留白／可在後續內容擴充
 - Priya Anand（對照組案例）目前只在 relay API + frontier search 出現，尚無對應 archive 端資料——刻意保留「不是每筆資料都異常」的訊號，不需要額外揭露。

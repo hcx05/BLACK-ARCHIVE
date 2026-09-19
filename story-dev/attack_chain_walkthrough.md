@@ -205,9 +205,10 @@ smbclient -L //cairn.internal/ -U sysadmin%admin123 -m NT1
 **`confidential`**（限定 `valid users = sysadmin`）：
 ```bash
 smbclient //cairn.internal/confidential -U sysadmin%admin123 -m NT1 \
-  -c "get acquisition_directive_excerpt.txt; get acquisition_directive_scan.jpg; get legacy_service_credentials.txt; get cairn_backup_key"
+  -c "get acquisition_directive_excerpt.txt; get acquisition_directive_scan.pdf; get disposition_order_2547-014.pdf; get legacy_service_credentials.txt; get cairn_backup_key"
 ```
-- `acquisition_directive_excerpt.txt` / `.jpg`（掃描版）— **SPARTAN-II 名稱正式出現**的地方：2517 年的徵召指令，說明動機是「殖民地叛亂風險」而不是為了打星盟。
+- `acquisition_directive_excerpt.txt` / `acquisition_directive_scan.pdf`（掃描版）— **SPARTAN-II 名稱正式出現**的地方：2517 年的徵召指令，說明動機是「殖民地叛亂風險」而不是為了打星盟。
+- `disposition_order_2547-014.pdf` — Cmdr. Petrov 簽署的正式處置令掃描版，跟 admin panel record 101 的內容是同一份文件的兩種呈現（一份是 web app 內文字，一份是真正的簽署掃描件），互相印證。
 - `legacy_service_credentials.txt` — 四組 base 帳密清單，第三次驗證同一批密碼。
 - `cairn_backup_key` — 假的 RSA 私鑰，純 flavor，不需要用到。
 
