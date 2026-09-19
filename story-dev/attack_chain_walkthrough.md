@@ -46,13 +46,14 @@
 3. **資安 ≠ 唯一難度來源**：這一輪修正後，加入了三個純粹靠推理才能解開的節點（見第 3.3、4.4、5.4 節），不是打完漏洞就結束。
 4. **不要 brute force 當主要 progression**：每一組要用到的密碼都有合法（非暴力破解）的發現管道，見附錄 B。
 5. **Flag 不是 `FLAG{}`**：每個原本的 flag 節點都換成一份真的文件（memo / DB 列 / SMB 檔案 / admin panel 紀錄）。
+6. **這不是一個「為了被駭而存在」的環境，是一個真環境，玩家只是恰好在調查它**：這一輪特別加強了訊噪比——搜尋索引從 3 筆加到 7 筆（另外 4 筆是普通對照組）、`/notes/` 從 3 個檔案加到 6 個、webmail 從 3 封信加到 11 封、`service_accounts` 加了 2 筆死線索、SMB 三個分享都各加了 1 份純填充文件。這些新增內容**全部跟劇情/漏洞無關**，目的是讓玩家自己分辨「這個值得看」跟「這只是辦公室的日常雜物」，而不是每個列出來的東西都注定是線索。下面每一節看到「純填充」「死線索」字樣的地方，都是刻意加入的噪音，不是漏改的殘留內容。
 
 ---
 
 ## 2. ACT I — FRONTIER（172.20.1.10, host:8080 / :8025）
 
 ### 設計意圖
-玩家此時只知道 LONGSHORE 給的三個名字（`briefing/00_longshore_contact.md`）。FRONTIER 要讓玩家從「這三筆資料看起來普通」走到「這系統本身有問題」，但**絕對不能**提到 ONI / SPARTAN-II / Halsey。
+玩家此時只知道 LONGSHORE 給的三個名字（`briefing/00_longshore_contact.html`，純文字備份在同資料夾 `.md`）。FRONTIER 要讓玩家從「這三筆資料看起來普通」走到「這系統本身有問題」，但**絕對不能**提到 ONI / SPARTAN-II / Halsey。
 
 ### 2.1 Recon
 ```bash
@@ -70,7 +71,9 @@ curl "http://TARGET:8080/?page=search&q=Farrow"
 三筆都查得到，回傳真的案件卡（含案件卡圖片、`case_ref`）：
 - Eli Okafor — Eridanus II — `OCPA-R4-11902` — Case Closed, Deceased (age 6)
 - Talia Wren — Madrigal — `OCPA-R4-11944` — Case Closed, Deceased (age 6)
-- Dominic Farrow — Skopje — `OCPA-R4-11887` — Case Closed, Deceased (age 7)
+- Dominic Farrow — Skopje — `OCPA-R4-11887` — Case Closed, Deceased (age 6)
+
+`$DEPENDENT_INDEX` 這個搜尋後端其實有 **7 筆**公開可查的紀錄，不只 LONGSHORE 給的這 3 筆：另外 4 筆（Priya Anand / Marcus Webb / Dana Song / Theo Alvarez）是刻意放進去的對照組——都是普通、平凡的案件，狀態各自是 Active / Active / Active / Closed-relocated，沒有任何異常欄位。玩家如果好奇多搜尋幾個名字，看到的應該是「大部分紀錄都很正常」，這樣 3 筆有問題的紀錄才顯得異常，而不是讓玩家覺得「這整個系統都是為了劇情設計的」。relay 的 MariaDB 裡還有 2 筆（Nadia Oyelaran / Kenji Park）**只存在 DB 裡，這個公開搜尋介面查不到**，屬於 Act II 才會看到的背景資料，見 3.3 節。
 
 `?q=` 本身有 **reflected XSS**（`Results for: <query>` 沒做 escaping），可用來練習/示範，但不是主線必經之路。
 
@@ -94,7 +97,9 @@ curl "http://TARGET:8080/?page=notes&file=todo.txt"
 curl "http://TARGET:8080/notes/"
 curl "http://TARGET:8080/?page=notes&file=credential_rotation_status.txt"
 ```
-這份文件是整條 credential-reuse 鏈的**唯一合法起點**：T.R. 在工單裡不小心貼上了一段舊的 provisioning script（`useradd`/`chpasswd`），內容就是 `sysadmin/admin123`、`devuser/devuser2024`、`backup/backup`、`deploy/deploy!` 四組帳密，並註明從未經過 first-login 輪替。
+`/notes/` 目錄實際列出 **6 個檔案**，多出來的 3 個（`parking_permit_renewal.txt`、`elevator_status.txt`、`supply_closet_note.txt`）是純填充內容，跟劇情/漏洞無關——刻意讓這個 autoindex 看起來像真的辦公室共用資料夾裡會有的雜物，不是「一列出來就知道哪個檔案是重點」。
+
+`credential_rotation_status.txt` 這份文件是整條 credential-reuse 鏈的**唯一合法起點**：T.R. 在工單裡不小心貼上了一段舊的 provisioning script（`useradd`/`chpasswd`），內容就是 `sysadmin/admin123`、`devuser/devuser2024`、`backup/backup`、`deploy/deploy!` 四組帳密，並註明從未經過 first-login 輪替。頁面上如果順手看一下 `?page=notes&file=welcome.txt` 旁邊列的其他人員，會看到 T. Reyes 的頭像（`t_reyes.jpg`，真實照片素材）掛在留言旁邊——純粹增加真實感，不帶任何線索。
 
 ### 2.5 Webmail（8025）— 憑證重用的起點
 ```bash
@@ -103,7 +108,9 @@ curl -X POST http://TARGET:8025/login --data "user=sysadmin&pass=admin123"   # 3
 ```
 webmail 的登入帳號 `sysadmin` 剛好也是 base image 的真實 OS 帳號 — 這是刻意設計的「密碼重用」示範，不是巧合。
 
-登入後看 `/inbox`（三封信，用同一個 session 直接 GET `/inbox` 也看得到，因為**沒有 session 驗證**，這本身也是一個漏洞）：
+登入後看 `/inbox`（**共 11 封信**，用同一個 session 直接 GET `/inbox` 也看得到，因為**沒有 session 驗證**，這本身也是一個漏洞）。11 封裡只有 **3 封跟劇情/漏洞有關**，剩下 8 封是刻意加的填充信件（合規訓練提醒、停水通知、電梯維修、印表機耗材、閒聊、patch window 通知、物料補貨、門禁卡停用）——玩家要自己從一堆無聊的辦公室信件裡認出哪三封重要，這是這輪特別加強的「訊噪比」設計，不是隨便塞信件湊數。
+
+三封關鍵信（依收件時間混雜在其他 8 封中間，不會排在一起）：
 1. "LEDGER Terminal Access" — 提到一個叫 `svc-relay` 的帳號，**這是死線索**（該帳號根本不存在），但正確指出目標是 `relay.internal`。
 2. "LEDGER sandbox refresh" — `root / S3cretDB!2024`，跟後面 RELAY 的 DB root 密碼**互相驗證**（多來源交叉確認同一組密碼，強化玩家信心）。
 3. "New Case Handler Onboarding" — 官方說法定調「這只是 SPINDLE 遺留的匯入假影」，跟 todo.txt 的說法一致，替後面的官方稽核回應（4.4 節）先埋一個伏筆。
@@ -157,11 +164,15 @@ SELECT * FROM service_accounts;
 | CAIRN Cache | (無) | (無) | cairn.internal:6379 |
 | Gateway Maintenance SSH | backup | backup | relay.internal |
 | Floor Print Server | printsvc | printsvc | printsvc.internal:9100（死線索，host 不回應） |
+| Conference Room Booking | booking-svc | B00king2019 | roombook.internal:80（死線索，兩年前系統換掉了，只是沒人下架這筆） |
+| Vending Machine Telemetry | vendtel | vendtel | vendtel.internal:8081（死線索，回報庫存用，跟劇情完全無關） |
 
-CAIRN Fileshare 這筆再次驗證「同一組密碼到處重複用」（Samba 跟 SSH/webmail 共用）。**這張表不再直接給出 CAIRN Records Terminal 的帳密**——那組憑證要靠下一步的環境探索才找得到，不是單純 `SELECT *` 就拿到下一關全部鑰匙。
+`service_accounts` 現在共 **6 筆**，其中後兩筆是純填充的死線索——真實環境裡這種「早就沒用但沒人清理的舊帳號」很常見，故意留著讓玩家自己判斷哪些值得追。CAIRN Fileshare 這筆再次驗證「同一組密碼到處重複用」（Samba 跟 SSH/webmail 共用）。**這張表不再直接給出 CAIRN Records Terminal 的帳密**——那組憑證要靠下一步的環境探索才找得到，不是單純 `SELECT *` 就拿到下一關全部鑰匙。
 
 ```sql
-SELECT * FROM dependent_case_index;   -- 背景資料，多一筆 Samuel Voight（沒有 transfer_ref 欄位但同模式）
+SELECT * FROM dependent_case_index;   -- 背景資料，共 10 筆：Act I 公開搜尋能查到的 7 筆全部都在這裡，
+                                       -- 加上 3 筆只存在 DB 裡的（Samuel Voight 帶異常模式；
+                                       -- Nadia Oyelaran / Kenji Park 純填充，無 transfer_ref）
 SELECT * FROM system_migration_log ORDER BY entry_date;
 ```
 
@@ -214,7 +225,7 @@ smbclient -L //cairn.internal/ -U sysadmin%admin123 -m NT1
 # public / confidential / backups
 ```
 
-**`public`**（guest 可讀寫，不需要密碼）：只有一份 `welcome.txt`，場景真實感用，非關鍵。
+**`public`**（guest 可讀寫，不需要密碼）：`welcome.txt`、`it_policy_reminder.txt`、`meeting_notes_disposition_q1.txt` 三份，全部場景真實感用，非關鍵——後兩份是純填充（IT 政策提醒、團隊內部隨手記的會議筆記），不含任何線索。
 
 **`confidential`**（限定 `valid users = sysadmin`）：
 ```bash
@@ -229,10 +240,11 @@ smbclient //cairn.internal/confidential -U sysadmin%admin123 -m NT1 \
 **`backups`**（guest 可讀寫，操作失誤留下的東西）：
 ```bash
 smbclient //cairn.internal/backups -U sysadmin%admin123 -m NT1 \
-  -c "get casualty_log_partial.txt; get training_roster_fragment.txt"
+  -c "get casualty_log_partial.txt; get training_roster_fragment.txt; get old_budget_q3_2546.txt"
 ```
 - `casualty_log_partial.txt` — 四個候選人的 augmentation 結果（死亡/殘障/現役），第一次把 Act I/II 的名字跟「augmentation」這個詞連起來。
 - `training_roster_fragment.txt` — **只給訓練代號 + 殖民地 + 年齡，不給姓名**，見 4.4 節。
+- `old_budget_q3_2546.txt` — 純填充，一份過季的預算摘要，跟劇情完全無關，放著只是因為「備份資料夾裡通常什麼都有」。
 
 ### 4.3 SQLi 進 CAIRN Records Terminal（8080）
 ```bash
@@ -255,6 +267,8 @@ curl http://cairn.internal:8080/dashboard
 | 104 | Internal Memo - CPO M. Kade to Records, 2540 | 訓練者的矛盾情感 + 追加的「07-B」線索（見 4.4） |
 | 105 | Medical Certification Log Fragment | 解答 102 的「三份 vs 四筆案件」落差 |
 | 106 | Cryogenic Recovery Transfer Authorization - Subject 07-B | Farrow 矛盾的第三個來源（見 4.5） |
+
+101/102/104/105 這四份文件掛有真實人物照片（Cmdr. I. Petrov / Dr. M. Castel / CPO M. Kade / Dr. R. Achebe，`RECORD_PHOTOS` dict），103 跟 106 刻意不給照片——不是遺漏，是因為 103 是書信片段、106 是轉移授權書，這兩種文件類型本來就不會附照片，跟其他文件的照片一起看才會覺得「有些文件有照片、有些沒有」是正常的，而不是「系統只做了一半」。
 
 ### 4.4 【推理節點 1】三份 vs 四筆
 102 說 Castel「簽了三份」死亡證明，但玩家在 Act II 已經看過**四筆**帶 `transfer_ref` 異常的案件（Okafor / Wren / Farrow / Voight）。這個落差不會自動被指出來——玩家要自己數。
