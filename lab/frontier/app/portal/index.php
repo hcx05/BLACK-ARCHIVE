@@ -3,6 +3,21 @@
 // Colonial Dependent & Personnel Records Access
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'home';
+
+// Dependent Status Index - real (if limited) backing data, not a static
+// placeholder. This is the same batch of closed cases OCPA can legally
+// disclose the existence of; internal transfer/disposition detail lives
+// on other systems entirely.
+$DEPENDENT_INDEX = array(
+    array('name' => 'Eli Okafor', 'colony' => 'Eridanus II', 'case_ref' => 'OCPA-R4-11902',
+          'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_okafor.png'),
+    array('name' => 'Talia Wren', 'colony' => 'Madrigal', 'case_ref' => 'OCPA-R4-11944',
+          'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_wren.png'),
+    array('name' => 'Dominic Farrow', 'colony' => 'Skopje', 'case_ref' => 'OCPA-R4-11887',
+          'status' => 'Case Closed - Deceased (medical, age 7)', 'image' => 'case_farrow.png'),
+    array('name' => 'Priya Anand', 'colony' => 'Eridanus II', 'case_ref' => 'OCPA-R4-12210',
+          'status' => 'Active - standard dependent case', 'image' => 'case_anand.png'),
+);
 ?>
 <!DOCTYPE html>
 <html>
@@ -30,7 +45,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 <body>
 <div class="banner">UNSC OCPA NETWORK -- AUTHORIZED PERSONNEL ONLY -- ACTIVITY IS LOGGED (Reg. 4 Systems Directive 09)</div>
 <div class="container">
-    <h1>ROSTER :: Office of Colonial Personnel Affairs -- Regional Support Terminal</h1>
+    <h1><img src="assets/ocpa_seal.png" width="28" style="vertical-align:middle;margin-right:8px"> ROSTER :: Office of Colonial Personnel Affairs -- Regional Support Terminal</h1>
     <nav>
         <a href="?page=home">Home</a>
         <a href="?page=search">Dependent Status Index</a>
@@ -59,9 +74,30 @@ switch($page) {
         echo ' <input type="submit" value="Search">';
         echo '</form>';
         if ($query) {
-            // Vulnerable: no output encoding
+            // Vulnerable: no output encoding on the echoed query itself
             echo "<p>Results for: " . $query . "</p>";
-            echo "<p>No records found matching your query in the current index.</p>";
+            $needle = strtolower($query);
+            $hits = array();
+            foreach ($DEPENDENT_INDEX as $rec) {
+                $haystack = strtolower($rec['name'] . ' ' . $rec['colony'] . ' ' . $rec['case_ref']);
+                if ($needle !== '' && strpos($haystack, $needle) !== false) {
+                    $hits[] = $rec;
+                }
+            }
+            if (count($hits) > 0) {
+                foreach ($hits as $rec) {
+                    echo '<div style="display:flex;gap:15px;border:1px solid #1f2b38;padding:10px;margin:10px 0;background:#0e141a">';
+                    echo '<img src="assets/' . $rec['image'] . '" width="90" style="border:1px solid #2a3b4a">';
+                    echo '<div>';
+                    echo '<b>' . htmlspecialchars($rec['name']) . '</b><br>';
+                    echo 'Colony of record: ' . htmlspecialchars($rec['colony']) . '<br>';
+                    echo 'Case reference: ' . htmlspecialchars($rec['case_ref']) . '<br>';
+                    echo 'Status: ' . htmlspecialchars($rec['status']);
+                    echo '</div></div>';
+                }
+            } else {
+                echo "<p>No records found matching your query in the current index.</p>";
+            }
         }
         echo '</div>';
         break;

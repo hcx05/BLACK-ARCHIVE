@@ -73,7 +73,24 @@ RECORDS = [
      "that scares me more than anything the Covenant has thrown at us. Keep the\n"
      "file. Don't let it disappear. Somebody should be able to ask the question\n"
      "later, even if we can't answer it now.\n\n"
+     "One more thing, since this is going in the sealed file and not a report\n"
+     "anyone reviews. I still think about 07-B. Skopje kid, angriest six-year-old\n"
+     "I ever met, best reflexes in the whole cohort by the second year. The\n"
+     "official log on that one reads as a medical discharge. That is not what\n"
+     "I watched happen in the augmentation bay, and I was standing right there.\n"
+     "I did not write it up that way. I don't know who did, or why.\n\n"
      "- M. Kade, CPO"),
+
+    (105, "Medical Certification Log Fragment - Case Closures 2517",
+     "//CLASSIFIED - ONI SECTION III - EYES ONLY//\n"
+     "MEDICAL CERTIFICATION LOG (FRAGMENT)\n"
+     "RE: Death certificates issued under substitution protocol, 2517 batch\n\n"
+     "  CASE REF        CERTIFYING PHYSICIAN\n"
+     "  OCPA-R4-11902    Dr. M. Castel\n"
+     "  OCPA-R4-11944    Dr. M. Castel\n"
+     "  OCPA-R4-11887    Dr. M. Castel\n"
+     "  OCPA-R4-10733    Dr. R. Achebe\n\n"
+     "Log fragment only - remaining entries lost in the SPINDLE migration."),
 ]
 
 

@@ -36,6 +36,6 @@
 - 部分候選人的 augmentation 結果（backups share 的傷亡紀錄）。
 仍不知道：官方最終處置決定的完整脈絡與明確的「保留但不公開」授權文字（Disposition Order 已知，但尚未有把所有線串起來的單一文件）。
 
-## ARCHIVE root 之後（讀到 disposition_summary_final.txt）
+## ARCHIVE root 之後（讀到 cairn_disposition_review.txt）
 新增知道：完整事件脈絡——起源、掩蓋手法、訓練與 augmentation 結果、程序性授權決定，以及案件最終停在「保留但等待未來處置」。
 玩家此時應該能自己回答「這些孩子發生了什麼」，並面對主題問句，而不是被文件直接告知結論。

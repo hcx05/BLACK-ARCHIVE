@@ -17,4 +17,4 @@
 ## 玩家實際會遇到的順序（技術面，非強制線性，但架構上大致如此）
 1. FRONTIER：發現 Dependent Status Index 有異常、Support Tickets 提到 SPINDLE 這個名字、webmail 洩漏可能通往 RELAY 的線索（含一個過期/錯誤的帳密紅鯡魚，真正可行路徑是密碼重用：webmail `sysadmin/admin123` 同時是 RELAY 的 SSH 密碼）。
 2. RELAY：透過 SSH 或 API exploit 進入，發現 case index 裡「已結案死亡」卻帶有 transfer reference 的紀錄，DB 洩漏 CAIRN 的服務憑證與 migration log（第一次出現 ONI Section III / Cmdr. Petrov 名字）。
-3. ARCHIVE：透過 relay 洩漏的憑證 pivot 進入，SQLi 取得 records terminal 存取權，讀到 Halsey 書信片段、Medical Annex、Kade 備忘錄；Samba share 洩漏 acquisition directive（SPARTAN-II 首次正式出現）與遺留在 backups share 的 casualty log；root privesc 後讀到最終 `disposition_summary_final.txt`，把所有線串起來。
+3. ARCHIVE：透過 relay 洩漏的憑證 pivot 進入，SQLi 取得 records terminal 存取權，讀到 Halsey 書信片段、Medical Annex、Kade 備忘錄；Samba share 洩漏 acquisition directive（SPARTAN-II 首次正式出現）與遺留在 backups share 的 casualty log；root privesc 後讀到最終 `cairn_disposition_review.txt`，把所有線串起來。

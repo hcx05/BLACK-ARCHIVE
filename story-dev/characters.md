@@ -37,13 +37,20 @@
 - 只以一段書信片段出現（archive CAIRN record 103），不作為可互動角色、不寫她的完整心理描寫。
 - 內容克制且道德複雜：承認代價，堅持必要性，不寫成反派台詞。
 
-## 候選人／失蹤兒童（案件核心）
-| 姓名 | 殖民地 | LEDGER 狀態 | 真實結果（archive 揭露） |
-|---|---|---|---|
-| Eli Okafor | Eridanus II | Case Closed - Deceased | Augmentation failure, deceased |
-| Talia Wren | Madrigal | Case Closed - Deceased | Augmentation successful, active service |
-| Dominic Farrow | Skopje | Case Closed - Deceased | Augmentation failure, discharged, permanent disability |
-| Samuel Voight | Eridanus II | （僅在 relay DB 背景資料出現，無 API record）Closed - Deceased | Augmentation successful, active service |
-| Priya Anand | Eridanus II | Active（對照組，證明不是所有案件都異常） | 未涉入計畫，純粹作為「不是每筆資料都有問題」的對照 |
+## Dr. R. Achebe — UNSC 醫療官（僅文件署名，不展開角色）
+- 只出現在 archive CAIRN record 105（Medical Certification Log Fragment）的一行署名：Samuel Voight（case_ref OCPA-R4-10733）的死亡證明是他/她簽的，不是 Dr. Castel。
+- 存在目的：讓玩家發現「Castel 說她簽了三份，但案件明明有四份」的落差有一個具體、可查證的解答——不只 Castel 一個人涉入，這件事牽涉的醫療人員比她的自白信讓人以為的更多。
+- 不需要展開背景故事，維持「一個名字」的份量即可，避免人物數量膨脹。
 
-人物總數：LONGSHORE、T. Reyes、Dr. Castel、Cmdr. Petrov、CPO Kade + Halsey（克制引用）= 5 個原創 + 1 個 canon 引用，符合作品要求「5–7 個有名字角色」。
+## 候選人／失蹤兒童（案件核心）
+| 姓名 | 殖民地 | LEDGER 狀態 | 官方紀錄結果 | 有爭議的第二來源 |
+|---|---|---|---|---|
+| Eli Okafor | Eridanus II | Case Closed - Deceased | Augmentation failure, deceased | 無爭議 |
+| Talia Wren | Madrigal | Case Closed - Deceased | Augmentation successful, active service | 無爭議 |
+| Dominic Farrow | Skopje | Case Closed - Deceased | 官方 casualty log：discharged, permanent disability | CPO Kade 備忘錄（CAIRN record 104）暗示他其實死於 augmentation，官方紀錄被動過手腳——**兩份來源互相矛盾，遊戲不解答哪個對**，玩家要自己判斷 |
+| Samuel Voight | Eridanus II | （僅在 relay DB 背景資料出現，無 API record）Closed - Deceased | Augmentation successful, active service | 無爭議，但死亡證明簽署人是 Dr. Achebe 而非 Castel（見上） |
+| Priya Anand | Eridanus II | Active（對照組，證明不是所有案件都異常） | 未涉入計畫 | 純粹作為「不是每筆資料都有問題」的對照 |
+
+Farrow 案是目前唯一一個刻意設計成「兩份可信來源互相矛盾、遊戲不裁決真假」的節點，對應作品核心要求「有些 evidence 可以…看似矛盾…玩家應該會建立 hypothesis，再用 hacking 去驗證」。線索鏈：archive backups share 的 `training_roster_fragment.txt`（只給訓練代號 07-A~07-D + 殖民地 + 年齡，不給姓名）→ CPO Kade 備忘錄提到「07-B」的親眼見聞 → 玩家要自己用殖民地（Skopje 只有 Farrow 一筆）交叉比對回真實姓名，才能發現這條反駁官方紀錄的線索——不是單純字串比對，是要跨兩份文件做身分還原。
+
+人物總數：LONGSHORE、T. Reyes、Dr. Castel、Cmdr. Petrov、CPO Kade、Dr. Achebe + Halsey（克制引用）= 6 個原創 + 1 個 canon 引用，仍在作品要求「5–7 個有名字角色」範圍內。

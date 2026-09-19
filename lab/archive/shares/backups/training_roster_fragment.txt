@@ -1,0 +1,13 @@
+//CLASSIFIED - ONI SECTION III - EYES ONLY//
+TRAINING ROSTER FRAGMENT - INTAKE COHORT 07 (2517)
+Left on the backups share during the 2547 migration. Should not be here.
+
+Cohort designations only. Names are not carried on this roster by policy.
+
+  DESIGNATION   ORIGIN COLONY     AGE AT INTAKE
+  07-A          Eridanus II       6
+  07-B          Skopje            7
+  07-C          Madrigal          6
+  07-D          Eridanus II       8
+
+Remainder of cohort 07 roster not recovered in this backup.
