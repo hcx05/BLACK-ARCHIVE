@@ -38,7 +38,6 @@ CREATE TABLE service_accounts (
 
 INSERT INTO service_accounts (service_name, username, password, host, notes) VALUES
 ('CAIRN Fileshare', 'sysadmin', 'admin123', 'cairn.internal', 'Same login as the gateway account (reused, never rotated per-service)'),
-('CAIRN Cache', '', '', 'cairn.internal:6379', 'No authentication required'),
 ('Gateway Maintenance SSH', 'backup', 'backup', 'relay.internal', 'Used for automated backups'),
 ('Floor Print Server', 'printsvc', 'printsvc', 'printsvc.internal:9100', 'Decommissioned with the old floor plan, host no longer answers'),
 ('Conference Room Booking', 'booking-svc', 'B00king2019', 'roombook.internal:80', 'Outdated - Region 4 moved to the calendar app two years ago, nobody decommissioned this'),

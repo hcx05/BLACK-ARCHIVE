@@ -323,17 +323,15 @@ switch($page) {
             break;
         }
 
-        // Reflected XSS vulnerability
         $query = isset($_GET['q']) ? $_GET['q'] : '';
         echo '<p>Search by dependent name, colony of record, or case reference number.</p>';
         echo '<form method="GET">';
         echo '<input type="hidden" name="page" value="search">';
-        echo '<input type="text" name="q" placeholder="Search records..." value="' . $query . '">';
+        echo '<input type="text" name="q" placeholder="Search records..." value="' . htmlspecialchars($query) . '">';
         echo ' <input type="submit" value="Search">';
         echo '</form>';
         if ($query) {
-            // Vulnerable: no output encoding on the echoed query itself
-            echo "<p style='margin-top:16px'>Results for: " . $query . "</p>";
+            echo "<p style='margin-top:16px'>Results for: " . htmlspecialchars($query) . "</p>";
             $needle = strtolower($query);
             $hits = array();
             foreach ($DEPENDENT_INDEX as $rec) {
@@ -384,31 +382,34 @@ switch($page) {
         break;
 
     case 'ping':
-        // OS Command Injection vulnerability
         echo '<p>Legacy tool left over from the ROSTER migration. Reach out to Systems if it misbehaves.</p>';
         echo '<form method="POST">';
         echo '<input type="text" name="host" placeholder="Enter hostname or IP">';
         echo ' <input type="submit" value="Ping">';
         echo '</form>';
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['host'])) {
-            // Post-finding patch (SEC-1188): strips the separator from the
-            // last incident report. Nobody checked for other separators.
-            $host = str_replace(';', '', $_POST['host']);
-            // Vulnerable: direct command injection (semicolons only, see above)
-            $output = shell_exec("ping -c 3 " . $host);
-            echo '<pre style="margin-top:16px">' . $output . '</pre>';
+            $host = $_POST['host'];
+            // Re-done properly after SEC-1188 flagged the old semicolon-only
+            // filter: validate against a hostname/IP shape instead of
+            // blacklisting separators, then still pass through escapeshellarg.
+            if (preg_match('/^[a-zA-Z0-9.\-]+$/', $host)) {
+                $output = shell_exec("ping -c 3 " . escapeshellarg($host));
+                echo '<pre style="margin-top:16px">' . htmlspecialchars($output) . '</pre>';
+            } else {
+                echo '<p class="warning">Invalid hostname or IP.</p>';
+            }
         }
         break;
 
     case 'notes':
-        // Local File Inclusion vulnerability
         $file = isset($_GET['file']) ? $_GET['file'] : 'welcome.txt';
         echo '<ul class="ticket-list">';
         echo '<li><a href="?page=notes&file=welcome.txt">Onboarding Note (T. Reyes)</a></li>';
         echo '<li><a href="?page=notes&file=todo.txt">Open Items &mdash; Systems</a></li>';
         echo '</ul>';
-        // Vulnerable: no path validation
-        $filepath = '/var/www/html/portal/notes/' . $file;
+        // basename() strips any directory component, so ../ traversal
+        // collapses to a lookup inside notes/ instead of escaping it.
+        $filepath = '/var/www/html/portal/notes/' . basename($file);
         $reyes_files = array('welcome.txt', 'todo.txt', 'credential_rotation_status.txt', 't_reyes_annual_review_2546.txt');
         if (in_array($file, $reyes_files, true)) {
             echo '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">';
@@ -419,12 +420,7 @@ switch($page) {
         if (file_exists($filepath)) {
             echo "<pre>" . htmlspecialchars(file_get_contents($filepath)) . "</pre>";
         } else {
-            // Path traversal possible
-            if (file_exists($file)) {
-                echo "<pre>" . htmlspecialchars(file_get_contents($file)) . "</pre>";
-            } else {
-                echo "<p>File not found.</p>";
-            }
+            echo "<p>File not found.</p>";
         }
         break;
 

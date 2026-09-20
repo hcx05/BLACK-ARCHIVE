@@ -16,13 +16,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN mkdir -p /home/sysadmin/.ssh \
     && chmod 777 /home/sysadmin/.ssh
 
-# Legacy SPINDLE-era diagnostic wrapper - a python3 script tool that shelled
-# out to the interpreter directly. Someone SUID'd the interpreter itself so
-# the on-call rotation could run it without sudo access; the wrapper script
-# it was written for is long gone, the SUID bit on the interpreter was not.
-RUN cp /usr/bin/python3 /usr/local/bin/spindle-legacy-diag \
-    && chmod u+s /usr/local/bin/spindle-legacy-diag
-
 COPY app/api/ /opt/relay/api/
 COPY sql/init.sql /opt/relay/sql/init.sql
 COPY scripts/run-mariadb.sh /opt/relay/scripts/run-mariadb.sh

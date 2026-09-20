@@ -27,21 +27,13 @@ RUN chown -R root:root /var/www/html/portal /opt/webmail /etc/nginx/sites-availa
     && find /var/www/html/portal /opt/webmail -type f -exec chmod 644 {} \; \
     && chmod 644 /etc/nginx/sites-available/default
 
-# Intentional misconfigurations (carried over from legacy ROSTER deployment)
-RUN chmod -R 777 /var/www/html/portal/uploads \
-    && echo "sysadmin ALL=(ALL) NOPASSWD: /usr/bin/find" >> /etc/sudoers
-
-# Legacy backup job run as root every 5 minutes. www-data was added to the
-# "ops" group years ago for a since-removed "trigger backup now" admin
-# button; the group-write bit on the script itself was never locked back
-# down after that feature was ripped out.
-RUN groupadd ops \
-    && usermod -aG ops www-data \
-    && printf '#!/bin/bash\ntar czf /backups/roster-backup.tar.gz /var/www/html/portal/\n' > /opt/backup.sh \
-    && chown root:ops /opt/backup.sh \
-    && chmod 770 /opt/backup.sh \
-    && mkdir -p /backups \
-    && echo "*/5 * * * * root /opt/backup.sh" >> /etc/crontab
+# Intentional misconfiguration (carried over from legacy ROSTER deployment):
+# uploads/ has to stay writable by www-data for the intake form to work at
+# all, and there's no extension allowlist/rename on top of that - that's
+# the one deliberate foothold this host has. No local-root privesc lives
+# here: root on this box wouldn't unlock anything past what the foothold
+# already gives, so there isn't one to find.
+RUN chmod -R 777 /var/www/html/portal/uploads
 
 # Stale env vars from the last credential rotation on the webmail gateway
 ENV SMTP_USER=duty.admin

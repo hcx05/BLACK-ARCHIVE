@@ -26,7 +26,7 @@
 - relay 自己的官方稽核紀錄（2540 年）說這些異常「只是批次匯入的假影」——跟玩家自己看到的 transfer_ref 模式矛盾，玩家要自己判斷。
 仍不知道：SPARTAN-II 這個名稱本身、flash-clone 機制細節、候選人的最終命運、Halsey 的角色、CAIRN 實際上是什麼樣的系統（現役還是廢棄）。
 
-## ARCHIVE 攻破後（SQLi / Samba 取得，未 root）
+## ARCHIVE 攻破後（合法帳密 / Samba 取得，未 root）
 新增知道：
 - SPARTAN-II 正式名稱與 2517 徵召指令的動機（殖民地叛亂風險，不是為了星盟）。
 - flash-clone 死亡掩蓋機制，Dr. Castel 的直接涉入，以及第四份證明其實是 Dr. Achebe 簽的（不只她一人涉入）。

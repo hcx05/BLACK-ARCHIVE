@@ -265,37 +265,23 @@ class AdminHandler(BaseHTTPRequestHandler):
         if self.path == "/login":
             username = params.get("username", [""])[0]
             password = params.get("password", [""])[0]
-            # Sanitization added to the username field after SEC-2211 (a prior
-            # pentest finding scoped only to username). password was not in
-            # scope of that finding and is still concatenated unmodified below.
-            username = username.replace("'", "").replace("--", "")
-            # SQL Injection vulnerability (still reachable via password)
             conn = sqlite3.connect(DB_PATH)
             c = conn.cursor()
-            query = f"SELECT * FROM admins WHERE username='{username}' AND password='{password}'"
-            try:
-                c.execute(query)
-                result = c.fetchone()
-                if result:
-                    token = secrets.token_hex(16)
-                    VALID_SESSIONS.add(token)
-                    self.send_response(302)
-                    self.send_header("Location", "/dashboard")
-                    self.send_header("Set-Cookie", f"cairn_session={token}; Path=/")
-                    self.end_headers()
-                else:
-                    self.send_response(200)
-                    self.send_header("Content-Type", "text/html")
-                    self.end_headers()
-                    self.wfile.write(b"<html><body style=\"background:#000;color:#ff3b30;font-family:'IBM Plex Mono',monospace;text-align:center;padding:50px\"><h2>ACCESS DENIED</h2><a href='/' style='color:#ffb000'>Back</a></body></html>")
-            except Exception as e:
-                self.send_response(500)
-                self.send_header("Content-Type", "text/plain")
+            c.execute("SELECT * FROM admins WHERE username=? AND password=?", (username, password))
+            result = c.fetchone()
+            conn.close()
+            if result:
+                token = secrets.token_hex(16)
+                VALID_SESSIONS.add(token)
+                self.send_response(302)
+                self.send_header("Location", "/dashboard")
+                self.send_header("Set-Cookie", f"cairn_session={token}; Path=/")
                 self.end_headers()
-                # Error message leaks query details
-                self.wfile.write(f"Database error: {e}\nQuery: {query}".encode())
-            finally:
-                conn.close()
+            else:
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html")
+                self.end_headers()
+                self.wfile.write(b"<html><body style=\"background:#000;color:#ff3b30;font-family:'IBM Plex Mono',monospace;text-align:center;padding:50px\"><h2>ACCESS DENIED</h2><a href='/' style='color:#ffb000'>Back</a></body></html>")
 
 
 if __name__ == "__main__":

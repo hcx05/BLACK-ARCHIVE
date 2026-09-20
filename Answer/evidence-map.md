@@ -204,3 +204,29 @@
 三個修法都已經 `docker compose down && build --no-cache && up` 完整重建三台 host，並重新走了一次**完整攻擊鏈**驗證沒有任何既有功能被影響：FRONTIER 全端口掃描/搜尋/notes 洩漏/upload polyglot/ping injection/webmail debug 洩漏 → pivot 進 RELAY（reverse shell + TTY 升級 + ssh 密碼重用）→ LEDGER API/MariaDB/`sync.conf` → 反向 SOCKS + proxychains 進 ARCHIVE → SMB 三個分享 → `cairn_backup_key` key-only SSH → CAIRN Records Terminal（SQLi 換欄位 + 合法帳密兩條都測）→ 六份文件 → PATH-hijack 拿 root → 讀到 `cairn_disposition_review.txt`。FRONTIER 自己的兩條 optional privesc（`sudo find` NOPASSWD、`ops` 群組 `backup.sh`）跟 RELAY 的 `spindle-legacy-diag` 也都重新驗證過一次，跟第十一輪的結果一致，沒有因為這輪的權限鎖死而失效。
 
 更新的文件：`lab/frontier/Dockerfile`、`lab/frontier/config/supervisord.conf`、`lab/relay/Dockerfile`、`lab/relay/config/supervisord.conf`、`lab/archive/Dockerfile`、`lab/archive/config/supervisord.conf`。設計文件（`attack_chain_design.md`、`walkthrough.md`）不需要改——這些都是「不該存在的捷徑」，不是文件裡描述過的任何路徑，本來就沒有寫進任何攻略。
+
+## 第十三輪：使用者要求「一條攻擊鏈，不要多餘漏洞」——大規模砍掉冗餘/無回報的漏洞
+
+使用者對第十一/十二輪的成果反饋是「感覺漏洞太多」，明確要求：**保留一條完整的攻擊鏈，加上其他可以拿到更多額外資訊的漏洞；如果兩個漏洞拿到一樣的東西，砍到剩一個；不要兔子洞**（打得穿但拿不到任何東西、也不是往下一關必經的漏洞）。這輪把這個標準套用到三台 host，逐一砍，不是「隨便挑幾個刪掉湊數」。
+
+判斷標準統一寫成兩條規則：
+1. **兩個漏洞如果拿到一樣的東西（同一個 shell 等級、同一份資料），只留一個。**
+2. **一個漏洞如果打穿之後沒有任何新資訊、也不是往下一關的必經路，直接砍——不當「反正留著也沒差」的裝飾。**
+
+逐台檢查結果：
+
+- **FRONTIER**：
+  - 立足點原本「三選一」（upload / ping command injection / notes LFI）全部拿到 www-data，是同一個東西——依規則 1 只留 **upload**（`getimagesize()` magic-byte bypass，本身就是三條裡技術含量最高、最不容易 enumerate 出來的一條）。`ping` 的 command injection、`notes` 的 path traversal、`search` 的 reflected XSS 全部**真的修掉**（不是拿掉頁面，是把底層漏洞修對：`ping` 改用 `escapeshellarg()` + hostname 格式驗證、`notes` 用 `basename()` 擋掉 `../`、`search` 補上 `htmlspecialchars()`），三個頁面本身還在，只是不再是漏洞——不是删掉功能，是把「示範用的洞」清掉。
+  - 本機提權原本兩條（`sudo -l` NOPASSWD find、`ops` 群組寫入 `/opt/backup.sh`）——依規則 2 直接砍：文件裡本來就寫明「root 在 frontier 解鎖不了任何東西」，兩條路打穿了都沒有任何回報，是純粹的兔子洞。`ops` 群組、`/opt/backup.sh`、`sudo` NOPASSWD 這三個機制從 Dockerfile 整段移除。
+- **RELAY**：
+  - LEDGER API 原本除了核心的 `/api/cases`（IDOR）、`/api/health`（洩漏 `cairn.internal`）之外，還有 `/api/fetch?url=`（SSRF）、`/api/diagnostics`（command injection）、`/api/files?name=`（path traversal）三個「示範用」的洞——依規則 2 全部砍：SSRF/path traversal 拿到的資訊跟 `/api/health` 重複，command injection 在第十二輪修 supervisord 的 root 執行問題之前，甚至是一條從 FRONTIER 就能直接打、完全不用先拿 relay shell 的意外 root 捷徑（見第十二輪）。三個 endpoint 連同對應的 `readme.txt` data 檔一起從 `server.js` 刪除。
+  - 本機提權（SUID `spindle-legacy-diag`）——依規則 2 直接砍，理由跟 frontier 一樣：root 在 relay 解鎖不了任何東西（`/etc/ledger/sync.conf` 本身就是 644，`sysadmin` 就讀得到）。
+- **ARCHIVE**：
+  - CAIRN Records Terminal 登入原本雙路徑（SQLi 換到 password 欄位 / 合法帳密），兩條拿到完全一樣的 session/dashboard——依規則 1 只留**合法帳密**這一條（因為它本身就跟 3.3b 節的 `sync.conf` credential discovery 掛鉤，是主線必經，SQLi 只是額外的捷徑）。做法是把 `admin_panel.py` 的 SQL 查詢改成參數化查詢（`?` placeholder），SQLi 完全消失，合法登入的功能不變。
+  - Redis（無認證、網路可達）——依規則 2 直接砍：檢查過整個程式碼，沒有任何地方真的往 Redis 讀寫過東西，`service_accounts` 裡的「CAIRN Cache」那筆本身也寫著 `(無)/(無)`，玩家連上去除了「這是一個無認證的服務」之外什麼都拿不到，是純粹的兔子洞（也是第十二輪才剛花力氣把它的 root 執行問題修掉的服務——但修完之後重新評估，發現它本來就不該存在）。整個 Redis 服務從 archive 的 Dockerfile、supervisord.conf 移除，`service_accounts` 表跟 `/api/health` 裡對應的引用也一起清掉。
+
+**主線本身完全沒有變動**——FRONTIER 的 credential 洩漏鏈、RELAY 的 transfer_ref/MariaDB/sync.conf 鏈、ARCHIVE 的 SMB/backup key/PATH-hijack/最終文件全部原封不動。這輪砍的都是文件裡早就標記「示範/次要/非主線必經」的東西，跟主線劇情、證據鏈毫無關係。
+
+已重新 `docker compose down && build --no-cache && up` 完整重建三台 host，並重新走了一次**完整攻擊鏈**確認沒有任何主線功能受影響，同時逐一確認每個「砍掉」的東西真的不在了：外部 `nmap` 確認 `6379` 已關閉；`search`/`notes`/`ping` 三個頁面用原本的 payload 測試，全部確認不再可利用，但頁面本身功能正常（ping 還能正常 ping、notes 還能正常讀檔、search 還能正常搜尋，只是輸出有跳脱）；FRONTIER webshell 確認 `sudo -l` 空白、`/opt/backup.sh`/`ops` 群組都不存在；RELAY 確認 `find / -perm -4000` 不再列出任何自訂 SUID 檔案、LEDGER API 的 `/api/diagnostics` 回 404；ARCHIVE 確認 CAIRN 登入的 SQLi payload 回 200（拒絕）而合法帳密回 302（成功）。最後完整重跑一次 FRONTIER→RELAY→ARCHIVE→CAIRN→PATH-hijack→root file 全鏈，`euid=0(root)` 跟 `cairn_disposition_review.txt` 都確認讀到。
+
+更新的文件：`lab/frontier/app/portal/index.php`（XSS/LFI/ping 三個漏洞修掉，功能保留）、`lab/frontier/Dockerfile`（移除 `ops`/`backup.sh`/`sudo` NOPASSWD）、`lab/relay/app/api/server.js`（移除 SSRF/command injection/path traversal 三個 endpoint，刪掉 `data/readme.txt`）、`lab/relay/Dockerfile`（移除 `spindle-legacy-diag`）、`lab/relay/sql/init.sql`（移除 CAIRN Cache 那筆）、`lab/archive/app/admin/admin_panel.py`（SQLi 改參數化查詢）、`lab/archive/Dockerfile`（移除 Redis）、`lab/archive/config/supervisord.conf`（移除 `[program:redis]`）、`story-dev/attack_chain_design.md`（§1 新增原則 7、§2.2/2.3、§3.2/3.3/3.5、§4.3、附錄 A 全部同步）、`Answer/walkthrough.md`（移除步驟 6 Ping，其餘全部重新編號 1-21，CAIRN 登入步驟移除 SQLi）、`story-dev/player-knowledge-states.md`/`timeline.md`/`characters.md`（三處提到 SQLi/Redis 的字句同步修掉）。`story-dev/legacy-mechanics.md` 維持凍結，不更新——那份文件本來就是「原始 VulnCastle 機制」的歷史記錄，不是目前實際漏洞集合的說明。

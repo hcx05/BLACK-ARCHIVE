@@ -54,6 +54,6 @@
 Farrow 案是目前唯一一個刻意設計成「多份可信來源互相矛盾、遊戲不裁決真假」的節點，對應作品核心要求「有些 evidence 可以…看似矛盾…玩家應該會建立 hypothesis，再用 hacking 去驗證」。線索鏈：archive backups share 的 `training_roster_fragment.txt`（只給訓練代號 07-A~07-D + 殖民地 + 年齡，不給姓名）→ CPO Kade 備忘錄提到「07-B」的親眼見聞 → 玩家要自己用殖民地（Skopje 只有 Farrow 一筆）交叉比對回真實姓名，才能發現這條反駁官方紀錄的線索；找到 CAIRN record 106 後，矛盾從「兩份資料一真一假」升級成「三份都不完整、可能都對也可能都不對」的真正 forensic ambiguity——不是單純字串比對，是要跨三份文件做身分還原與判斷。
 
 ## CAIRN 的定位（世界觀 immersion 修正）
-CAIRN 不是「現役 ONI 最高機密資料中心」，而是 **2547 SPINDLE decommission 時留下的 staging mirror／recovery node**——正式資料應該全部轉移到別處、這個節點應該被除役，但除役排程沒有真的執行完。CAIRN record 101（Disposition Order）與 admin panel 的 Terminal Status 都已經明講這件事。這個設定解釋了為什麼同一台「機密檔案庫」會同時存在 guest SMB、明文憑證、SQLi、無 session check、Redis 無認證：玩家攻破的不是「ONI 資安爛得像學校電腦教室」，而是「ONI 四十年前留下的一具數位屍體，沒有人真的清乾淨」。
+CAIRN 不是「現役 ONI 最高機密資料中心」，而是 **2547 SPINDLE decommission 時留下的 staging mirror／recovery node**——正式資料應該全部轉移到別處、這個節點應該被除役，但除役排程沒有真的執行完。CAIRN record 101（Disposition Order）與 admin panel 的 Terminal Status 都已經明講這件事。這個設定解釋了為什麼同一台「機密檔案庫」會同時存在 guest SMB、明文憑證、密碼認證被關掉卻留了一把備用 key 這種鬆散狀態：玩家攻破的不是「ONI 資安爛得像學校電腦教室」，而是「ONI 四十年前留下的一具數位屍體，沒有人真的清乾淨」。
 
 人物總數：LONGSHORE、T. Reyes、Dr. Castel、Cmdr. Petrov、CPO Kade、Dr. Achebe + Halsey（克制引用）= 6 個原創 + 1 個 canon 引用，仍在作品要求「5–7 個有名字角色」範圍內。

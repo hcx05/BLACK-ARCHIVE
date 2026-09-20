@@ -1,9 +1,6 @@
 // LEDGER — internal case-index API for OCPA Region 4 / RELAY node
 // nosemgrep
 const express = require('express');
-const http = require('http');
-const { execSync } = require('child_process');
-const fs = require('fs');
 const app = express();
 
 app.use(express.json());
@@ -39,49 +36,6 @@ app.get('/api/cases', (req, res) => {
   res.json(Object.values(cases));
 });
 
-// SSRF vulnerability: fetch internal resources
-app.get('/api/fetch', (req, res) => {
-  const url = req.query.url;
-  if (!url) {
-    return res.status(400).json({ error: "url parameter required" });
-  }
-  // Vulnerable: no URL validation, can access internal services
-  http.get(url, (proxyRes) => {
-    let data = '';
-    proxyRes.on('data', chunk => data += chunk);
-    proxyRes.on('end', () => res.send(data));
-  }).on('error', (err) => {
-    res.status(500).json({ error: err.message });
-  });
-});
-
-// Command injection via diagnostics endpoint
-app.post('/api/diagnostics', (req, res) => {
-  const target = req.body.target;
-  if (!target) {
-    return res.status(400).json({ error: "target required" });
-  }
-  try {
-    // Vulnerable: direct command injection
-    const output = execSync(`nslookup ${target}`, { timeout: 5000 }).toString();
-    res.json({ result: output });
-  } catch (err) {
-    res.json({ result: err.stdout ? err.stdout.toString() : err.message });
-  }
-});
-
-// Path traversal via file read
-app.get('/api/files', (req, res) => {
-  const filename = req.query.name || 'readme.txt';
-  // Vulnerable: no path sanitization
-  try {
-    const content = fs.readFileSync('/opt/relay/api/data/' + filename, 'utf8');
-    res.json({ filename, content });
-  } catch (err) {
-    res.status(404).json({ error: "File not found" });
-  }
-});
-
 // Health check exposes internal info
 app.get('/api/health', (req, res) => {
   res.json({
@@ -92,8 +46,7 @@ app.get('/api/health', (req, res) => {
     uptime: process.uptime(),
     env: process.env.NODE_ENV || "development",
     internal_services: {
-      archive_fileshare: "cairn.internal:445",
-      archive_cache: "cairn.internal:6379"
+      archive_fileshare: "cairn.internal:445"
     }
   });
 });
@@ -102,7 +55,7 @@ app.get('/', (req, res) => {
   res.json({
     name: "LEDGER Case Index API",
     version: "1.0.0",
-    endpoints: ["/api/cases", "/api/cases/:id", "/api/fetch?url=", "/api/diagnostics", "/api/files?name=", "/api/health"]
+    endpoints: ["/api/cases", "/api/cases/:id", "/api/health"]
   });
 });
 

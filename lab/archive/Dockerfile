@@ -2,18 +2,12 @@ FROM black-archive-base:latest
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     samba \
-    redis-server \
     python3 \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 COPY smb/smb.conf /etc/samba/smb.conf
 RUN chown root:root /etc/samba/smb.conf && chmod 644 /etc/samba/smb.conf
-
-# Redis with no authentication (intentional misconfiguration)
-RUN sed -i 's/^bind .*/bind 0.0.0.0/' /etc/redis/redis.conf \
-    && sed -i 's/^protected-mode yes/protected-mode no/' /etc/redis/redis.conf \
-    && sed -i 's/^daemonize yes/daemonize no/' /etc/redis/redis.conf
 
 # Restricted disposition-hold shares
 RUN mkdir -p /srv/share/public /srv/share/confidential /srv/share/backups \
@@ -79,6 +73,6 @@ RUN groupadd release \
 COPY config/supervisord.conf /etc/supervisor/conf.d/archive.conf
 RUN chown root:root /etc/supervisor/conf.d/archive.conf && chmod 644 /etc/supervisor/conf.d/archive.conf
 
-EXPOSE 139 445 6379 8080
+EXPOSE 139 445 8080
 
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]

