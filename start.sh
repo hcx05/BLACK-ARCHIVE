@@ -40,6 +40,30 @@ echo -e "${YELLOW}[*] Building and starting all services...${NC}"
 docker compose up -d --build
 
 echo ""
+echo -e "${YELLOW}[*] Waiting for host-exposed ports to come up...${NC}"
+# `docker compose ps` showing "Up" only means the container's process (supervisord)
+# is alive - each host runs several services under it, and one of them can be
+# crash-looping while the container itself stays Up. Check the ports that are
+# actually exposed to this machine; anything internal-only can't be smoke
+# tested from here without a pivot, which is the point of the lab.
+check_port() {
+    local host="$1" port="$2" name="$3" tries=20
+    while ! (exec 3<>"/dev/tcp/$host/$port") 2>/dev/null; do
+        tries=$((tries - 1))
+        if [ "$tries" -le 0 ]; then
+            echo -e "  ${RED}[FAIL]${NC} $name ($host:$port) did not come up"
+            return 1
+        fi
+        sleep 1
+    done
+    exec 3>&- 2>/dev/null
+    echo -e "  ${GREEN}[ OK ]${NC} $name ($host:$port)"
+}
+check_port localhost 8080 "FRONTIER portal" || true
+check_port localhost 8025 "FRONTIER webmail" || true
+check_port localhost 2222 "RELAY ssh" || true
+
+echo ""
 echo -e "${GREEN}[+] BLACK ARCHIVE is running.${NC}"
 echo ""
 echo -e "${CYAN}=== Reachable from your attacking machine ===${NC}"

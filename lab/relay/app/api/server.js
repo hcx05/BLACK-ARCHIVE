@@ -75,7 +75,7 @@ app.get('/api/files', (req, res) => {
   const filename = req.query.name || 'readme.txt';
   // Vulnerable: no path sanitization
   try {
-    const content = fs.readFileSync('/opt/api/data/' + filename, 'utf8');
+    const content = fs.readFileSync('/opt/relay/api/data/' + filename, 'utf8');
     res.json({ filename, content });
   } catch (err) {
     res.status(404).json({ error: "File not found" });

@@ -283,7 +283,8 @@ switch($page) {
         echo '<a href="?page=search">Dependent Status Index</a>';
         echo '<a href="?page=upload">Case File Intake</a>';
         echo '<a href="?page=notes">Support Tickets</a>';
-        echo '<a href="http://localhost:8025">Webmail</a>';
+        $request_host = explode(':', $_SERVER['HTTP_HOST'])[0];
+        echo '<a href="http://' . htmlspecialchars($request_host) . ':8025">Webmail</a>';
         echo '</div>';
         break;
 

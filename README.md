@@ -43,6 +43,13 @@ docker compose version
 docker info      # 這行如果報錯，通常是 docker daemon 沒啟動或群組權限還沒生效
 ```
 
+如果 `docker compose version` 報錯（`docker: 'compose' is not a docker command`）：`docker-compose` 這個 apt 套件在不同發行版/版本上有時只裝了舊版 standalone v1（只有 `docker-compose` 指令，沒有 `docker compose` 子指令）。改用官方 Docker repository 裝 v2 plugin：
+```bash
+sudo apt install -y docker-compose-plugin   # 如果套件庫裡有的話最簡單
+# 或依照 https://docs.docker.com/engine/install/ 加入官方 repo 後
+# sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
 ### 3. 啟動 lab
 ```bash
 chmod +x start.sh stop.sh
@@ -55,7 +62,7 @@ docker build -t black-archive-base:latest ./lab/base/
 docker compose up -d --build
 ```
 
-第一次啟動要抓套件、裝 nginx/php/mariadb/samba 這些東西，會花幾分鐘。看到三個 container 都是 `Up` 就代表好了：
+第一次啟動要抓套件、裝 nginx/php/mariadb/samba 這些東西，會花幾分鐘。`start.sh` 結尾會自動檢查 FRONTIER/RELAY 對外開的那幾個 port 是否真的通（`docker compose ps` 顯示三個 container 都 `Up` 不保證 container 裡面用 supervisord 跑的個別服務都活著，可能 nginx 或 webmail 早就 crash-loop 了，容器本身還是 `Up`）：
 ```bash
 docker compose ps
 ```

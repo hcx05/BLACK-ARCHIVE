@@ -140,3 +140,17 @@
 - **LONGSHORE 開場委託信改寫**（`.md` + `.html`）：原本結尾「find out what happened to them」太模糊。改成她已經有一份具體的 migration index 殘存片段，證明 Farrow 的案件在結案數十年後被重新處理過；委託目標改成三個明確問題（誰授權了轉移／原始紀錄送去哪裡／為什麼 Farrow 案在死後三十年被重新開啟），並保留一句更有戲劇性的收尾：「I don't need a theory. I need the record that made them change his file.」同時修掉一個舊 bug——`.md`/`.html` 兩份都寫著「attaching four names」卻只列了三筆，已修正為「three names」。
 - **新增 Naomi = LONGSHORE 的可發現證據鏈**（原本只存在開發文件，玩家沒有機會自己推出來）：relay `system_migration_log` 新增一筆由「N. Okafor, Colonial Records Clerk」處理 2547 批次重新索引的紀錄；archive backups share 新增一份通知記錄殘檔，列出「Naomi Okafor」為 Eli 原始案件監護人的全名。兩者都用行政語氣寫成，不強調、不特別標示，細心玩家要自己把姓氏/職務連起來才會推出身分，遊戲仍然不會直接講。
 - CAIRN record 101-106 的既有內容全部保留不動——這批文件已經很好地完成「SPARTAN-II 正式揭露」跟「Farrow 三方矛盾」兩個任務，不需要重寫，只是重新定位成「重大 reveal，但不是最終答案」。
+
+## 第八輪：外部技術 review 抓到的真 bug
+
+外部 review（非本專案作者）逐檔比對程式碼跟攻略後回報 6 點，其中 4 點屬實並修正：
+
+- **CAIRN `/dashboard`、`/records/*` 完全沒有 session 驗證（真 bug，嚴重）**：`admin_panel.py` 原本的 `# No session validation (broken authentication)` 注釋是從 VulnCastle 沿用下來的舊漏洞標記，但這輪重新設計 login（username 欄位 SQLi 被堵、要換到 password 欄位）之後，這個舊漏洞變成讓整個新設計形同虛設——不管有沒有登入，直接 `curl /dashboard` 一樣看得到全部六份文件。連攻略本身都在示範這個 bug（`login` 之後另開一個沒帶 cookie 的 `curl /dashboard` 還是成功）。已修正：登入成功（SQLi 或合法密碼皆可）發一個 `cairn_session` cookie，`/dashboard`、`/records/*` 沒帶有效 cookie 一律 302 回首頁。SQLi 本身完全沒被動到——SQLi 成功一樣讓 server 判定登入成功、一樣發 cookie，只是現在真的需要那個 cookie 才能進去。已重新 build+live test 確認：沒 cookie 兩個 endpoint 都 302；帶 SQLi 或合法密碼拿到的 cookie 都能進 dashboard。
+- **relay `/api/files` 讀檔路徑寫錯（真 bug，次要功能）**：`server.js` 寫的是 `/opt/api/data/`，但 Dockerfile 實際 `COPY app/api/ /opt/relay/api/`，檔案其實在 `/opt/relay/api/data/`，導致這個次要 endpoint（示範用，非主線）原本一定回 404。已修正路徑，path traversal 效果不受影響，重新 build 確認 `?name=readme.txt` 跟 `?name=../../../../etc/passwd` 都正常。
+- **frontier 首頁 Webmail Quick Link 寫死 `localhost:8025`（真 bug，遠端打會連錯機器）**：如果攻擊機跟受害機不是同一台（README 本來就支援這種用法），玩家瀏覽器點這個連結會連回攻擊機自己的 8025，不是受害機的。已改成用 `$_SERVER['HTTP_HOST']`（去掉 port 後重組）動態產生連結。
+- **frontier nginx `location /backup/`（真的是 leftover dead config）**：對應的 `/var/www/html/portal/backup/` 從來不存在（真正的 `/backups/` 在檔案系統根目錄，是另一個提權用的路徑，跟這個 nginx location 無關），這個 block 從一開始就是死的、不影響任何攻略路徑。直接刪掉，不做成 alias（避免意外改變 attack surface）。
+
+以下 2 點外部 review 提的不算需要改的 bug，但已經據此加強 `start.sh`/README：
+
+- **README 的 `docker-compose` 安裝指令在部分 Debian/Ubuntu 版本可能只裝到舊版 standalone v1**（`docker compose` 子指令會不存在）。這台 Kali 上實測目前 apt 版本沒有這個問題（`docker-compose` 套件本身就內建 v2 plugin），但其他發行版/版本仍可能踩到，已在 README 加上 `docker compose version` 報錯時的官方 repo 安裝備援指令。
+- **`docker compose ps` 顯示三個 container 都 `Up` 不保證裡面用 supervisord 跑的個別服務都活著**（單一 container 裡任何一個服務 crash-loop，container 本身照樣是 `Up`）。`start.sh` 結尾加上對 FRONTIER `:8080`/`:8025`、RELAY `:2222` 這三個真正對外開放的 port 做輪詢檢查；archive 跟 relay 內部服務因為本來就不對 host 開 port，沒辦法從外面測，這正是 pivot 存在的意義，不強行加測。

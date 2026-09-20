@@ -2,11 +2,25 @@
 """CAIRN Records Terminal — restricted disposition archive (internal only)."""
 # nosemgrep
 import os
+import secrets
 import sqlite3
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs, urlparse
 
 DB_PATH = "/opt/admin/admin.db"
+
+# In-memory session store. A successful login (legitimate creds or the
+# password-field SQLi) is what's supposed to gate /dashboard and /records/*.
+VALID_SESSIONS = set()
+
+
+def has_valid_session(handler):
+    cookie_header = handler.headers.get("Cookie", "")
+    for part in cookie_header.split(";"):
+        part = part.strip()
+        if part.startswith("cairn_session="):
+            return part[len("cairn_session="):] in VALID_SESSIONS
+    return False
 
 RECORDS = [
     (101, "ONI Section III - Disposition Order 2547-014",
@@ -183,10 +197,14 @@ class AdminHandler(BaseHTTPRequestHandler):
                 self.send_response(404)
                 self.end_headers()
         elif parsed.path == "/dashboard":
+            if not has_valid_session(self):
+                self.send_response(302)
+                self.send_header("Location", "/")
+                self.end_headers()
+                return
             self.send_response(200)
             self.send_header("Content-Type", "text/html")
             self.end_headers()
-            # No session validation (broken authentication)
             html = """<html><head><title>CAIRN Dashboard</title>
             <link rel="icon" type="image/png" href="/assets/oni_seal.png"></head>
             <body style="background-color:#000;background-image:repeating-linear-gradient(180deg,rgba(255,176,0,0.022) 0px,rgba(255,176,0,0.022) 1px,transparent 1px,transparent 3px),radial-gradient(ellipse at 50% 45%,rgba(255,176,0,0.05) 0%,rgba(0,0,0,0) 55%),radial-gradient(ellipse at 50% 50%,transparent 55%,rgba(0,0,0,0.5) 100%);color:#ffb000;font-family:'IBM Plex Mono','Consolas',monospace;font-size:16px;line-height:1.6;padding:70px 24px 24px">
@@ -203,6 +221,11 @@ class AdminHandler(BaseHTTPRequestHandler):
             html += "</pre></body></html>"
             self.wfile.write(html.encode())
         elif parsed.path.startswith("/records/"):
+            if not has_valid_session(self):
+                self.send_response(302)
+                self.send_header("Location", "/")
+                self.end_headers()
+                return
             try:
                 rid = int(parsed.path.split("/records/")[1])
             except ValueError:
@@ -252,8 +275,11 @@ class AdminHandler(BaseHTTPRequestHandler):
                 c.execute(query)
                 result = c.fetchone()
                 if result:
+                    token = secrets.token_hex(16)
+                    VALID_SESSIONS.add(token)
                     self.send_response(302)
                     self.send_header("Location", "/dashboard")
+                    self.send_header("Set-Cookie", f"cairn_session={token}; Path=/")
                     self.end_headers()
                 else:
                     self.send_response(200)
