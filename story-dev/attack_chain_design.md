@@ -227,9 +227,10 @@ sync_pass = Records!Access99
 
 ### 3.5（附）RELAY 本機提權（非主線必經，但完整記錄）
 ```bash
-/usr/local/bin/python3-suid -c 'import os; os.setuid(0); os.system("/bin/bash")'   # SUID python3
+find / -perm -4000 -type f 2>/dev/null   # 列出 SUID 檔案，會看到 /usr/local/bin/spindle-legacy-diag
+/usr/local/bin/spindle-legacy-diag -c 'import os; os.setuid(0); os.system("/bin/bash")'
 ```
-（`sudo -l` 上的 `NOPASSWD: /usr/bin/socat` 已移除——socat 留著是給玩家自己拿來做 pivoting/tunneling 用，不再是免密碼 root 捷徑。這台的本機提權現在只剩 SUID python3 這一條，仍然是刻意保留的簡單 optional 分支，非主線必經。）
+`spindle-legacy-diag` 這個名字本身不會暴露它其實是什麼——它就是 `/usr/bin/python3` 的一份複製檔，只是被改了名字、加了 SUID bit。名字刻意取得像一個真的內部工具（SPINDLE 那個年代留下來的診斷腳本，原始的 wrapper script 早就不在了，只剩被 SUID 過的直譯器本體），不會讓玩家單看檔名就知道答案，要真的執行它才會發現這其實是一個完整的 Python REPL。（`sudo -l` 上的 `NOPASSWD: /usr/bin/socat` 已移除——socat 留著是給玩家自己拿來做 pivoting/tunneling 用，不再是免密碼 root 捷徑。這台的本機提權現在只剩這一條，仍然是刻意保留的簡單 optional 分支，非主線必經。）
 
 ---
 
@@ -409,8 +410,8 @@ cat /root/cairn_disposition_review.txt
 
 | Host | 立足點 | 提權 |
 |---|---|---|
-| frontier | command injection（過濾 `;` 但漏其他分隔符）/ upload（getimagesize magic-byte bypass）/ LFI（www-data） | `sudo -l` → `(ALL) NOPASSWD: /usr/bin/find` → `sudo find . -exec /bin/sh \;`；或等 `/opt/backup.sh`（world-writable, root cron `*/5`）被執行 —— 這兩條是刻意保留的簡單 optional 分支，非主線必經 |
-| relay | SSH 密碼重用（sysadmin） | SUID `/usr/local/bin/python3-suid`（唯一分支，`sudo socat` NOPASSWD 已移除） —— 同樣是 optional 分支，非主線必經 |
+| frontier | command injection（過濾 `;` 但漏其他分隔符）/ upload（getimagesize magic-byte bypass）/ LFI（www-data） | `sudo -l` → `(ALL) NOPASSWD: /usr/bin/find` → `sudo find . -exec /bin/sh \;`；或 `id` 發現 `www-data` 是 `ops` 群組成員 → `/opt/backup.sh`（root:ops，770，group-writable，root cron `*/5` 執行）改內容等它被執行 —— 這兩條是刻意保留的簡單 optional 分支，非主線必經（`/opt/backup.sh` 不是單純 `chmod 777`，要先注意到自己在 `ops` 群組裡才會想到去查這個檔案，不是 `find / -perm -002` 一行指令就直接列出來） |
+| relay | SSH 密碼重用（sysadmin） | `find / -perm -4000` 列出 SUID 檔案 → `/usr/local/bin/spindle-legacy-diag`（唯一分支，`sudo socat` NOPASSWD 已移除） —— 名字刻意取得像一個真的 SPINDLE 遺留診斷工具，不會讓玩家單看檔名猜到答案，同樣是 optional 分支，非主線必經 |
 | archive | 讀文件不需要 shell：SQLi（要換到 password 欄位才有效）/ 合法帳密 / SMB 都能直接拿到大部分內容。**但要 shell（提權必要）就只有一條路**：SMB confidential share 裡的 `cairn_backup_key`，SSH 密碼認證在這台被關掉了（`sysadmin/admin123` 對 SSH 完全無效，只有 Samba 還吃這組密碼）——這是刻意設計，避免密碼重用直接跳過整個 Act III 拿 shell | PATH hijack：cron 用 root 執行 `/opt/healthcheck.sh`（讀得到寫不到），腳本呼叫未寫絕對路徑的 `logtool`，root crontab 的 `PATH=` 把 `/opt/staging` 排在前面且對 `release` 群組（`sysadmin` 是成員）可寫 —— **這是主線最終提權，需要多步 enumeration，不是單一 GTFOBins/world-writable 捷徑**（群組刻意不叫 `deploy`，避免跟 base image 既有的 `deploy` 帳號的 primary group 撞名） |
 
 ## 附錄 B：每一組密碼的「合法發現管道」（不需要 brute force）

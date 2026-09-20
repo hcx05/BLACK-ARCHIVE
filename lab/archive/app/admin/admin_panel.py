@@ -2,6 +2,7 @@
 """CAIRN Records Terminal — restricted disposition archive (internal only)."""
 # nosemgrep
 import os
+import pwd
 import secrets
 import sqlite3
 from http.server import HTTPServer, BaseHTTPRequestHandler
@@ -215,7 +216,7 @@ class AdminHandler(BaseHTTPRequestHandler):
                 html += f'<li><a style="color:#ffb000" href="/records/{rid}">[{rid}] {title}</a></li>'
             html += "</ul><h2>Terminal Status</h2><pre style=\"border:1px solid #7a5c00;padding:14px;background:#0a0a05;font-size:1em\">"
             html += f"Hostname: {os.uname().nodename}\n"
-            html += f"User: {os.getenv('USER', 'root')}\n"
+            html += f"User: {pwd.getpwuid(os.getuid()).pw_name}\n"
             html += "Role: staging mirror (post-SPINDLE migration, transfer pending)\n"
             html += "Decommission: scheduled, not completed\n"
             html += "</pre></body></html>"

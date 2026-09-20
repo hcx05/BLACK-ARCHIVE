@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY smb/smb.conf /etc/samba/smb.conf
+RUN chown root:root /etc/samba/smb.conf && chmod 644 /etc/samba/smb.conf
 
 # Redis with no authentication (intentional misconfiguration)
 RUN sed -i 's/^bind .*/bind 0.0.0.0/' /etc/redis/redis.conf \
@@ -41,6 +42,15 @@ RUN chmod 600 /home/sysadmin/.ssh/authorized_keys \
 
 COPY app/admin/admin_panel.py /opt/admin/app.py
 COPY app/admin/assets/ /opt/admin/assets/
+# app.py/assets stay root-owned and read-only; the directory itself is
+# group-writable (sticky bit set) only so the app - running as www-data,
+# see supervisord.conf - can create its own admin.db at first startup
+# without being able to delete or replace the protected files above it.
+RUN chown -R root:root /opt/admin \
+    && find /opt/admin -type d -exec chmod 755 {} \; \
+    && find /opt/admin -type f -exec chmod 644 {} \; \
+    && chown root:www-data /opt/admin \
+    && chmod 1775 /opt/admin
 
 # Final root-gated disposition summary
 COPY root/cairn_disposition_review.txt /root/cairn_disposition_review.txt
@@ -67,6 +77,7 @@ RUN groupadd release \
     && echo "* * * * * root /opt/healthcheck.sh" >> /etc/crontab
 
 COPY config/supervisord.conf /etc/supervisor/conf.d/archive.conf
+RUN chown root:root /etc/supervisor/conf.d/archive.conf && chmod 644 /etc/supervisor/conf.d/archive.conf
 
 EXPOSE 139 445 6379 8080
 
