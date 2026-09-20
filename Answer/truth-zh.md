@@ -1,12 +1,10 @@
----
-不進玩家發行版。內部開發參考文件 — 完整劇透，寫成故事而不是條列真相表。
-**這是中文版。英文版見同資料夾 `truth-en.md`。**
-對照文件：`../story-dev/truth-map.md`（條列版，供邏輯核對用）、
-`../story-dev/timeline.md`（精確日期）、`../story-dev/characters.md`（人物資料）、
-`evidence-map.md`（每份證據的敘事功能，同資料夾）。
----
-
 # BLACK ARCHIVE — 完整故事
+
+> 不進玩家發行版。內部開發參考文件 — 完整劇透，寫成故事而不是條列真相表。
+> **這是中文版。英文版見同資料夾 `truth-en.md`。**
+> 對照文件：`../story-dev/truth-map.md`（條列版，供邏輯核對用）、
+> `../story-dev/timeline.md`（精確日期）、`../story-dev/characters.md`（人物資料）、
+> `evidence-map.md`（每份證據的敘事功能，同資料夾）。
 
 ## 一、風險評估
 

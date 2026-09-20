@@ -1,8 +1,6 @@
----
-不進玩家發行版。內部開發參考文件。
----
-
 # Legacy Mechanics Freeze — 原 VulnCastle 7-Host Attack Chain
+
+> 不進玩家發行版。內部開發參考文件。
 
 > 目的：在 reskin 之前，把原本 7-host 版本「能動的東西」完整記錄下來，作為之後三個新 host 不可打破的技術基準。所有 credential / port / dependency 都必須在新架構裡找到對應位置，即使敘事外衣換掉。
 

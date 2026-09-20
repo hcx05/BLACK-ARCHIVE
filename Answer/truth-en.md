@@ -1,14 +1,12 @@
----
-Not for player release. Internal dev reference - full spoilers, written as
-a story rather than a bulleted fact sheet.
-**This is the English version. Chinese version: `truth-zh.md`, same folder.**
-Companion files: `../story-dev/truth-map.md` (bulleted version, for
-consistency checks), `../story-dev/timeline.md` (exact dates),
-`../story-dev/characters.md` (character sheet), `evidence-map.md`
-(narrative function of every piece of evidence, same folder).
----
-
 # BLACK ARCHIVE — The Complete Story
+
+> Not for player release. Internal dev reference - full spoilers, written as
+> a story rather than a bulleted fact sheet.
+> **This is the English version. Chinese version: `truth-zh.md`, same folder.**
+> Companion files: `../story-dev/truth-map.md` (bulleted version, for
+> consistency checks), `../story-dev/timeline.md` (exact dates),
+> `../story-dev/characters.md` (character sheet), `evidence-map.md`
+> (narrative function of every piece of evidence, same folder).
 
 ## I. The Assessment
 
