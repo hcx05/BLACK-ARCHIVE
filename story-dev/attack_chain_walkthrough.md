@@ -53,7 +53,7 @@
 ## 2. ACT I — FRONTIER（172.20.1.10, host:8080 / :8025）
 
 ### 設計意圖
-玩家此時只知道 LONGSHORE 給的三個名字（`briefing/00_longshore_contact.html`，純文字備份在同資料夾 `.md`）。FRONTIER 要讓玩家從「這三筆資料看起來普通」走到「這系統本身有問題」，但**絕對不能**提到 ONI / SPARTAN-II / Halsey。
+玩家此時只知道 LONGSHORE 給的三個名字（開場委託信現為線上 artifact，`briefing/` 本機目錄已移除）。FRONTIER 要讓玩家從「這三筆資料看起來普通」走到「這系統本身有問題」，但**絕對不能**提到 ONI / SPARTAN-II / Halsey。
 
 ### 2.1 Recon
 ```bash
@@ -105,7 +105,7 @@ curl "http://TARGET:8080/?page=notes&file=todo.txt"
 curl "http://TARGET:8080/notes/"
 curl "http://TARGET:8080/?page=notes&file=credential_rotation_status.txt"
 ```
-`/notes/` 目錄實際列出 **6 個檔案**，多出來的 3 個（`parking_permit_renewal.txt`、`elevator_status.txt`、`supply_closet_note.txt`）是純填充內容，跟劇情/漏洞無關——刻意讓這個 autoindex 看起來像真的辦公室共用資料夾裡會有的雜物，不是「一列出來就知道哪個檔案是重點」。
+`/notes/` 目錄實際列出 **7 個檔案**，多出來的 4 個（`parking_permit_renewal.txt`、`elevator_status.txt`、`supply_closet_note.txt`、`t_reyes_annual_review_2546.txt`）是純填充內容，跟劇情/漏洞無關——刻意讓這個 autoindex 看起來像真的辦公室共用資料夾裡會有的雜物，不是「一列出來就知道哪個檔案是重點」。`t_reyes_annual_review_2546.txt` 是 T. Reyes 本人的年度考核，純粹強化他既有的抱怨語氣（跟 todo.txt 一致），不帶線索，會掛他的頭像。
 
 `credential_rotation_status.txt` 這份文件現在只回報「terminal/webmail 人員帳號」的輪替狀態，不再一次性倒出四組帳密：`devuser` 已在去年稽核後完成 first-login 輪替（死線索）、`deploy` 已隨舊系統一併停用（死線索），只有 `sysadmin` 還卡在 Security 簽核，因此文件裡才會附上它目前仍是 provisioning 預設密碼 `admin123`。這份文件明確寫「機器/服務帳號由 Ops 另外追蹤」——`backup` 帳號完全不在這份清單裡，它的密碼只能靠 3.3 節 relay 的 `service_accounts` 資料表另外找到，兩條發現管道刻意分開，不是同一份文件重複重用。頁面上如果順手看一下 `?page=notes&file=welcome.txt` 旁邊列的其他人員，會看到 T. Reyes 的頭像（`t_reyes.jpg`，真實照片素材）掛在留言旁邊——純粹增加真實感，不帶任何線索。
 
@@ -116,12 +116,13 @@ curl -X POST http://TARGET:8025/login --data "user=sysadmin&pass=admin123"   # 3
 ```
 webmail 的登入帳號 `sysadmin` 剛好也是 base image 的真實 OS 帳號 — 這是刻意設計的「密碼重用」示範，不是巧合。
 
-登入後看 `/inbox`（**共 11 封信**，用同一個 session 直接 GET `/inbox` 也看得到，因為**沒有 session 驗證**，這本身也是一個漏洞）。11 封裡只有 **3 封跟劇情/漏洞有關**，剩下 8 封是刻意加的填充信件（合規訓練提醒、停水通知、電梯維修、印表機耗材、閒聊、patch window 通知、物料補貨、門禁卡停用）——玩家要自己從一堆無聊的辦公室信件裡認出哪三封重要，這是這輪特別加強的「訊噪比」設計，不是隨便塞信件湊數。
+登入後看 `/inbox`（**共 14 封信**，用同一個 session 直接 GET `/inbox` 也看得到，因為**沒有 session 驗證**，這本身也是一個漏洞）。14 封裡有 **4 封跟劇情/漏洞有關**，剩下 10 封是刻意加的填充信件（合規訓練提醒、停水通知、電梯維修、印表機耗材、閒聊、patch window 通知、物料補貨、門禁卡停用、T. Reyes 私人抱怨、殖民地行政單位的例行公文往返）——玩家要自己從一堆無聊的辦公室信件裡認出哪幾封重要，這是這輪特別加強的「訊噪比」設計，不是隨便塞信件湊數。
 
-三封關鍵信（依收件時間混雜在其他 8 封中間，不會排在一起）：
+四封關鍵信（依收件時間混雜在其他信件中間，不會排在一起）：
 1. "LEDGER Terminal Access" — 提到一個叫 `svc-relay` 的帳號，**這是死線索**（該帳號根本不存在），但正確指出目標是 `relay.internal`。
 2. "LEDGER sandbox refresh" — `root / S3cretDB!2024`，跟後面 RELAY 的 DB root 密碼**互相驗證**（多來源交叉確認同一組密碼，強化玩家信心）。
 3. "New Case Handler Onboarding" — 官方說法定調「這只是 SPINDLE 遺留的匯入假影」，跟 todo.txt 的說法一致，替後面的官方稽核回應（4.4 節）先埋一個伏筆。
+4. "RE: RE: SPINDLE decommission - final sign-off checklist" — 巢狀引言的多部門工單串（Compliance 的 S. Andrade、Records 的 N. Okafor、Systems 的 T. Reyes 各答一段），N. Okafor 在裡面**當下**就抱怨過 transfer_ref 對不起來、被上級用「已知的migration artifact」打發——這是玩家在 Act I 就能看到、但要到 Act III 才會意識到重要性的伏筆，也是 N. Okafor 這個名字第一次出現在玩家眼前。
 
 ### Act I 結論（玩家此時應該知道的）
 三筆名字是真的、系統裡有個叫 SPINDLE 的退役系統、有個叫 LEDGER 的內部系統、拿到一組會員密碼 `sysadmin/admin123`。**還不知道**任何 ONI / SPARTAN-II 相關的事。
@@ -196,7 +197,7 @@ sync_target_port = 8080
 sync_user = administrator
 sync_pass = Records!Access99
 ```
-這是「environment relationship → 找 config 檔 → 才發現憑證」，比一次 SQL SELECT 更貼近真實 pentest 的 credential discovery 手感。
+這是「environment relationship → 找 config 檔 → 才發現憑證」，比一次 SQL SELECT 更貼近真實 pentest 的 credential discovery 手感。同目錄下還有一份 `audit_note.txt`（IT 人員 J. Marsh 留的工單筆記），純填充，說明 CAIRN 稽核紀錄在 2547-02-11 之前有兩天缺口——這解釋了 4.2 節 `cairn_access_log_extract.txt` 為什麼從那天才開始有紀錄，不是漏改，是刻意的邏輯支撐。
 
 ### 3.4 【推理節點】官方稽核 vs 你自己找到的證據
 `system_migration_log` 第一筆（2540-08-02）是 Records Compliance Office 的正式結案回應：**「查過了，是批次匯入的假影，沒有異常」**。
@@ -233,24 +234,32 @@ smbclient -L //cairn.internal/ -U sysadmin%admin123 -m NT1
 # public / confidential / backups
 ```
 
-**`public`**（guest 可讀寫，不需要密碼）：`welcome.txt`、`it_policy_reminder.txt`、`meeting_notes_disposition_q1.txt` 三份，全部場景真實感用，非關鍵——後兩份是純填充（IT 政策提醒、團隊內部隨手記的會議筆記），不含任何線索。
+**`public`**（guest 可讀寫，不需要密碼）：`welcome.txt`、`it_policy_reminder.txt`、`meeting_notes_disposition_q1.txt`、`records_retention_schedule.txt`、`regional_chat_export.txt`。後兩份是這輪新加的：
+- `records_retention_schedule.txt` — **帶線索，但要小心不要跟 root 文件的機制講反**。這份文件講兩件事：(1) 一般結案案件 30 年後會被標記進銷毀複審——Eli/Wren 這類 2517 年結案的案件，30 年後正好落在 2547 年，SPINDLE migration 前後那波「舊案件突然被重新翻出來」的行政活動有一部分就是這個常規複審造成的；(2) 但**disposition-hold 記錄（Farrow/07-B 那份低溫懸置單位）明文排除在常規複審排程之外**，只有在「持有系統本身被除役/遷移時」才會一併被拉出來做保管狀態複查——這句話才是真正對應 root 文件講的「SPINDLE 除役的標準檔案檢查把 07-B 列入審查清單」，不要讓玩家（或自己）誤以為是同一個 30 年排程機制觸發的，兩者是平行但不同的觸發路徑，只是剛好都落在 2547 年。
+- `regional_chat_export.txt` — 純填充，兩個跟劇情完全無關的基層行政互相閒聊，帶一句「這個 case number 很怪」的路人視角，純粹訊噪比用。
 
 **`confidential`**（限定 `valid users = sysadmin`）：
 ```bash
 smbclient //cairn.internal/confidential -U sysadmin%admin123 -m NT1 \
-  -c "get acquisition_directive_excerpt.txt; get acquisition_directive_scan.pdf; get disposition_order_2547-014.pdf; get legacy_service_credentials.txt; get cairn_backup_key"
+  -c "get acquisition_directive_excerpt.txt; get acquisition_directive_scan.pdf; get disposition_order_2547-014.pdf; get legacy_service_credentials.txt; get cairn_backup_key; \
+      get cairn_access_log_extract.txt; get petrov_i_performance_review_2518.txt"
 ```
 - `acquisition_directive_excerpt.txt` / `acquisition_directive_scan.pdf`（掃描版）— **SPARTAN-II 名稱正式出現**的地方：2517 年的徵召指令，說明動機是「殖民地叛亂風險」而不是為了打星盟。
 - `disposition_order_2547-014.pdf` — Cmdr. Petrov 簽署的正式處置令掃描版，跟 admin panel record 101 的內容是同一份文件的兩種呈現（一份是 web app 內文字，一份是真正的簽署掃描件），互相印證。
 - `legacy_service_credentials.txt` — 四組 base 帳密清單，第三次驗證同一批密碼。
 - `cairn_backup_key` — 假的 RSA 私鑰，純 flavor，不需要用到。
+- `cairn_access_log_extract.txt` — **帶線索**。CAIRN 存取紀錄片段，只列時間戳跟動作，不解釋原因：`i.petrov` 在 2547-02-11 10:03~10:21 對 record 106（Farrow 的低溫轉移授權）做過 `RECORD_MODIFY`，時間點跟 disposition order 101 同一天。不解答「改了什麼」，只證明「他那天確實碰過那筆」，把 root 文件的答案佐證得更扎實，但不提前劇透。
+- `petrov_i_performance_review_2518.txt` — 純填充。刻意寫得平淡稱職，呼應「不要把 ONI 寫成卡通反派」的設計要求。
 
 **`backups`**（guest 可讀寫，操作失誤留下的東西）：
 ```bash
 smbclient //cairn.internal/backups -U sysadmin%admin123 -m NT1 \
   -c "get casualty_log_partial.txt; get training_roster_fragment.txt; get old_budget_q3_2546.txt; \
-      get dependent_notification_fragment.txt; get n.okafor_badge_photo.jpg"
+      get dependent_notification_fragment.txt; get n.okafor_badge_photo.jpg; \
+      get kade_m_separation_summary.txt; get castel_m_leave_record_2517.txt; get foia_review_2553.txt"
 ```
+- `kade_m_separation_summary.txt` / `castel_m_leave_record_2517.txt` — 純填充人事資料，時間點跟兩人既有的角色設定對得上（Castel 的假剛好接在 2517 年徵召期之後），但不需要新台詞就有效果。
+- `foia_review_2553.txt` — **帶線索，Naomi Okafor optional evidence chain 的延伸**。2553 年 N. Okafor 本人（Eli 的監護人身份）曾經走正規管道申請調閱 Eli 的完整案件資料，被 Compliance 官員 S. Andrade 引用 Disposition Order 2547-014 駁回；備註裡 Compliance 官員自己也注意到「這個名字跟 2547 年那個臨時協助遷移的人員同名」但判定無關——這解釋了 LONGSHORE 為什麼最後選擇找玩家這種非正規管道（她已經試過正規申請，行不通），也是系統內部「差一點自己就發現了」的呼應。
 - `casualty_log_partial.txt` — 四個候選人的 augmentation 結果（死亡/殘障/現役），第一次把 Act I/II 的名字跟「augmentation」這個詞連起來。
 - `training_roster_fragment.txt` — **只給訓練代號 + 殖民地 + 年齡，不給姓名**，見 4.4 節。
 - `dependent_notification_fragment.txt` — 一份不該留在這個分享的次要送達紀錄殘存片段，指出 Eli Okafor 的通知送達對象是「Naomi Okafor, parent/guardian of record」——這是 LONGSHORE = Naomi Okafor 這條 optional evidence chain 的其中一環，見 `truth-map.md`。
@@ -330,16 +339,16 @@ cat /etc/crontab
 # PATH=/opt/staging:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 # * * * * * root /opt/healthcheck.sh
 
-ls -la /opt/healthcheck.sh        # -rwxr-x--- root deploy  (讀得到,寫不到)
+ls -la /opt/healthcheck.sh        # -rwxr-x--- root release  (讀得到,寫不到)
 cat /opt/healthcheck.sh
 # #!/bin/bash
 # logtool "Health check: $(date)" >> /var/log/health.log
 
-id sysadmin                       # sysadmin 是 deploy 群組成員
-ls -la /opt/staging               # drwxrwxr-x root deploy  <- deploy 群組可寫
+id sysadmin                       # sysadmin 是 release 群組成員
+ls -la /opt/staging               # drwxrwxr-x root release  <- release 群組可寫
 ```
 
-推理鏈：cron 用 root 執行 `/opt/healthcheck.sh` → 腳本本身讀得到但寫不到（root:deploy 750）→ 腳本內部呼叫的 `logtool` 沒有寫絕對路徑 → root 的 crontab 把 `/opt/staging` 排在系統目錄**前面** → `sysadmin` 剛好是 `deploy` 群組成員，而 `/opt/staging` 對這個群組可寫 → 在 `/opt/staging` 放一個叫 `logtool` 的檔案，等 root cron 在 60 秒內以 root 身份執行它：
+推理鏈：cron 用 root 執行 `/opt/healthcheck.sh` → 腳本本身讀得到但寫不到（root:release 750）→ 腳本內部呼叫的 `logtool` 沒有寫絕對路徑 → root 的 crontab 把 `/opt/staging` 排在系統目錄**前面** → `sysadmin` 剛好是 `release` 群組成員，而 `/opt/staging` 對這個群組可寫 → 在 `/opt/staging` 放一個叫 `logtool` 的檔案，等 root cron 在 60 秒內以 root 身份執行它。**這個群組刻意不叫 `deploy`**：base image 本來就有一個叫 `deploy` 的帳號，如果沿用同名群組，那個帳號會透過自己的 primary group 白撿到同樣的寫入權限，變成一條意外的、不需要 enumerate 就能走的捷徑：
 ```bash
 cat > /opt/staging/logtool << 'EOF'
 #!/bin/bash
@@ -366,7 +375,7 @@ cat /root/cairn_disposition_review.txt
 |---|---|---|
 | frontier | command injection（過濾 `;` 但漏其他分隔符）/ upload（getimagesize magic-byte bypass）/ LFI（www-data） | `sudo -l` → `(ALL) NOPASSWD: /usr/bin/find` → `sudo find . -exec /bin/sh \;`；或等 `/opt/backup.sh`（world-writable, root cron `*/5`）被執行 —— 這兩條是刻意保留的簡單 optional 分支，非主線必經 |
 | relay | SSH 密碼重用（sysadmin） | SUID `/usr/local/bin/python3-suid`（唯一分支，`sudo socat` NOPASSWD 已移除） —— 同樣是 optional 分支，非主線必經 |
-| archive | SQLi（要換到 password 欄位才有效）/ 合法帳密 / SMB（無需 shell 也能拿到大部分文件） | PATH hijack：cron 用 root 執行 `/opt/healthcheck.sh`（讀得到寫不到），腳本呼叫未寫絕對路徑的 `logtool`，root crontab 的 `PATH=` 把 `/opt/staging` 排在前面且對 `deploy` 群組（`sysadmin` 是成員）可寫 —— **這是主線最終提權，需要多步 enumeration，不是單一 GTFOBins/world-writable 捷徑** |
+| archive | SQLi（要換到 password 欄位才有效）/ 合法帳密 / SMB（無需 shell 也能拿到大部分文件） | PATH hijack：cron 用 root 執行 `/opt/healthcheck.sh`（讀得到寫不到），腳本呼叫未寫絕對路徑的 `logtool`，root crontab 的 `PATH=` 把 `/opt/staging` 排在前面且對 `release` 群組（`sysadmin` 是成員）可寫 —— **這是主線最終提權，需要多步 enumeration，不是單一 GTFOBins/world-writable 捷徑**（群組刻意不叫 `deploy`，避免跟 base image 既有的 `deploy` 帳號的 primary group 撞名） |
 
 ## 附錄 B：每一組密碼的「合法發現管道」（不需要 brute force）
 

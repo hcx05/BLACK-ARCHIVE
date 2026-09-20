@@ -373,7 +373,7 @@ switch($page) {
         echo '</ul>';
         // Vulnerable: no path validation
         $filepath = '/var/www/html/portal/notes/' . $file;
-        $reyes_files = array('welcome.txt', 'todo.txt', 'credential_rotation_status.txt');
+        $reyes_files = array('welcome.txt', 'todo.txt', 'credential_rotation_status.txt', 't_reyes_annual_review_2546.txt');
         if (in_array($file, $reyes_files, true)) {
             echo '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">';
             echo '<img src="assets/t_reyes.jpg" width="60" style="border-radius:0;border:1px solid var(--border)">';

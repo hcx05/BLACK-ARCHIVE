@@ -1,0 +1,11 @@
+//ROUTINE - PERSONNEL RECORDS//
+LEAVE OF ABSENCE RECORD (PARTIAL EXPORT)
+NAME: Castel, M. (Dr., UNSC Medical Corps)
+TYPE: Extended personal leave
+DATES: 2517-09 through 2517-12 (approx. 14 weeks)
+APPROVED BY: R. Okonjo, Human Resources
+MEDICAL FLAG: none on file
+
+Notes field (administrative, not clinical): "Approved without further
+review per standing policy for personnel returning from field
+deployment. No fitness-for-duty follow-up required per policy."

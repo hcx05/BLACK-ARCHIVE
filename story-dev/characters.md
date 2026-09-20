@@ -8,8 +8,8 @@
 獨立駭客／數位調查者。無代號固定名稱（由玩家自行想像），故事中以「你」稱呼。
 
 ## 委託人 — 代號 LONGSHORE
-- 一開始只用加密通訊代號 LONGSHORE 聯絡玩家，語氣簡短、謹慎（見 `briefing/00_longshore_contact.html`）。
-- 只提供三個名字（Eli Okafor / Talia Wren / Dominic Farrow）與一句話任務：「Find out what happened to them.」——**只有三個，不是四個**：她自己也沒查到 Samuel Voight，這是刻意的（見下方「為什麼是現在」）。
+- 一開始只用加密通訊代號 LONGSHORE 聯絡玩家，語氣簡短、謹慎（開場委託信現在只存在於線上 artifact，不是本機檔案，見 README）。
+- 提供三個名字（Eli Okafor / Talia Wren / Dominic Farrow），並明確要求玩家查出「誰授權了轉移、原始紀錄送去哪裡、為什麼 Farrow 案在死後三十年被重新開啟」，收尾一句「I don't need a theory. I need the record that made them change his file.」——**只有三個名字，不是四個**：她自己也沒查到 Samuel Voight，這是刻意的（見下方「為什麼是現在」）。
 - **真實身分（後期揭露，不強制玩家發現）**：Naomi Okafor，殖民地 records clerk，Eli Okafor 的母親。她從未真正相信兒子是病死。
 - **為什麼是現在**（解決「等了將近 40 年才找 hacker」這個動機漏洞）：Naomi 不是在 Eli 消失 38 年後突然心血來潮。約 2547 年 SPINDLE 系統退役／資料遷移時，她因為工作關係接觸到 Eli 的舊 case 被重新索引，意外看到一個不該存在的 `transfer_ref`。她沒有權限進入限閱系統，只能用自己的 records 職權，花了約 8 年時間安靜地用同樣的 pattern 交叉搜尋，才陸續找到 Wren、Farrow 的案例（沒找到 Voight——她的搜尋管道本來就有限）。2555 年她終於累積到足夠信心，透過 LONGSHORE 這個代號找上玩家。真正的觸發點是**系統遷移意外讓一個不該存在的痕跡露出來**，不是單純的母親直覺。
 - 身分線索現在確實存在於環境內：relay `system_migration_log` 有一筆由「N. Okafor, Colonial Records Clerk」處理 2547 批次重新索引的紀錄；archive backups share 有一份列出「Naomi Okafor」為 Eli 監護人全名的通知記錄殘檔。兩者都用行政語氣寫成，不強調、不加粗、不特別標示——細心玩家自己把姓氏跟職務連起來就能推出身分，遊戲不會直接講。

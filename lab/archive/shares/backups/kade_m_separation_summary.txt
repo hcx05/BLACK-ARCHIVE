@@ -1,0 +1,15 @@
+//ROUTINE - PERSONNEL RECORDS//
+SEPARATION SUMMARY (PARTIAL EXPORT)
+NAME: Kade, M. (CPO, UNSC Training Command)
+SERVICE: 2513-2551 (38 years)
+LAST POSTING: Reach, Training Command
+SEPARATION TYPE: Standard retirement, honorable
+PENSION STATUS: Processed, no flags
+
+Postings (partial):
+  2513-2517   Basic Training Instructor, Reach
+  2517-2551   Advanced Combat Instructor, Reach (Training Command)
+
+Processed by: C. Voss, Human Resources
+Filed for archival per standard separation procedure. No outstanding
+disciplinary or administrative actions on file.

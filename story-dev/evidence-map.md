@@ -33,9 +33,9 @@
 | archive Samba `backups/training_roster_fragment.txt` | 訓練代號對照表（只有代號+殖民地+年齡，沒有姓名） | 逼玩家做真正的跨文件身分還原（代號 → 殖民地/年齡 → 交叉比對 relay 的 case index → 還原成真名），而不是單純複製貼上同一個字串；年齡已修正為 6-7 歲區間（貼近 canon「約六歲」設定） |
 | archive `/root/cairn_disposition_review.txt`（root only，已改名+**大幅改寫**，見下方 bug 修正） | 最終處置決定書（Petrov 親筆） | **不再重講整個陰謀**，只回答「ONI 為什麼沒有銷毀這批資料」——這是 root 之後唯一新增的資訊，acquisition/flash-clone/augmentation 結果玩家此時應該已經從其他文件自己拼出來了 |
 | relay `system_migration_log` 新增一列（2540 稽核回應） | Records Compliance Office 的官方結案回應 | **主動推理節點**：玩家已經從 API IDOR 親眼看過 transfer_ref 異常，這裡卻是官方「查過了，沒問題，是批次匯入的假影」的正式結論——玩家要自己判斷這份官方紀錄是失職還是刻意淡化，遊戲不給答案 |
-| frontier `?page=search`（改版） | 真正查得到資料的 Dependent Status Index（4 筆真實記錄 + 對應照片欄位圖片） | 修正「網站內容只是為了塞漏洞存在」的問題：查 LONGSHORE 信裡給的名字會回傳真的案件卡（含 case_ref，供之後跨系統比對），查不到的名字（如 Voight）也會誠實回「查無資料」，不再是萬用的假回應 |
+| frontier `?page=search`（改版） | 真正查得到資料的 Dependent Status Index（現為 7 筆：3 筆異常 + 4 筆對照組，均帶對應照片欄位圖片，見下方第六輪雜訊擴充） | 修正「網站內容只是為了塞漏洞存在」的問題：查 LONGSHORE 信裡給的名字會回傳真的案件卡（含 case_ref，供之後跨系統比對），查不到的名字（如 Voight）也會誠實回「查無資料」，不再是萬用的假回應 |
 | frontier / archive 圖片（`assets/*.png`、`acquisition_directive_scan.pdf`、`disposition_order_2547-014.pdf`） | 案件卡（照片欄位標示「IMAGE CORRUPTED」）、OCPA 徽記、掃描版徵召指令、Petrov 簽署的處置令掃描件 | 補上真實感缺口：舊系統的照片欄位損毀是合理的世界觀理由，避免需要生成兒童肖像這種不恰當的內容，同時掃描版文件讓「這是紙本舊紀錄」的設定更可信 |
-| `briefing/00_longshore_contact.html` | LONGSHORE 開場委託信的正式版本 | 玩家實際會打開的檔案不再只是純文字 `.md`，而是一個風格化的「加密通訊擷取」靜態網頁（深色終端機美術風格，JetBrains Mono + Chakra Petch），跟 `.md` 內容一致但呈現更真實；`.md` 保留作為純文字備份。**先試過 PDF（Pillow 生圖轉 PDF），使用者覺得效果不好，改成純 HTML** —— 純靜態檔案不需要架任何伺服器，直接用瀏覽器開 `file://` 路徑即可，也另外發布了一份線上版本（Claude Artifact，預設 private）方便分享連結而不用自己維護站台。 |
+| LONGSHORE 開場委託信（Claude Artifact，`https://claude.ai/artifact/3Wy9d8TySzLM5yFcqMnK8t`） | LONGSHORE 開場委託信的正式版本 | 一個風格化的「加密通訊擷取」頁面（深色終端機美術風格，JetBrains Mono + Chakra Petch）。**先試過 PDF（Pillow 生圖轉 PDF），使用者覺得效果不好，改成 HTML**；後續改版把本機 `briefing/` 目錄整個移除，委託信改成只存在於這個線上 artifact——玩家先看到一個「接受委託」的閘門頁（含 README 原本的作品介紹），按下 accept 才會看到真正的 LONGSHORE 通訊記錄，結尾附上 repo 連結。 |
 
 **格式多樣性說明**：不是所有文件都改成 PDF/HTML——保留 `.txt` 的地方（`legacy_service_credentials.txt`、`casualty_log_partial.txt`、`training_roster_fragment.txt`、frontier notes、CAIRN admin panel 內文）都是因為那些情境下純文字本身就更真實（內部日誌、備份殘留、支援工單、web app 動態內容），只有「正式簽署的官方文件」轉成 PDF、「玩家會實際打開閱讀的委託信」轉成風格化網頁，避免為了多樣性而多樣性。
 
@@ -59,7 +59,7 @@
 - Priya Anand（對照組案例）目前只在 relay API + frontier search 出現，尚無對應 archive 端資料——刻意保留「不是每筆資料都異常」的訊號，不需要額外揭露。
 
 ## 已修正的攻擊鏈 bug（依 OSCP/CPTS/eJPT 方法論覆盤時發現）
-- **LONGSHORE 開場委託信**已補上：`briefing/00_longshore_contact.md`，玩家介面層，比對三個案例（Eli Okafor / Talia Wren / Dominic Farrow）作為唯一初始線索，不劇透、不給登入資訊。
+- **LONGSHORE 開場委託信**已補上（現為線上 artifact，見上方條目），玩家介面層，比對三個案例（Eli Okafor / Talia Wren / Dominic Farrow）作為唯一初始線索，不劇透、不給登入資訊。
 - **frontier 的 LFI 讀不到任何 notes 檔案**：`index.php` 的 `$filepath` 寫死 `/var/www/html/notes/`，但 nginx `root` 實際指到 `/var/www/html/portal/`，兩者對不起來，導致 welcome.txt / todo.txt 從一開始就是死路。已修正為 `/var/www/html/portal/notes/`。
 - **archive confidential share 的密碼永遠對不起來**：relay DB 洩漏的 CAIRN Fileshare 帳密是 `smbadmin/Cairn#Records24`，但 smb.conf 的 `confidential` share 限定 `valid users = sysadmin`，且 Samba 只幫 `sysadmin` 設過完全不同的密碼——玩家不可能用洩漏的憑證登入，等於 `acquisition_directive_excerpt.txt`（SPARTAN-II 名稱正式出現的地方）永久拿不到。已改成密碼重用同一套（`sysadmin/admin123`，跟 SSH/webmail 共用），同時更貼合「同一批人到處重複用密碼」這個核心主題。
 - **webmail/SSH 憑證重用路徑原本沒有合法發現管道**：玩家要嘗試 `sysadmin/admin123` 登入 webmail、進而重用到 relay SSH，原本沒有任何線索指向這組帳密，等於逼玩家 brute force。已透過上面的 `credential_rotation_status.txt` + `/notes/` autoindex 補上合法發現路徑。
@@ -120,7 +120,7 @@
 
 - **`briefing/00_longshore_contact.md` 的 Dominic Farrow 還寫著 age 7**：先前只改了 `.html` 版本跟 relay/frontier 的資料，`.md` 純文字備份版漏改，導致同一份委託信的兩種格式互相矛盾。已修正為 age 6，跟其他所有來源一致。
 - **`disposition_order_2547-014.pdf`（掃描版）內容跟 admin panel 的 record 101 文字對不起來**：CAIRN 重新定位成「staging mirror」那段說明（解釋為什麼這台機器資安這麼糟）只加進了 `admin_panel.py` 的文字版，PDF 生成腳本（`gen_disposition_order.py`）是獨立的硬寫死文字，沒有同步更新——玩家如果先看 PDF 版本，會完全看不到這個關鍵的世界觀說明。已經讓 PDF 文字跟 record 101 逐字對齊，重新產生 PDF（保留 ONI 信頭浮水印跟 RESTRICTED 印章），並確認 `acquisition_directive_scan.pdf` 跟對應的 `.txt` 版本本來就沒有這個問題（沒有在後續修訂中被單獨改過）。
-- 其餘交叉比對過的項目全部一致，沒有發現新問題：`OCPA-R4-XXXXX` case_ref 在 frontier/relay/archive/briefing 四處出現次數合理且對得上；`SPINDLE-7-XXXX` transfer_ref 只在該有的三筆案件（Okafor/Wren/Farrow）出現；四組關鍵密碼（`S3cretDB!2024`／`admin123`／`Records!Access99`／`MailP@ss2024`）在該出現的檔案裡都對得上；殖民地名稱（Eridanus II / Madrigal / Skopje）拼法全專案一致，沒有變體；`archive/shares/confidential/legacy_service_credentials.txt` 跟 `lab/base/Dockerfile` 的四組帳密完全吻合；`RECORD_PHOTOS` 的人物-文件對應（101 Petrov／102 Castel／104 Kade／105 Achebe）跟 `RECORDS` 陣列內容檢查過都正確，103（Halsey）刻意沒有照片，106（低溫轉移授權）也刻意沒有照片，都符合設計。
+- 其餘交叉比對過的項目全部一致，沒有發現新問題：`OCPA-R4-XXXXX` case_ref 在 frontier/relay/archive 三處出現次數合理且對得上（`briefing/` 已於後續改版移除，開場委託改為只存在於線上 artifact，不再是本機檔案，見 README 變更記錄）；`SPINDLE-7-XXXX` transfer_ref 只在該有的三筆案件（Okafor/Wren/Farrow）出現；四組關鍵密碼（`S3cretDB!2024`／`admin123`／`Records!Access99`／`MailP@ss2024`）在該出現的檔案裡都對得上；殖民地名稱（Eridanus II / Madrigal / Skopje）拼法全專案一致，沒有變體；`archive/shares/confidential/legacy_service_credentials.txt` 跟 `lab/base/Dockerfile` 的四組帳密完全吻合；`RECORD_PHOTOS` 的人物-文件對應（101 Petrov／102 Castel／104 Kade／105 Achebe）跟 `RECORDS` 陣列內容檢查過都正確，103（Halsey）刻意沒有照片，106（低溫轉移授權）也刻意沒有照片，都符合設計。
 
 ## 第六輪：加大量無關緊要的雜訊
 使用者的核心意見：「這不要是一個用來駭、用來調查的環境，是一個真環境，只是我們在調查」——換句話說，目前的環境雖然已經有一些填充內容（停車證、印表機缺碳粉等），但份量還是太少，導致玩家找到的東西「幾乎每一筆都有意義」，這本身就會讓人感覺是精心設計過的關卡而不是真的公司/軍方系統。這輪大幅增加跟案件完全無關的雜訊，不是為了增加難度，是為了稀釋訊噪比：

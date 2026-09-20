@@ -1,0 +1,26 @@
+//OCPA REGION 4 - INTERNAL USE ONLY//
+RECORDS RETENTION SCHEDULE - REGIONAL DEPENDENT & PERSONNEL CASE FILES
+ISSUED BY: K. Whitfield, Records Policy Office
+REVISION: 2544-03 (supersedes 2538-11)
+
+  CASE CATEGORY                          RETENTION PERIOD        DISPOSAL METHOD
+  Active dependent case                  indefinite               n/a
+  Closed dependent case (standard)       30 years post-closure    scheduled purge
+  Closed dependent case (medical)        30 years post-closure    scheduled purge
+  Transfer/disposition record            per originating order    per originating order
+  Service account / system log           2 years                  automatic rotation
+
+Notes: Cases are checked against this schedule whenever the holding or
+originating system undergoes decommission, migration, or a scheduled
+compliance sweep - review happens at the point something moves, not on a
+fixed calendar cycle. Standard-category closures past the thirty-year
+mark are flagged for purge at that time; flagged cases require sign-off
+from Records Compliance before disposal, and unsigned flags roll over to
+the next such review indefinitely. This has created a significant
+backlog wherever a system goes a long time between migrations - Systems
+has raised it at three consecutive quarterly meetings.
+
+Disposition-hold records (see Disposition Order log) are exempt from
+routine purge scheduling, but remain subject to custodial-status review
+whenever the holding system is decommissioned or migrated, per standard
+procedure.

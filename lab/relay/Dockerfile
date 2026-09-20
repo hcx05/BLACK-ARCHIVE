@@ -32,7 +32,8 @@ RUN mkdir -p /run/mysqld && chown mysql:mysql /run/mysqld
 # API's system record and by the sync service itself, not a bare DB dump)
 RUN mkdir -p /etc/ledger
 COPY etc-ledger/sync.conf /etc/ledger/sync.conf
-RUN chmod 644 /etc/ledger/sync.conf
+COPY etc-ledger/audit_note.txt /etc/ledger/audit_note.txt
+RUN chmod 644 /etc/ledger/sync.conf /etc/ledger/audit_note.txt
 
 COPY config/supervisord.conf /etc/supervisor/conf.d/relay.conf
 

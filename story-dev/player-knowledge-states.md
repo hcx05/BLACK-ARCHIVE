@@ -6,7 +6,7 @@
 
 用來檢查「玩家在拿到某份證據之後，應該知道什麼、還不應該知道什麼」，避免某個 host 過早劇透。
 
-實際的開場委託信在 `briefing/00_longshore_contact.html`（玩家實際會讀到的檔案，`.md` 是純文字備份），內容是三個案例（Eli Okafor / Talia Wren / Dominic Farrow）加一句「find out what happened to them」，不含任何登入資訊或下一步提示。遊戲現在時間點定死為 2555 年。
+實際的開場委託信現在只存在於線上 artifact（本機 `briefing/` 目錄已移除），內容是三個案例（Eli Okafor / Talia Wren / Dominic Farrow），加上明確的三個問題（誰授權轉移、原始紀錄去向、Farrow 案為何三十年後被重開）與收尾句「I don't need a theory. I need the record that made them change his file.」，不含任何登入資訊或下一步提示。遊戲現在時間點定死為 2555 年。
 
 ## 開場（拿到 LONGSHORE 的委託後）
 知道：一批兒童紀錄、官方顯示已死亡、委託人懷疑造假。

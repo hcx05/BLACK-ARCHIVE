@@ -1,0 +1,14 @@
+//OCPA REGION 4 - INTERNAL USE ONLY//
+ANNUAL PERFORMANCE SUMMARY
+NAME: T. Reyes (Systems, ROSTER/LEDGER support)
+PERIOD: 2546
+REVIEWED BY: M. Alcaraz, Duty Administrator
+
+Rating: Meets expectations.
+Comments: Handles a high ticket volume with limited support staff.
+Several recurring infrastructure issues (see open tickets) remain
+outside scope of role to resolve independently. Recommend Systems
+review staffing levels for Region 4 before next cycle.
+
+Employee comments: "Noted. Would also like it on record that I've
+flagged the same three things for two years running."

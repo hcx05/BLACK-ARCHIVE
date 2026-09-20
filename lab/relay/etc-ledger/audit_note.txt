@@ -1,0 +1,14 @@
+# SYS-4402 - audit logging gap, CAIRN staging mirror
+# filed by: J. Marsh, Systems
+# status: resolved (partial)
+
+CAIRN's audit subsystem was down for scheduled maintenance 2547-02-09
+through 2547-02-10 (unrelated hardware swap on the log volume). Full
+access history prior to 2547-02-11 is not recoverable. Logging resumed
+normally from 2547-02-11 onward.
+
+Flagged this to Records when they asked for a full audit extract - told
+them what's here is what exists, we're not going to reconstruct two days
+of logs from nothing. Nobody followed up.
+
+- J.M.
