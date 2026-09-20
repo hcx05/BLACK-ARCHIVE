@@ -154,3 +154,19 @@
 
 - **README 的 `docker-compose` 安裝指令在部分 Debian/Ubuntu 版本可能只裝到舊版 standalone v1**（`docker compose` 子指令會不存在）。這台 Kali 上實測目前 apt 版本沒有這個問題（`docker-compose` 套件本身就內建 v2 plugin），但其他發行版/版本仍可能踩到，已在 README 加上 `docker compose version` 報錯時的官方 repo 安裝備援指令。
 - **`docker compose ps` 顯示三個 container 都 `Up` 不保證裡面用 supervisord 跑的個別服務都活著**（單一 container 裡任何一個服務 crash-loop，container 本身照樣是 `Up`）。`start.sh` 結尾加上對 FRONTIER `:8080`/`:8025`、RELAY `:2222` 這三個真正對外開放的 port 做輪詢檢查；archive 跟 relay 內部服務因為本來就不對 host 開 port，沒辦法從外面測，這正是 pivot 存在的意義，不強行加測。
+
+## 第九輪：外部 review 抓到一個真正傷結構的設計 bug
+
+同一位外部 reviewer 再次逐檔覆盤，這次抓到 3 個「設計層面」bug（不是單純程式碼寫錯），加上 4 個小一致性問題。3 個設計 bug 全部屬實並修正：
+
+- **Critical：ARCHIVE 的 shell access 可以完全跳過 Act III（真 bug，這輪最嚴重的發現）**：`lab/base/Dockerfile` 建立 `sysadmin/admin123`，archive 繼承 base image 又跑 sshd，導致玩家在 RELAY 學到這組密碼後，只要對 `cairn.internal` 做 port scan 看到 22 開著，直接 `ssh sysadmin@cairn.internal` 就能拿 shell，接著照 4.6 節做 PATH hijack 提權、`cat /root/cairn_disposition_review.txt`——SQLi、CAIRN Records Terminal、SMB 三個分享、SPARTAN-II reveal、Kade/Castel/106 三方矛盾全部可以整段跳過，`player-knowledge-states.md` 假設的「root 前應該已經自己拼出 SPARTAN-II」完全不成立。採用 reviewer 建議的修法：**拆開 OS 登入跟 Samba 密碼**，archive 的 sshd 改成 `PasswordAuthentication no`（只有這台，frontier/relay 不受影響），`sysadmin/admin123` 對 archive SSH 完全失效，Samba 繼續吃這組密碼不變。真正能拿 shell 的方法：SMB `confidential` share 裡原本「假的、純 flavor」的 `cairn_backup_key` 現在是一把真的 RSA 私鑰，`authorized_keys` 已經佈好在 archive 的 `sysadmin` 帳號上——玩家必須先進到 confidential share（`sysadmin/admin123`，密碼沒變，只是不能拿去打 SSH 了）才拿得到 shell。不是硬鎖劇情（玩家不用真的讀完 101-106 才能提權），但至少強迫多走一步跟 CAIRN 系統本身的互動，不是純密碼重用的一步到位。已重新 build+完整 live test 全鏈：密碼 SSH 確認被拒（`Permission denied (publickey)`），用 SMB 撈到的 key 確認能登入、能做完整 PATH hijack 提權、能讀到 root 文件。
+- **High：遊戲現在是 2555 年，但 FRONTIER 的「現役」介面全部停在 2547（真 bug）**：`timeline.md`/`truth-map.md` 明確定死現在是 2555，但首頁 `LAST LOGIN`、System Notices 公告板、webmail 全部 14 封信都是 2547 年，會讓人覺得是特地做給玩家看的歷史快照，而不是正在運作的系統。**不刪任何 2547 舊信**（那些是劇情需要的歷史 thread）——改成：`LAST LOGIN` 換成 2555-03-19；System Notices 八則全部換成 2555 年的新版本（大部分是原本內容換日期，換掉跟 2547 SPINDLE 直接掛鉤的那一則，換成無關的電梯巡檢公告）；webmail inbox 最上面新增 3 封 2555 年的純填充信（新印表機、Q1 費用報告、消防演習），2547 年的 14 封信原封不動留在下面。信箱總數變成 17 封（4 條劇情線 + 13 填充）。
+- **High：Petrov 到底改了什麼，兩份證據互相打架（真 bug）**：第八輪新加的 `cairn_access_log_extract.txt` 原本寫 `i.petrov RECORD_MODIFY 106`——但 106 是 Farrow 的 2525 年低溫轉移授權，root 文件明講「我讀過這三份，不會在這裡寫第四種版本」。`RECORD_MODIFY 106` 等於暗示 106 這份文件的內容被 Petrov 動過，直接跟「三份矛盾來源永遠保持原樣、不解答」的設計原則衝突。已改成 `CUSTODY_STATUS_SET 07-B`，明確是一個獨立的保管狀態欄位被改，不是 106 這份文件本身。同時修正 3 個小地方讓時間線完全一致：`timeline.md` 原本寫「2547-02-12（前後，未正式記錄）」，跟 access log 的 `2547-02-11` 對不起來，已統一成 02-11，並說明 access log 是系統技術性紀錄、不等於「正式授權文書」（root 文件講的「no authorization attached」指的是後者）。
+
+以下順手修的小一致性問題（Medium/Low，不影響主線）：
+
+- root 文件「The records were never moved anywhere. They are exactly where they were left in 2525, on this node」跟 record 101（2547 年 acquisition-era material 才被保留進這個 node）時間/地點矛盾——CAIRN 這個 node 本來就是 2547 SPINDLE decommission 才出現的，不可能東西從 2525 就「一直在這個 node」。改成「2547 migration 已經把這批東西移到能移的最後一步，之後那個往 permanent archive 的 transfer 才是真的沒發生」。
+- `backups` share smb.conf 寫 `guest ok = yes, writable = yes`，但 Dockerfile 對 `/srv/share/backups` 只給 `chmod 755`（root 擁有），guest 對應的 unix 使用者實際上寫不進去，跟文件宣稱的「guest 可讀寫」不符。改成 `chmod 777`，跟 `public` share 一致，重新 build 確認 guest 真的能 put/del 檔案。
+- walkthrough Act I 的 `nmap -p- TARGET` 預期輸出寫「80/tcp」，但 TARGET 是 docker host、host port 映射是 8080，而且 RELAY 的 2222/ssh 也會在同一次掃描裡出現。已修正成 8080/tcp + 8025/tcp + 2222/tcp，並註明 2222 是 RELAY 的、不是 frontier 自己的服務。
+
+以下 1 點 reviewer 明確標注「不算 bug，你的取捨」，維持原樣不動：webmail `/inbox` 沒有 session 驗證，玩家可以不找密碼直接 GET 進去看到 DB root 密碼等內容——這是既有攻略文件已經寫明的刻意保留漏洞，不是遺漏。

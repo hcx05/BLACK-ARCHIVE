@@ -11,6 +11,21 @@ USERS = {
 }
 
 EMAILS = [
+    {"from": "facilities@ocpa.unsc.mil", "to": "all-staff@ocpa.unsc.mil", "date": "2555-03-17 09:12",
+     "subject": "New printer arriving 2nd floor next week",
+     "body": ("The replacement for the 2nd floor printer ships Thursday. Yes, the\n"
+              "same one that's been out of the darker toner cartridge on and off\n"
+              "for as long as anyone can remember. IT will handle setup, no action\n"
+              "needed from the floor.")},
+    {"from": "hr@ocpa.unsc.mil", "to": "all-staff@ocpa.unsc.mil", "date": "2555-03-15 08:30",
+     "subject": "Reminder: submit Q1 expense reports by Friday",
+     "body": ("Late submissions roll to next quarter's batch and take longer to\n"
+              "process. If you're missing a receipt, use the standard exception\n"
+              "form instead of holding the whole report.")},
+    {"from": "security@ocpa.unsc.mil", "to": "all-staff@ocpa.unsc.mil", "date": "2555-03-10 13:05",
+     "subject": "Building 4 fire drill - Thursday 1400",
+     "body": ("Standard annual drill, no equipment testing this cycle. Assemble at\n"
+              "the usual lot behind Building 2. Should take about fifteen minutes.")},
     {"from": "hr@ocpa.unsc.mil", "to": "all-staff@ocpa.unsc.mil", "date": "2547-02-19 08:03",
      "subject": "Mandatory Annual Compliance Training - Due End of Month",
      "body": ("This is your second reminder. Records show 41% completion for Region 4.\n"

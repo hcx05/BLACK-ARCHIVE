@@ -18,7 +18,7 @@ RUN sed -i 's/^bind .*/bind 0.0.0.0/' /etc/redis/redis.conf \
 RUN mkdir -p /srv/share/public /srv/share/confidential /srv/share/backups \
     && chmod 777 /srv/share/public \
     && chmod 755 /srv/share/confidential \
-    && chmod 755 /srv/share/backups
+    && chmod 777 /srv/share/backups
 COPY shares/public/ /srv/share/public/
 COPY shares/confidential/ /srv/share/confidential/
 COPY shares/backups/ /srv/share/backups/
@@ -27,6 +27,17 @@ RUN chmod 644 /srv/share/confidential/* /srv/share/backups/*
 # Set Samba password for the sysadmin (base) account. Same password as
 # everywhere else - whoever provisioned this never rotates per-service.
 RUN (echo "admin123"; echo "admin123") | smbpasswd -a -s sysadmin
+
+# This node was hardened past the base image's password-auth default:
+# shell access requires the backup/restore key, not the reused OS password.
+# Samba above and the reused password elsewhere are untouched - only this
+# node's SSH stopped accepting it.
+RUN sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config \
+    && mkdir -p /home/sysadmin/.ssh \
+    && chmod 700 /home/sysadmin/.ssh
+COPY ssh/authorized_keys /home/sysadmin/.ssh/authorized_keys
+RUN chmod 600 /home/sysadmin/.ssh/authorized_keys \
+    && chown -R sysadmin:sysadmin /home/sysadmin/.ssh
 
 COPY app/admin/admin_panel.py /opt/admin/app.py
 COPY app/admin/assets/ /opt/admin/assets/

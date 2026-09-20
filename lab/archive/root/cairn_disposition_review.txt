@@ -39,11 +39,14 @@ had the ability to do was make sure that no automated process would ask
 the question for me on a schedule I did not choose. That is what I did,
 and it is the only thing I did.
 
-The transfer everyone keeps asking about never happened. The records
-were never moved anywhere. They are exactly where they were left in
-2525, on this node, because a case that generates no review activity
-also generates no reason to relocate it. Concealment, in this instance,
-took the form of nothing happening, on purpose, for thirty years.
+The transfer everyone keeps asking about never happened. The 2547
+migration already moved this holding as far as it was ever going to
+go - onto this node, with the rest of the acquisition-era material,
+pending onward transfer to permanent archival custody. That onward
+transfer is what never happened, and never will now, because a case
+that generates no review activity also generates no reason to finish
+moving it. Concealment, in this instance, took the form of nothing
+happening, on purpose, for thirty years.
 
 If this file is ever read by someone with the standing this office
 lacked, the checklist entry is still flagged in the system underneath

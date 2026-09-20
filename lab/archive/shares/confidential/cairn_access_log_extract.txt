@@ -4,15 +4,15 @@ Extract requested by: internal audit reference AUD-2547-019
 Note: full log unavailable prior to 2547-02-11 - see IT ticket SYS-4402
 re: audit service outage on the log volume.
 
-  TIMESTAMP            USER              ACTION              RECORD
-  2547-02-11 09:14     administrator     LOGIN               -
-  2547-02-11 09:20     administrator     RECORD_VIEW         101
-  2547-02-11 09:31     administrator     RECORD_VIEW         102
-  2547-02-11 10:02     i.petrov          LOGIN               -
-  2547-02-11 10:03     i.petrov          RECORD_VIEW         106
-  2547-02-11 10:19     i.petrov          RECORD_MODIFY       106
-  2547-02-11 10:21     i.petrov          LOGOUT              -
-  2547-02-14 15:47     administrator     LOGIN               -
-  2547-02-14 15:50     administrator     RECORD_VIEW         104
+  TIMESTAMP            USER              ACTION                RECORD/ITEM
+  2547-02-11 09:14     administrator     LOGIN                 -
+  2547-02-11 09:20     administrator     RECORD_VIEW           101
+  2547-02-11 09:31     administrator     RECORD_VIEW           102
+  2547-02-11 10:02     i.petrov          LOGIN                 -
+  2547-02-11 10:03     i.petrov          RECORD_VIEW           106
+  2547-02-11 10:19     i.petrov          CUSTODY_STATUS_SET    07-B
+  2547-02-11 10:21     i.petrov          LOGOUT                -
+  2547-02-14 15:47     administrator     LOGIN                 -
+  2547-02-14 15:50     administrator     RECORD_VIEW           104
 
 Log continues - remaining entries not recovered in this extract.

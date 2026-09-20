@@ -58,7 +58,10 @@
 ### 2.1 Recon
 ```bash
 nmap -sC -sV -p- TARGET
-# 預期：80/tcp http (nginx), 8025/tcp http (Python BaseHTTPServer, webmail)
+# TARGET 是 docker host 的 IP，frontier/relay 的 host port 都映射在同一個 IP 上，
+# 預期：8080/tcp http (nginx，容器內部是 80，host 映射成 8080)、
+#      8025/tcp http (Python BaseHTTPServer, webmail)、
+#      2222/tcp ssh (RELAY，同一台 host 上映射出來的，不是 frontier 自己的服務)
 ```
 逛 `http://TARGET:8080/`，導覽列有 Home / Dependent Status Index / Case File Intake / Network Diagnostics / Support Tickets。
 
@@ -116,7 +119,7 @@ curl -X POST http://TARGET:8025/login --data "user=sysadmin&pass=admin123"   # 3
 ```
 webmail 的登入帳號 `sysadmin` 剛好也是 base image 的真實 OS 帳號 — 這是刻意設計的「密碼重用」示範，不是巧合。
 
-登入後看 `/inbox`（**共 14 封信**，用同一個 session 直接 GET `/inbox` 也看得到，因為**沒有 session 驗證**，這本身也是一個漏洞）。14 封裡有 **4 封跟劇情/漏洞有關**，剩下 10 封是刻意加的填充信件（合規訓練提醒、停水通知、電梯維修、印表機耗材、閒聊、patch window 通知、物料補貨、門禁卡停用、T. Reyes 私人抱怨、殖民地行政單位的例行公文往返）——玩家要自己從一堆無聊的辦公室信件裡認出哪幾封重要，這是這輪特別加強的「訊噪比」設計，不是隨便塞信件湊數。
+登入後看 `/inbox`（**共 17 封信**，用同一個 session 直接 GET `/inbox` 也看得到，因為**沒有 session 驗證**，這本身也是一個漏洞）。17 封裡有 **4 封跟劇情/漏洞有關**，剩下 13 封是刻意加的填充信件（合規訓練提醒、停水通知、電梯維修、印表機耗材、閒聊、patch window 通知、物料補貨、門禁卡停用、T. Reyes 私人抱怨、殖民地行政單位的例行公文往返，加上 3 封 2555 年的近期信件——新印表機、Q1 費用報告、消防演習——確保這個信箱看起來是「現在還在用」，不是一個停在 2547 年的歷史快照）——玩家要自己從一堆無聊的辦公室信件裡認出哪幾封重要，這是這輪特別加強的「訊噪比」設計，不是隨便塞信件湊數。
 
 四封關鍵信（依收件時間混雜在其他信件中間，不會排在一起）：
 1. "LEDGER Terminal Access" — 提到一個叫 `svc-relay` 的帳號，**這是死線索**（該帳號根本不存在），但正確指出目標是 `relay.internal`。
@@ -247,9 +250,18 @@ smbclient //cairn.internal/confidential -U sysadmin%admin123 -m NT1 \
 - `acquisition_directive_excerpt.txt` / `acquisition_directive_scan.pdf`（掃描版）— **SPARTAN-II 名稱正式出現**的地方：2517 年的徵召指令，說明動機是「殖民地叛亂風險」而不是為了打星盟。
 - `disposition_order_2547-014.pdf` — Cmdr. Petrov 簽署的正式處置令掃描版，跟 admin panel record 101 的內容是同一份文件的兩種呈現（一份是 web app 內文字，一份是真正的簽署掃描件），互相印證。
 - `legacy_service_credentials.txt` — 四組 base 帳密清單，第三次驗證同一批密碼。
-- `cairn_backup_key` — 假的 RSA 私鑰，純 flavor，不需要用到。
-- `cairn_access_log_extract.txt` — **帶線索**。CAIRN 存取紀錄片段，只列時間戳跟動作，不解釋原因：`i.petrov` 在 2547-02-11 10:03~10:21 對 record 106（Farrow 的低溫轉移授權）做過 `RECORD_MODIFY`，時間點跟 disposition order 101 同一天。不解答「改了什麼」，只證明「他那天確實碰過那筆」，把 root 文件的答案佐證得更扎實，但不提前劇透。
+- `cairn_backup_key` — **真的 RSA 私鑰，主線必要**。這是拿到 archive 本機 shell 的唯一方式，見下方 4.2b。
+- `cairn_access_log_extract.txt` — **帶線索**。CAIRN 存取紀錄片段，只列時間戳跟動作，不解釋原因：`i.petrov` 在 2547-02-11 10:03 先 `RECORD_VIEW` 了 106（Farrow 的低溫轉移授權），10:19 對「07-B」做了一筆 `CUSTODY_STATUS_SET`——**注意這裡動的是一個獨立的保管狀態欄位，不是 106 這份文件本身的內容**，跟 root 文件講的「保管狀態被私自改掉，三份矛盾來源本身沒有被動過」完全對得上，不要寫成他改了 106 的文字內容。時間點跟 disposition order 101 同一天。不解答「為什麼」，只證明「他那天確實碰過那個欄位」，把 root 文件的答案佐證得更扎實，但不提前劇透。
 - `petrov_i_performance_review_2518.txt` — 純填充。刻意寫得平淡稱職，呼應「不要把 ONI 寫成卡通反派」的設計要求。
+
+### 4.2b 用找到的 key 拿 archive 本機 shell
+
+這台的 sshd 被獨立加固過：`PasswordAuthentication no`，`sysadmin/admin123` 對 SSH **完全無效**（Samba 不受影響，繼續吃這組密碼）——這是刻意設計，逼玩家不能單純密碼重用就跳過整個 Act III 直接拿 shell 提權。真正能登入的是上面 SMB confidential share 裡那把 `cairn_backup_key`：
+```bash
+chmod 600 cairn_backup_key
+ssh -i cairn_backup_key -J sysadmin@TARGET:2222 sysadmin@cairn.internal
+```
+（`-J` 走 relay 當 jump host，因為 archive 沒有映射 port 到宿主機；也可以先用 4.1 的 `-L` 手動轉發再對 `127.0.0.1` 打。）拿到這個 shell 之後才能做 4.6 的本機提權——`sudo -l`、`id`、`/etc/crontab` 這些 enumeration 都要在這個 shell 裡做，不是在 relay 的 shell 裡。
 
 **`backups`**（guest 可讀寫，操作失誤留下的東西）：
 ```bash
@@ -376,7 +388,7 @@ cat /root/cairn_disposition_review.txt
 |---|---|---|
 | frontier | command injection（過濾 `;` 但漏其他分隔符）/ upload（getimagesize magic-byte bypass）/ LFI（www-data） | `sudo -l` → `(ALL) NOPASSWD: /usr/bin/find` → `sudo find . -exec /bin/sh \;`；或等 `/opt/backup.sh`（world-writable, root cron `*/5`）被執行 —— 這兩條是刻意保留的簡單 optional 分支，非主線必經 |
 | relay | SSH 密碼重用（sysadmin） | SUID `/usr/local/bin/python3-suid`（唯一分支，`sudo socat` NOPASSWD 已移除） —— 同樣是 optional 分支，非主線必經 |
-| archive | SQLi（要換到 password 欄位才有效）/ 合法帳密 / SMB（無需 shell 也能拿到大部分文件） | PATH hijack：cron 用 root 執行 `/opt/healthcheck.sh`（讀得到寫不到），腳本呼叫未寫絕對路徑的 `logtool`，root crontab 的 `PATH=` 把 `/opt/staging` 排在前面且對 `release` 群組（`sysadmin` 是成員）可寫 —— **這是主線最終提權，需要多步 enumeration，不是單一 GTFOBins/world-writable 捷徑**（群組刻意不叫 `deploy`，避免跟 base image 既有的 `deploy` 帳號的 primary group 撞名） |
+| archive | 讀文件不需要 shell：SQLi（要換到 password 欄位才有效）/ 合法帳密 / SMB 都能直接拿到大部分內容。**但要 shell（提權必要）就只有一條路**：SMB confidential share 裡的 `cairn_backup_key`，SSH 密碼認證在這台被關掉了（`sysadmin/admin123` 對 SSH 完全無效，只有 Samba 還吃這組密碼）——這是刻意設計，避免密碼重用直接跳過整個 Act III 拿 shell | PATH hijack：cron 用 root 執行 `/opt/healthcheck.sh`（讀得到寫不到），腳本呼叫未寫絕對路徑的 `logtool`，root crontab 的 `PATH=` 把 `/opt/staging` 排在前面且對 `release` 群組（`sysadmin` 是成員）可寫 —— **這是主線最終提權，需要多步 enumeration，不是單一 GTFOBins/world-writable 捷徑**（群組刻意不叫 `deploy`，避免跟 base image 既有的 `deploy` 帳號的 primary group 撞名） |
 
 ## 附錄 B：每一組密碼的「合法發現管道」（不需要 brute force）
 
