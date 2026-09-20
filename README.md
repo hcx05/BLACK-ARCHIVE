@@ -9,15 +9,29 @@
 - 一個 3-host 的 offensive security lab（`FRONTIER` / `RELAY` / `ARCHIVE`），技術難度約 HTB Easy ～ 偏難 Easy。
 - 同時是一個非線性的調查敘事：證據分散在網站、mail、資料庫、檔案分享、備份與內部文件之間，需要玩家自己拼線。
 - Root 不是終點——它只是取得最後一批受限資料的手段。
-- 詳細的作品定位與設計原則見 `作品核心要求`、`故事劇情`、`BLACK_ARCHIVE_Modification_Plan.md`（含 spoiler，開發用文件）。
-
-## 致謝 / 來源
-
-技術架構與漏洞機制基於 [VulnCastle](https://github.com/0x6d61/vulncastle)（by 0x6d61，MIT License）改造而成。原版是 7-host 企業靶場；本作品把它重構為 3-host 架構並替換全部敘事內容，漏洞機制本身盡量保持一致。
+- 詳細的作品定位與設計原則見 `BLACK_ARCHIVE_Modification_Plan.md`、`story-dev/`（含 spoiler，開發用文件）。
 
 ## 快速開始
 
-### 1. 在受害機上裝好 Docker（第一次設置才需要）
+### 1. 抓這個 repo
+
+在要跑 lab 的那台機器（受害機，不是攻擊機）上：
+
+```bash
+git clone git@github.com:hcx05/BLACK-ARCHIVE.git
+cd BLACK-ARCHIVE
+```
+
+沒設定 SSH key 的話用 HTTPS：
+
+```bash
+git clone https://github.com/hcx05/BLACK-ARCHIVE.git
+cd BLACK-ARCHIVE
+```
+
+下面所有指令都是在這個 repo 的根目錄（也就是 `docker-compose.yml` 所在的位置）底下執行。
+
+### 2. 在受害機上裝好 Docker（第一次設置才需要）
 
 這台機器（跑 lab 的那台，不是攻擊機）要有 Docker + Docker Compose v2。Kali / Debian / Ubuntu 系統：
 
@@ -40,7 +54,7 @@ docker compose version
 docker info      # 這行如果報錯，通常是 docker daemon 沒啟動或群組權限還沒生效
 ```
 
-### 2. 啟動 lab
+### 3. 啟動 lab
 ```bash
 chmod +x start.sh stop.sh
 ./start.sh
@@ -57,7 +71,7 @@ docker compose up -d --build
 docker compose ps
 ```
 
-### 3. 停止 / 重啟
+### 4. 停止 / 重啟
 ```bash
 ./stop.sh                          # 或 docker compose down
 docker compose up -d --build       # 改過程式碼後要重新 build 再啟動
@@ -76,14 +90,14 @@ FRONTIER 預設對外開在 `8080`（portal）、`8025`（webmail），RELAY 開
 Attacker (Kali)
     │
     ▼
-┌─── DMZ (172.20.1.0/24) ───────────────────────────┐
-│  frontier (172.20.1.10) → localhost:8080 / :8025    │
-│  relay    (172.20.1.12) → localhost:2222 (SSH)      │
-│    dual-homed, pivot point ──────────────────┐      │
-└───────────────────────────────────────────────┼──────┘
-                                                │
-┌─── Internal (10.10.0.0/24, internal-only) ────┘
-│  archive (10.10.0.15) — 只能透過 relay 抵達        │
+┌─── DMZ (172.20.1.0/24) ──────────────────────────┐
+│  frontier (172.20.1.10) → localhost:8080 / :8025 │
+│  relay    (172.20.1.12) → localhost:2222 (SSH)   │
+│    dual-homed, pivot point ──────────────────┐   │
+└──────────────────────────────────────────────┼───┘
+                                               │ 
+┌─── Internal (10.10.0.0/24, internal-only) ───┘───┐ 
+│  archive (10.10.0.15) — 只能透過 relay 抵達      │
 └──────────────────────────────────────────────────┘
 ```
 
@@ -97,11 +111,3 @@ Attacker (Kali)
 - 不要對未經授權的系統使用這裡的技巧
 - 僅在隔離、受控的環境中使用
 
-## 授權說明
-
-這個 repo 混合了兩種不同性質的內容，授權狀態不一樣，**不宣告整個 repo 為 MIT**：
-
-- **`lab/` 底下的靶機程式碼與 Dockerfile／設定**：改編自 [VulnCastle](https://github.com/0x6d61/vulncastle)，該專案在自己的 README 聲明 MIT License（雖然 repo 內沒有附獨立 `LICENSE` 檔案）。這部分的漏洞機制與工程手法沿用其授權條件，並在本文件保留致謝。
-- **故事、人物、Halo/UNSC/ONI/SPARTAN-II 相關敘事內容**：非官方 Halo 同人創作，使用的是 Microsoft／343 Industries 擁有的智慧財產。這部分**不屬於作者原創版權範圍，作者無權將其授權給任何人使用**，僅作為非商業同人專案存在，與 Microsoft／343 Industries 無關、未經其授權或認可。
-
-如果要重新散布或修改此 repo，請分開處理這兩部分：程式碼／靶機架構部分可視為延續 VulnCastle 的 MIT 條件；故事內容請視為同人創作，不要當作可自由再授權的素材。
