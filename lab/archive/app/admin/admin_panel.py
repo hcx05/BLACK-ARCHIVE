@@ -240,7 +240,8 @@ class AdminHandler(BaseHTTPRequestHandler):
                     fname, pname = RECORD_PHOTOS[record[0]]
                     photo_html = (
                         f'<div style="display:flex;align-items:center;gap:16px;margin:18px 0">'
-                        f'<img src="/assets/{fname}" width="92" style="border:1px solid #7a5c00;filter:sepia(0.15) contrast(1.05)">'
+                        f'<a href="/assets/{fname}" target="_blank" rel="noopener">'
+                        f'<img src="/assets/{fname}" width="92" style="border:1px solid #7a5c00;filter:sepia(0.15) contrast(1.05)"></a>'
                         f'<div><div style="font-size:15px;color:#ffb000">{pname}</div>'
                         f'<div style="font-size:12.5px;color:#a37c00">personnel photo on file</div></div></div>'
                     )

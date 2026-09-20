@@ -147,10 +147,10 @@ STYLE = b"""<html><head><title>OCPA Webmail</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 :root {
-  --bg: #050a12; --surface: #0b1826; --surface-2: #112337; --surface-hover: #162c44;
-  --border: #244a63; --border-soft: #1a3348; --text: #7ec4e8; --text-dim: #4f89ac;
-  --text-faint: #2f5870; --accent: #bfe6f7; --accent-soft: rgba(191,230,247,0.08);
-  --danger: #d4685c; --danger-bg: #2a1310;
+  --bg: #000000; --surface: #060d14; --surface-2: #0a1622; --surface-hover: #0d1c2a;
+  --border: #1a3244; --border-soft: #101f2a; --text: #7ec4e8; --text-dim: #4f89ac;
+  --text-faint: #2f5870; --accent: #bfe6f7; --accent-soft: rgba(191,230,247,0.06);
+  --danger: #d4685c; --danger-bg: #200d0b;
   --mono: 'IBM Plex Mono', 'Consolas', monospace;
 }
 * { box-sizing: border-box; }
@@ -159,9 +159,9 @@ body {
   font-family: var(--mono); margin: 0; color: var(--text); font-size: 15.5px;
   background-color: var(--bg);
   background-image:
-    repeating-linear-gradient(180deg, rgba(191,230,247,0.022) 0px, rgba(191,230,247,0.022) 1px, transparent 1px, transparent 3px),
-    radial-gradient(ellipse at 50% 40%, rgba(191,230,247,0.045) 0%, rgba(0,0,0,0) 55%),
-    radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.45) 100%);
+    repeating-linear-gradient(180deg, rgba(191,230,247,0.016) 0px, rgba(191,230,247,0.016) 1px, transparent 1px, transparent 3px),
+    radial-gradient(ellipse at 50% 40%, rgba(191,230,247,0.02) 0%, rgba(0,0,0,0) 55%),
+    radial-gradient(ellipse at 50% 50%, transparent 45%, rgba(0,0,0,0.6) 100%);
   background-attachment: fixed;
 }
 .banner { background: var(--danger-bg); color: var(--danger); text-align: center; padding: 7px 12px; font-size: 12px; letter-spacing: 0.6px; text-transform: uppercase; border-bottom: 1px solid #3a1d1d; }

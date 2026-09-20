@@ -59,19 +59,19 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
     <style>
         :root {
-            --bg: #050a12;
-            --surface: #0b1826;
-            --surface-2: #112337;
-            --surface-hover: #162c44;
-            --border: #244a63;
-            --border-soft: #1a3348;
+            --bg: #000000;
+            --surface: #060d14;
+            --surface-2: #0a1622;
+            --surface-hover: #0d1c2a;
+            --border: #1a3244;
+            --border-soft: #101f2a;
             --text: #7ec4e8;
             --text-dim: #4f89ac;
             --text-faint: #2f5870;
             --accent: #bfe6f7;
-            --accent-soft: rgba(191, 230, 247, 0.08);
+            --accent-soft: rgba(191, 230, 247, 0.06);
             --danger: #d4685c;
-            --danger-bg: #2a1310;
+            --danger-bg: #200d0b;
             --mono: 'IBM Plex Mono', 'Consolas', monospace;
         }
         * { box-sizing: border-box; }
@@ -84,9 +84,9 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
             line-height: 1.55;
             background-color: var(--bg);
             background-image:
-                repeating-linear-gradient(180deg, rgba(191,230,247,0.022) 0px, rgba(191,230,247,0.022) 1px, transparent 1px, transparent 3px),
-                radial-gradient(ellipse at 50% 40%, rgba(191,230,247,0.045) 0%, rgba(0,0,0,0) 55%),
-                radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.45) 100%);
+                repeating-linear-gradient(180deg, rgba(191,230,247,0.016) 0px, rgba(191,230,247,0.016) 1px, transparent 1px, transparent 3px),
+                radial-gradient(ellipse at 50% 40%, rgba(191,230,247,0.02) 0%, rgba(0,0,0,0) 55%),
+                radial-gradient(ellipse at 50% 50%, transparent 45%, rgba(0,0,0,0.6) 100%);
             background-attachment: fixed;
         }
         a { color: var(--accent); }
@@ -209,6 +209,14 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
         .result-card img { border: 1px solid var(--border-soft); border-radius: 0; }
         .result-card .name { font-weight: 600; color: var(--text); margin-bottom: 3px; font-size: 15px; }
         .result-card .field { font-size: 13px; color: var(--text-dim); }
+        a.result-link { display: block; text-decoration: none; color: inherit; }
+        a.result-link:hover .result-card { border-color: var(--text); }
+        a.result-link:hover .name { color: var(--accent); }
+        .detail-back { display: inline-block; margin-bottom: 14px; font-size: 13px; }
+        .detail-card { display: flex; gap: 26px; border: 1px solid var(--border); background: var(--surface); padding: 22px; flex-wrap: wrap; }
+        .detail-card img { border: 1px solid var(--border-soft); flex-shrink: 0; }
+        .detail-card h2 { margin: 0 0 12px; font-size: 19px; color: var(--text); text-shadow: 0 0 6px rgba(126,196,232,0.3); }
+        .detail-card .field { font-size: 14px; color: var(--text-dim); margin-bottom: 6px; }
         ul.ticket-list { list-style: none; padding: 0; margin: 0 0 16px; }
         ul.ticket-list li { border: 1px solid var(--border); border-radius: 0; margin-bottom: 6px; background: var(--surface); }
         ul.ticket-list a { display: block; padding: 11px 14px; font-size: 14px; text-decoration: none; color: var(--text-dim); }
@@ -289,6 +297,32 @@ switch($page) {
         break;
 
     case 'search':
+        // Detail view: exact case_ref lookup against the known index only
+        // (no filesystem/DB access, no substring match) - safe regardless
+        // of what's in $_GET['case'].
+        $detail_ref = isset($_GET['case']) ? $_GET['case'] : '';
+        $detail_rec = null;
+        if ($detail_ref !== '') {
+            foreach ($DEPENDENT_INDEX as $rec) {
+                if ($rec['case_ref'] === $detail_ref) {
+                    $detail_rec = $rec;
+                    break;
+                }
+            }
+        }
+        if ($detail_rec) {
+            echo '<a class="detail-back" href="?page=search">&laquo; back to Dependent Status Index</a>';
+            echo '<div class="detail-card">';
+            echo '<img src="assets/' . htmlspecialchars($detail_rec['image']) . '" width="280">';
+            echo '<div>';
+            echo '<h2>' . htmlspecialchars($detail_rec['name']) . '</h2>';
+            echo '<div class="field">Colony of record: ' . htmlspecialchars($detail_rec['colony']) . '</div>';
+            echo '<div class="field">Case reference: ' . htmlspecialchars($detail_rec['case_ref']) . '</div>';
+            echo '<div class="field">Status: ' . htmlspecialchars($detail_rec['status']) . '</div>';
+            echo '</div></div>';
+            break;
+        }
+
         // Reflected XSS vulnerability
         $query = isset($_GET['q']) ? $_GET['q'] : '';
         echo '<p>Search by dependent name, colony of record, or case reference number.</p>';
@@ -310,6 +344,7 @@ switch($page) {
             }
             if (count($hits) > 0) {
                 foreach ($hits as $rec) {
+                    echo '<a class="result-link" href="?page=search&case=' . urlencode($rec['case_ref']) . '">';
                     echo '<div class="result-card">';
                     echo '<img src="assets/' . $rec['image'] . '" width="140">';
                     echo '<div>';
@@ -317,7 +352,7 @@ switch($page) {
                     echo '<div class="field">Colony of record: ' . htmlspecialchars($rec['colony']) . '</div>';
                     echo '<div class="field">Case reference: ' . htmlspecialchars($rec['case_ref']) . '</div>';
                     echo '<div class="field">Status: ' . htmlspecialchars($rec['status']) . '</div>';
-                    echo '</div></div>';
+                    echo '</div></div></a>';
                 }
             } else {
                 echo "<p>No records found matching your query in the current index.</p>";
@@ -377,7 +412,7 @@ switch($page) {
         $reyes_files = array('welcome.txt', 'todo.txt', 'credential_rotation_status.txt', 't_reyes_annual_review_2546.txt');
         if (in_array($file, $reyes_files, true)) {
             echo '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">';
-            echo '<img src="assets/t_reyes.jpg" width="60" style="border-radius:0;border:1px solid var(--border)">';
+            echo '<a href="assets/t_reyes.jpg" target="_blank" rel="noopener"><img src="assets/t_reyes.jpg" width="60" style="border-radius:0;border:1px solid var(--border)"></a>';
             echo '<div><div style="font-size:14.5px;font-weight:600;color:var(--text)">T. Reyes</div><div style="font-size:12px;color:var(--text-faint)">Systems &middot; ROSTER / LEDGER</div></div>';
             echo '</div>';
         }
