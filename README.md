@@ -62,7 +62,7 @@ docker build -t black-archive-base:latest ./lab/base/
 docker compose up -d --build
 ```
 
-第一次啟動要抓套件、裝 nginx/php/mariadb/samba 這些東西，會花幾分鐘。`start.sh` 結尾會自動檢查 FRONTIER/RELAY 對外開的那幾個 port 是否真的通（`docker compose ps` 顯示三個 container 都 `Up` 不保證 container 裡面用 supervisord 跑的個別服務都活著，可能 nginx 或 webmail 早就 crash-loop 了，容器本身還是 `Up`）：
+第一次啟動要抓套件、裝 nginx/php/mariadb/samba 這些東西，會花幾分鐘。`start.sh` 結尾會自動檢查 FRONTIER 對外開的那幾個 port 是否真的通（`docker compose ps` 顯示三個 container 都 `Up` 不保證 container 裡面用 supervisord 跑的個別服務都活著，可能 nginx 或 webmail 早就 crash-loop 了，容器本身還是 `Up`；RELAY/ARCHIVE 沒有映射任何 port，沒辦法從宿主機這樣測，要先 pivot 進去才看得到）：
 ```bash
 docker compose ps
 ```
