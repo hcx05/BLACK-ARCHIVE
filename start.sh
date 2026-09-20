@@ -61,7 +61,6 @@ check_port() {
 }
 check_port localhost 8080 "FRONTIER portal" || true
 check_port localhost 8025 "FRONTIER webmail" || true
-check_port localhost 2222 "RELAY ssh" || true
 
 echo ""
 echo -e "${GREEN}[+] BLACK ARCHIVE is running.${NC}"
@@ -69,7 +68,6 @@ echo ""
 echo -e "${CYAN}=== Reachable from your attacking machine ===${NC}"
 echo "  http://localhost:8080   (portal)"
 echo "  http://localhost:8025   (webmail)"
-echo "  ssh -p 2222 <user>@localhost"
 echo ""
 echo -e "${YELLOW}Everything else is internal-only. You'll need to find your own way in.${NC}"
 echo -e "${YELLOW}[!] This environment is intentionally vulnerable. Do not expose it to untrusted networks.${NC}"

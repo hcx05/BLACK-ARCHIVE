@@ -74,7 +74,7 @@ docker compose up -d --build       # 改過程式碼後要重新 build 再啟動
 docker compose up -d --force-recreate   # 沒改程式碼，只是想重置成乾淨狀態
 ```
 
-FRONTIER 預設對外開在 `8080`（portal）、`8025`（webmail），RELAY 開在 `2222`（SSH）；如果是從另一台攻擊機打，把 `localhost` 換成跑 docker 那台受害機的 IP 就好（兩台機器要能互相 ping 通）。
+FRONTIER 預設對外開在 `8080`（portal）、`8025`（webmail）；如果是從另一台攻擊機打，把 `localhost` 換成跑 docker 那台受害機的 IP 就好（兩台機器要能互相 ping 通）。RELAY 跟 ARCHIVE 都沒有映射任何 host port，從外部（攻擊機）打不到——要先在 FRONTIER 拿到 shell，再從裡面 pivot。
 
 ## 免責聲明
 

