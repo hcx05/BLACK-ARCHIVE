@@ -1,8 +1,3 @@
----
-不進玩家發行版。純操作記錄，不解釋設計理由——理由看 `../story-dev/attack_chain_design.md`。
-格式固定：發現 / 測試 / 成功 / 下一步。TARGET 換成實際打靶用的 IP。
----
-
 # BLACK ARCHIVE — Walkthrough（操作記錄）
 
 ## FRONTIER (172.20.1.10 / host:8080,8025)
