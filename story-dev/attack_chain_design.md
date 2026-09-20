@@ -9,11 +9,12 @@
 > 但那是為了讓設計說明可以對照實際指令驗證，不是給你照抄的操作記錄。
 >
 > 如果只想要「打的時候發現了什麼、測試了什麼、成功了什麼、下一步做什麼」
-> 這種精簡操作記錄，看 `walkthrough.md`——那份不解釋任何設計理由。
+> 這種精簡操作記錄，看 `../Answer/walkthrough.md`——那份不解釋任何設計理由。
 >
 > 對照文件：`legacy-mechanics.md`（原始 VulnCastle 攻擊鏈凍結記錄）、
-> `evidence-map.md`（每份證據的敘事功能與已修正的 bug）、
-> `characters.md` / `timeline.md` / `truth-map.md` / `truth.md`（人物與真相）、
+> `../Answer/evidence-map.md`（每份證據的敘事功能與已修正的 bug）、
+> `characters.md` / `timeline.md` / `truth-map.md`（人物與真相，本資料夾）、
+> `../Answer/truth-zh.md` / `../Answer/truth-en.md`（完整故事，敘事體）、
 > `player-knowledge-states.md`（玩家在每個階段應該知道什麼）。
 
 ---

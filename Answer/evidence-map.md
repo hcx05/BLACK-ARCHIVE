@@ -109,7 +109,7 @@
 
 ## 第四輪：使用者自己生成的人物照片
 使用者用自己的管道生成了 6 張高品質、高解析度的角色照片（T. Reyes、Cmdr. Petrov、Dr. Castel、CPO Kade、Dr. Achebe、Naomi Okafor），品質遠超這個環境現有能力，並詳細符合先前給的角色特徵描述（制服、徽章、場景招牌文字都對應正確的部門）。處理方式：
-- 原始高解析度檔案（1.7–2MB／張）移到 `story-dev/character-photos/`（dev-only 來源存檔，不進玩家發行版，因為原檔太大也不需要真的被 serve）。
+- 原始高解析度檔案（1.7–2MB／張）移到 `../story-dev/character-photos/`（dev-only 來源存檔，不進玩家發行版，因為原檔太大也不需要真的被 serve）。
 - 壓縮成 420px 寬、JPEG quality 82 的網頁用版本（每張 20–31KB），實際部署進遊戲：
   - `t_reyes.jpg` → frontier `assets/`，掛在 Support Tickets 頁面：只要載入的是他寫的三份文件（welcome/todo/credential_rotation），就會在內文上方出現一張小的「作者卡」（照片 + 姓名 + 職稱），其他人寫的（如停車證通知）不會出現他的照片。
   - `i_petrov.jpg` / `m_castel.jpg` / `m_kade.jpg` / `r_achebe.jpg` → archive `assets/`，掛在各自簽署/提到的 CAIRN record（101/102/104/105）上，用 sepia 濾鏡處理成「機密檔案裡附的人事照片」質感，不是乾淨的現代照片感。admin_panel.py 的靜態檔案 route 從只認 `oni_seal.png` 改成通用的 `/assets/<filename>`（有做 `os.path.basename` 防止路徑穿越，避免意外變成新的檔案讀取漏洞）。

@@ -1,5 +1,5 @@
 ---
-不進玩家發行版。純操作記錄，不解釋設計理由——理由看 `attack_chain_design.md`。
+不進玩家發行版。純操作記錄，不解釋設計理由——理由看 `../story-dev/attack_chain_design.md`。
 格式固定：發現 / 測試 / 成功 / 下一步。TARGET 換成實際打靶用的 IP。
 ---
 
@@ -142,4 +142,4 @@
 ### 22. 最終文件
 - 測試：`cat /root/cairn_disposition_review.txt`
 - 成功：讀到 Petrov 的私人記述——SPINDLE 除役檢查把 07-B 列入審查清單，他在審查觸發前私自把保管狀態改成「繼續、無需處理」，跳過審查，未經授權；07-B 的三份矛盾來源依然沒有標準答案
-- 下一步：（無，案件結束——但完整真相見 `truth.md`）
+- 下一步：（無，案件結束——但完整真相見 `truth-zh.md` / `truth-en.md`）
