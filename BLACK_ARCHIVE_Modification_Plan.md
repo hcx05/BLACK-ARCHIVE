@@ -407,9 +407,8 @@ SMB / file-share 可以保留作為 service，但不是一台獨立劇情節點�
 玩家可直接存取：
 
 - FRONTIER
-- RELAY 的極少數必要入口
 
-但 RELAY 不應像普通 public server 一樣暴露所有東西。
+> **後續修正**：原計畫這裡寫的是「RELAY 的極少數必要入口」，實際後來覺得連這個極少數入口（RELAY 的 SSH）都不該對外開——一開始的 `nmap -p- TARGET` 就會同時看到 FRONTIER 跟 RELAY，破壞「先攻破 DMZ 才發現內部還有一台」的真實感。最終定案：**RELAY 完全不對外開任何 port**，跟 ARCHIVE 一致，玩家必須先在 FRONTIER 拿到執行權限、升級成真正的互動式 shell，才能從 container 內部 pivot 進 RELAY。細節見 `story-dev/attack_chain_design.md` §0、§3.1，`Answer/evidence-map.md` 第十輪。
 
 ---
 
