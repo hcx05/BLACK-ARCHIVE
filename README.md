@@ -1,16 +1,5 @@
 # BLACK ARCHIVE
 
-一個由 Halo 故事改編的 ARG / cyber-investigation 靶場。你不是來解 CTF 題目的——你是一名獨立駭客，接下一個看似普通的委託：驗證一批殖民地兒童的死亡紀錄是否造假。深入下去以後，你會發現自己碰到的不只是資料造假。
-
-> Find out what happened to them.
-
-## 這是什麼
-
-- 一個 3-host 的 offensive security lab（`FRONTIER` / `RELAY` / `ARCHIVE`），技術難度約 HTB Easy ～ 偏難 Easy。
-- 同時是一個非線性的調查敘事：證據分散在網站、mail、資料庫、檔案分享、備份與內部文件之間，需要玩家自己拼線。
-- Root 不是終點——它只是取得最後一批受限資料的手段。
-- 詳細的作品定位與設計原則見 `BLACK_ARCHIVE_Modification_Plan.md`、`story-dev/`（含 spoiler，開發用文件）。
-
 ## 快速開始
 
 ### 1. 抓這個 repo
@@ -78,10 +67,6 @@ docker compose up -d --build       # 改過程式碼後要重新 build 再啟動
 docker compose up -d --force-recreate   # 沒改程式碼，只是想重置成乾淨狀態
 ```
 
-### 開始之前
-
-在碰任何 exploit 之前，先看 [`briefing/00_longshore_contact.html`](briefing/00_longshore_contact.html)（純文字來源在同資料夾的 `.md`）——那是你唯一會拿到的委託內容，之後不會再有人告訴你下一步該做什麼。這是一個純靜態網頁，不需要架任何伺服器：把檔案下載下來直接用瀏覽器打開（`file://` 路徑）就能看，跟開一個 PDF 一樣，只是格式是 HTML。如果想要一個可以直接分享的連結而不想自己架站，也可以參考線上版本：https://claude.ai/artifact/3Wy9d8TySzLM5yFcqMnK8t
-
 FRONTIER 預設對外開在 `8080`（portal）、`8025`（webmail），RELAY 開在 `2222`（SSH）；如果是從另一台攻擊機打，把 `localhost` 換成跑 docker 那台受害機的 IP 就好（兩台機器要能互相 ping 通）。
 
 ## 架構
@@ -97,7 +82,7 @@ Attacker (Kali)
 └──────────────────────────────────────────────┼───┘
                                                │ 
 ┌─── Internal (10.10.0.0/24, internal-only) ───┘───┐ 
-│  archive (10.10.0.15) — 只能透過 relay 抵達      │
+│  archive (10.10.0.15) — 只能透過 relay 抵達       │
 └──────────────────────────────────────────────────┘
 ```
 
