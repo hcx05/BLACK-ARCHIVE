@@ -4,11 +4,14 @@
 
 $DEPENDENT_INDEX = array(
     array('name' => 'Eli Okafor', 'colony' => 'Eridanus II', 'case_ref' => 'OCPA-R4-11902',
-          'status' => '結案 - 死亡（醫療原因，6 歲）', 'image' => 'case_okafor.png'),
+          'status' => '結案 - 死亡（醫療原因，6 歲）', 'image' => 'case_okafor.png',
+          'transfer_ref' => 'SPINDLE-7-0119'),
     array('name' => 'Talia Wren', 'colony' => 'Madrigal', 'case_ref' => 'OCPA-R4-11944',
-          'status' => '結案 - 死亡（醫療原因，6 歲）', 'image' => 'case_wren.png'),
+          'status' => '結案 - 死亡（醫療原因，6 歲）', 'image' => 'case_wren.png',
+          'transfer_ref' => 'SPINDLE-7-0142'),
     array('name' => 'Dominic Farrow', 'colony' => 'Skopje', 'case_ref' => 'OCPA-R4-11887',
-          'status' => '結案 - 死亡（醫療原因，6 歲）', 'image' => 'case_farrow.png'),
+          'status' => '結案 - 死亡（醫療原因，6 歲）', 'image' => 'case_farrow.png',
+          'transfer_ref' => 'SPINDLE-7-0087'),
     array('name' => 'Priya Anand', 'colony' => 'Eridanus II', 'case_ref' => 'OCPA-R4-12210',
           'status' => '在案 - 一般被扶養人案件', 'image' => 'case_anand.png'),
     array('name' => 'Marcus Webb', 'colony' => 'Tribute', 'case_ref' => 'OCPA-R4-12551',
@@ -69,7 +72,7 @@ $STR = array(
     'notice_4' => 'Building 3 電梯檢查，週三 0800-1200 - 該時段請改走東側樓梯。',
     'notice_5' => 'Building 4 停水，週二 0600-0900 - 詳情請見支援工單。',
     'notice_6' => 'C 停車場路面整修完工。標準核可停車證即日恢復使用。',
-    'notice_7' => '提醒：案件檔案收件僅接受掃描信件與轉移紀錄。',
+    'notice_7' => '提醒：案件檔案收件是唯一能為既有案件新增或補正文件的管道。Records 不會受理透過其他管道收到的文件。',
     'notice_8' => '第四區季度全體會議改到 25 日，時間地點不變。',
     'quick_links' => '快速連結',
     'quicklink_search' => '被扶養人狀態索引',
@@ -82,6 +85,7 @@ $STR = array(
     'field_colony' => '登記殖民地：',
     'field_case_ref' => '案件編號：',
     'field_status' => '狀態：',
+    'field_transfer_ref' => '內部轉移參照：',
     'search_intro' => '可依被扶養人姓名、登記殖民地或案件編號查詢。',
     'search_placeholder' => '搜尋紀錄...',
     'search_submit' => '搜尋',
@@ -89,7 +93,7 @@ $STR = array(
     'search_no_results' => '目前索引裡查無符合條件的紀錄。',
 
     // upload
-    'upload_intro' => '上傳掃描信件、醫療轉移紀錄，或需要建檔的案件資料。',
+    'upload_intro' => '提交或補件既有案件的收件資料——掃描信件、醫療轉移紀錄，或補正結案文件。案件一旦結案，唯一能新增資料的方式就是透過這裡。',
     'upload_rejected' => '收件被拒：這個檔案看起來不是有效的掃描影像。',
     'upload_indexed' => '檔案已建檔：',
     'upload_failed' => '收件失敗。',

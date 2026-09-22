@@ -12,6 +12,9 @@ RE: Open items
       after the audit last year.
 - [ ] Rotate the sandbox DB password. Again.
 - [ ] Ask records why three "closed" dependent cases from different
-      colonies all cite the same internal transfer reference. Probably
-      nothing. Probably a batch import artifact from the SPINDLE days.
+      colonies are the only closed cases in the whole index still
+      carrying anything in the internal transfer-reference field.
+      Every other closed case has it blank, same as the active ones.
+      Probably nothing. Probably a batch import artifact from the
+      SPINDLE days.
 - [ ] Stop asking that last one out loud.

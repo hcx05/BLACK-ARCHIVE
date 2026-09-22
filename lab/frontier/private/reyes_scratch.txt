@@ -1,0 +1,24 @@
+//PERSONAL - NOT A TICKET, DON'T FILE THIS ANYWHERE//
+scratch notes, delete before I forget
+
+Things I'm not putting my name on in the ticket system:
+
+  OCPA-R4-11902  (Okafor, Eridanus II)  transfer_ref SPINDLE-7-0119
+  OCPA-R4-11944  (Wren, Madrigal)       transfer_ref SPINDLE-7-0142
+  OCPA-R4-11887  (Farrow, Skopje)       transfer_ref SPINDLE-7-0087
+
+Pulled every closed dependent case in the index against every active
+one. These three are the ONLY closed cases anywhere in it that still
+have anything in the transfer_ref field at all. Every other closed
+case - and there are a lot of them - has it blank, same as the active
+ones. Not "old format." Not "legacy." Blank, except these three.
+
+Three different colonies, three different years the cases closed, and
+every single time I've asked about it I get the same answer, close
+enough to word-for-word that I don't think anyone's actually looking
+before they type it: known migration artifact, don't open a ticket.
+
+I'm not opening a ticket. I already know what it's going to say before
+I ask. But I'm not deleting this copy either.
+
+- t.r.

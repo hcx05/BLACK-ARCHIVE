@@ -8,7 +8,10 @@
 |---|---|---|
 | frontier `notes/welcome.txt` | T.R. onboarding note | 建立人物（T. Reyes）、首次出現「SPINDLE」代號、暗示 LEDGER 需要特定憑證 |
 | frontier `notes/todo.txt` | T.R. 待辦清單 | 暗示異常案件被系統性地忽略／壓下（"probably nothing... probably a batch import artifact"）——建立第一層懷疑 |
-| frontier `notes/credential_rotation_status.txt`（不在導覽列，只能靠 `/notes/` 目錄列出或 LFI 猜到） | T.R. 帳號稽核記錄，**內含「不小心貼上」的原始 provisioning script**（`useradd`/`chpasswd` 指令，含四組明文密碼） | **合法、非暴力破解**取得 `sysadmin/admin123` 等四組密碼的唯一正式管道。原本這份文件只寫「NOT rotated」卻沒給任何密碼值，玩家其實還是得用猜的——已修正為「T.R. 不小心把舊 provisioning script 貼進工單」的框架，讓密碼以貼近真實世界（shell history/貼錯內容）的方式洩漏，而不是乾淨表格 |
+| frontier `notes/credential_rotation_status.txt`（不在導覽列，只能靠 `/notes/` 目錄列出或 LFI 猜到） | T.R. 帳號輪替狀態表：`sysadmin` 未輪替、`devuser` 已輪替（死線索）、`deploy` 已停用（死線索） | 指出哪個帳號還在用 provisioning 範本預設值，但**不再直接寫出密碼本身**——要跟 `welcome.txt` 的範本預設值合起來看，才能推出 `sysadmin/admin123`（第十六輪把單一文件直接倒出密碼的設計拆成兩份獨立文件） |
+| frontier `notes/welcome.txt` 追加段落 | 通用 provisioning 政策說明（範本預設密碼 `admin123`，跟特定帳號無關） | `credential_rotation_status.txt` 的另一半——單獨看兩份文件都不會直接给出「`sysadmin/admin123`」這行字，玩家要自己把「哪個帳號沒輪替」跟「範本預設是什麼」接起來 |
+| frontier 案件卡（`?page=search`，僅 Okafor/Wren/Farrow 三筆） | `Internal transfer ref: SPINDLE-7-0119`（等）欄位 | 玩家自己在查詢委託信給的三個名字時就會親眼看到的第一手異常——其他 4 筆對照組完全沒有這個欄位，不需要先讀 Support Tickets 才知道「這裡有問題」；`todo.txt`／`reyes_scratch.txt` 之後只是確認同一件事，不是第一次告知 |
+| frontier `/var/backups/roster/reyes_scratch.txt`（不在 webroot 底下，只有拿到程式碼執行才讀得到） | T.R. 自己把整個索引比對過一輪的私人筆記，確認只有這 3 筆已結案案件帶 `transfer_ref` | 玩家拿到第一個 shell 後幾秒內就能讀到的「突破後才確認得到」的故事事實——形成正回饋，而不是純技術立足點；內容仍只是「確認異常存在」，不解答異常是什麼 |
 | frontier webmail Inbox #1 | LEDGER access note | 紅鯡魚帳密（svc-relay），但正確指出目標主機，訓練玩家「不是每個線索都直接可用」 |
 | frontier webmail Inbox #2 | Sandbox DB migration note | 與 relay DB 的 root 密碼互相驗證（多來源交叉確認同一組密碼） |
 | frontier webmail Inbox #3 | 新人上工信 | 定調「異常紀錄是正常的」官方說法，建立後續反差 |
@@ -259,4 +262,19 @@
 
 順手修掉兩個既有的用詞落差（review 時發現，跟本輪主題相關但屬於既有小 bug）：`Answer/walkthrough.md` 步驟 19 把「105（103 提到三份...）」的錯誤交叉引用改成「105（102 提到三份...）」；`characters.md`/`Answer/evidence-map.md` 裡舊的「Castel 說她簽了三份」統一改成「Castel 說她審核簽核了三份」，跟 record 102/105 的新措辭一致。
 
-更新的文件：`lab/archive/app/admin/content_en.py`/`content_zh.py`（record 102/104/105）、`lab/archive/shares/confidential/acquisition_directive_excerpt.txt`＋`shares-zh` 對應版本、`lab/archive/shares/backups/casualty_log_partial.txt`＋`shares-zh` 對應版本、`Answer/truth-en.md`、`Answer/truth-zh.md`、`story-dev/truth-map.md`、`story-dev/timeline.md`、`story-dev/characters.md`、`story-dev/attack_chain_design.md`（§4.4、附錄 C 摘要、CAIRN 六份文件表格的 102 一行）、`Answer/walkthrough.md`（步驟 19）、`Answer/evidence-map.md`（record 105 一行）。英文版 archive 已 `--no-cache` 重建並透過完整 pivot 鏈實測 record 102/104/105 與兩份 SMB 檔案渲染正確；中文版 archive 已重建但尚待實測。遊戲機制、帳密、`transfer_ref`、案件編號、SQL/PATH-hijack 等所有漏洞邏輯完全沒有變動，這輪純粹是敘事文字修正。
+更新的文件：`lab/archive/app/admin/content_en.py`/`content_zh.py`（record 102/104/105）、`lab/archive/shares/confidential/acquisition_directive_excerpt.txt`＋`shares-zh` 對應版本、`lab/archive/shares/backups/casualty_log_partial.txt`＋`shares-zh` 對應版本、`Answer/truth-en.md`、`Answer/truth-zh.md`、`story-dev/truth-map.md`、`story-dev/timeline.md`、`story-dev/characters.md`、`story-dev/attack_chain_design.md`（§4.4、附錄 C 摘要、CAIRN 六份文件表格的 102 一行）、`Answer/walkthrough.md`（步驟 19）、`Answer/evidence-map.md`（record 105 一行）。英文版、中文版 archive 皆已 `--no-cache` 重建並透過完整 pivot 鏈實測 record 102/104/105 與兩份 SMB 檔案渲染正確（中文版透過 relay pivot + curl 驗證 dashboard 標題跟三份 record 內容，另外直接檢查了容器內 SMB 分享檔案）。遊戲機制、帳密、`transfer_ref`、案件編號、SQL/PATH-hijack 等所有漏洞邏輯完全沒有變動，這輪純粹是敘事文字修正。
+
+## 第十六輪：Act I「追查 → 找漏洞」因果重整 + 密碼線索拆分
+
+使用者反饋核心：玩家不該是因為「這是 CTF，看到 upload 就測」而去打漏洞，而是因為想追查委託信裡三個孩子的死因，被系統正常權限擋下來，才被迫越權；技術難度完全不用變，只是玩家抵達每個漏洞的「理由」要換成調查動機。具體採納的改動（純文字/資料/檔案配置，沒有新增或修改任何漏洞機制）：
+
+1. **案件卡直接顯示異常，不用先看 Support Tickets 才知道**：`$DEPENDENT_INDEX`（frontier 案件搜尋後端）替 Okafor/Wren/Farrow 三筆新增 `transfer_ref` 欄位（`SPINDLE-7-0119`/`-0142`/`-0087`，沿用 relay 既有的值），顯示在搜尋結果卡跟詳細頁上；其他 4 筆對照組完全沒有這個欄位。玩家查詢委託信給的三個名字時，異常是自己第一手看到的，不是被動被工單告知。`todo.txt` 順手修正一個既有的用詞不精確：原本寫「三筆案件都指向同一個 transfer reference」，但三筆的值其實各自不同（都是 SPINDLE-7-xxxx 格式，不是同一個值）——改成準確的說法：「這 3 筆是整個索引裡唯一這欄還有值的已結案案件」。
+2. **Case File Intake（upload）重新框成「案件文件的唯一入口」**：`upload_intro` 跟首頁系統公告的文字改寫，明講這是案件結案後唯一還能補件的管道，讓玩家測試這個功能的理由變成「想知道這三筆案件的原始資料能不能透過這裡拿到更多」，而不是單純「有上傳功能，CTF 慣例就是測」。底層的 `getimagesize()` magic-byte bypass 漏洞本身完全沒有變。
+3. **第一次 shell 後立刻有故事回饋**：新增 `/var/backups/roster/reyes_scratch.txt`——不在 `/var/www/html/portal/` webroot 底下（nginx 不服務這個路徑），`?page=notes&file=` 的 LFI 也因為 `basename()` 限制構造性地碰不到（`../` 會被收斂回 `notes/` 目錄內），只有真的拿到程式碼執行才讀得到。內容是 T. Reyes 自己的私人筆記，確認案件卡上那個異常欄位是真的、只有這 3 筆已結案案件有、其他都是空的——玩家在拿到第一個 shell 後幾秒內就得到一個「只有突破後才確認得到」的故事事實，形成正回饋，不只是技術上的立足點。中英文版都有（`private/`、`private-zh/`，比照 `notes`/`notes-zh` 的 Dockerfile build-time 語言選擇模式）。
+4. **密碼線索拆成兩份文件，玩家自己做一步推論**：`credential_rotation_status.txt` 不再直接寫出 `sysadmin:admin123` 明文，只講「`sysadmin` 沒有經過 first-login 輪替，還在用 provisioning 範本的預設值」；範本預設值本身（`admin123`，跟任何特定帳號無關的通用政策）搬到 `welcome.txt` 一句新增的話裡。玩家要把兩份獨立文件的資訊接起來才能推出完整帳密——沒有增加任何猜測/解謎成分，兩份文件都直接讀得到，純粹把「設計者把鑰匙放在一個檔案裡」的體感換成「玩家自己推論出來的」。
+
+順手修正兩個既有的小問題：`Answer/evidence-map.md` 裡 `credential_rotation_status.txt` 那一行描述的是舊版設計（「不小心貼上 useradd/chpasswd 腳本」），跟目前檔案實際內容（一張輪替狀態表）對不上，已改寫成符合現況、並反映本輪的兩文件拆分；上一輪（第十五輪）結尾寫「中文版 archive 已重建但尚待實測」，本輪已實際完成中文版 archive 的 pivot 鏈實測，一併更新成完成狀態。
+
+已用真實漏洞路徑實測（不是只看程式碼）：真的用 GIF89a polyglot 上傳 webshell 拿到 `uid=33(www-data)`，再用這個 shell `cat /var/backups/roster/reyes_scratch.txt` 讀到新文件；確認同一個路徑用 `curl` 直接打會 404（不在 webroot），用 `?page=notes&file=../../../backups/roster/reyes_scratch.txt` 打 LFI 也讀不到（`basename()` 擋住）。中英文版 frontier 都已 `--no-cache` 重建並個別驗證過新欄位、新文字、新檔案。
+
+更新的文件：`lab/frontier/app/portal/content_en.php`/`content_zh.php`（`transfer_ref` 欄位、`field_transfer_ref` 標籤、`upload_intro`/`notice_7` 改寫）、`lab/frontier/app/portal/index.php`（顯示 `transfer_ref` 欄位）、`lab/frontier/app/portal/notes/welcome.txt`＋`notes-zh` 對應版本（新增範本預設密碼段落）、`lab/frontier/app/portal/notes/credential_rotation_status.txt`＋`notes-zh` 對應版本（移除明文密碼）、`lab/frontier/app/portal/notes/todo.txt`＋`notes-zh` 對應版本（修正用詞）、`lab/frontier/private/reyes_scratch.txt`＋`private-zh/reyes_scratch.txt`（新檔案）、`lab/frontier/Dockerfile`（COPY + 語言選擇 + 權限設定）、`story-dev/attack_chain_design.md`（§2.2/2.3/2.4、附錄 B）、`Answer/walkthrough.md`（步驟 2/3/4/5）、`Answer/evidence-map.md`（本節＋既有證據列表更新）。

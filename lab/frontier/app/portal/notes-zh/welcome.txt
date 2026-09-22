@@ -17,5 +17,8 @@ RE: ROSTER 新人須知
     user: app_svc
     pass: S3cretDB!2024
   （這只是 sandbox 複本。不要拿去打任何正式環境。）
+- 每個新開的終端機/webmail 帳號都還是用同一套帳號建立範本，直到有人強制
+  輪替為止。範本裡的標準暫時密碼是 admin123——如果你在查的帳號還沒經過
+  first-login 輪替，那它現在用的就是這組。
 
 — T.R.

@@ -5,11 +5,14 @@
 
 $DEPENDENT_INDEX = array(
     array('name' => 'Eli Okafor', 'colony' => 'Eridanus II', 'case_ref' => 'OCPA-R4-11902',
-          'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_okafor.png'),
+          'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_okafor.png',
+          'transfer_ref' => 'SPINDLE-7-0119'),
     array('name' => 'Talia Wren', 'colony' => 'Madrigal', 'case_ref' => 'OCPA-R4-11944',
-          'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_wren.png'),
+          'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_wren.png',
+          'transfer_ref' => 'SPINDLE-7-0142'),
     array('name' => 'Dominic Farrow', 'colony' => 'Skopje', 'case_ref' => 'OCPA-R4-11887',
-          'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_farrow.png'),
+          'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_farrow.png',
+          'transfer_ref' => 'SPINDLE-7-0087'),
     array('name' => 'Priya Anand', 'colony' => 'Eridanus II', 'case_ref' => 'OCPA-R4-12210',
           'status' => 'Active - standard dependent case', 'image' => 'case_anand.png'),
     array('name' => 'Marcus Webb', 'colony' => 'Tribute', 'case_ref' => 'OCPA-R4-12551',
@@ -70,7 +73,7 @@ $STR = array(
     'notice_4' => 'Building 3 elevator inspection, Wed 0800-1200 - use the east stairwell during that window.',
     'notice_5' => 'Water shutoff, Building 4, Tue 0600-0900 - see Support Tickets for details.',
     'notice_6' => 'Lot C resurfacing complete. Standard permit parking resumes Monday.',
-    'notice_7' => 'Reminder: case file intake accepts scanned correspondence and transfer notes only.',
+    'notice_7' => 'Reminder: Case File Intake is the only channel for adding or amending documentation on an existing case. Records cannot act on paperwork received any other way.',
     'notice_8' => 'Region 4 quarterly all-hands moved to the 25th, same time, same room.',
     'quick_links' => 'Quick Links',
     'quicklink_search' => 'Dependent Status Index',
@@ -83,6 +86,7 @@ $STR = array(
     'field_colony' => 'Colony of record:',
     'field_case_ref' => 'Case reference:',
     'field_status' => 'Status:',
+    'field_transfer_ref' => 'Internal transfer ref:',
     'search_intro' => 'Search by dependent name, colony of record, or case reference number.',
     'search_placeholder' => 'Search records...',
     'search_submit' => 'Search',
@@ -90,7 +94,7 @@ $STR = array(
     'search_no_results' => 'No records found matching your query in the current index.',
 
     // upload
-    'upload_intro' => 'Upload scanned correspondence, medical transfer notes, or archived case material for indexing.',
+    'upload_intro' => 'Submit or resubmit intake material for a case file - scanned correspondence, medical transfer notes, or amended closure documentation. This is the only way anything gets added to a case record once it has been closed.',
     'upload_rejected' => "Intake rejected: file does not appear to be a valid scanned image.",
     'upload_indexed' => 'File indexed:',
     'upload_failed' => 'Intake failed.',

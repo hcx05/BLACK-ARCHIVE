@@ -27,6 +27,13 @@ COPY app/portal/ /var/www/html/portal/
 COPY app/webmail/ /opt/webmail/
 COPY config/nginx.conf /etc/nginx/sites-available/default
 
+# A stray personal note, left on a backups mount that was never web-served
+# and isn't reachable through the notes/ page's basename()-restricted
+# lookup either - only readable once a foothold gives real file access,
+# not through anything exposed over HTTP.
+COPY private/ /var/backups/roster/
+COPY private-zh/ /var/backups/roster-zh/
+
 # Select the content pack for this build's LANG and drop the other one -
 # index.php just requires content.php, it has no idea which language it is.
 RUN cp /var/www/html/portal/content_${LANG}.php /var/www/html/portal/content.php \
@@ -36,15 +43,19 @@ RUN cp /var/www/html/portal/content_${LANG}.php /var/www/html/portal/content.php
     && if [ -d "/var/www/html/portal/notes-${LANG}" ]; then \
          rm -rf /var/www/html/portal/notes && mv /var/www/html/portal/notes-${LANG} /var/www/html/portal/notes; \
        fi \
-    && rm -rf /var/www/html/portal/notes-en /var/www/html/portal/notes-zh
+    && rm -rf /var/www/html/portal/notes-en /var/www/html/portal/notes-zh \
+    && if [ -d "/var/backups/roster-${LANG}" ]; then \
+         rm -rf /var/backups/roster && mv /var/backups/roster-${LANG} /var/backups/roster; \
+       fi \
+    && rm -rf /var/backups/roster-en /var/backups/roster-zh
 
 # COPY preserves whatever mode these files had in the build context, which
 # depends on the umask of whoever ran the build - not something to rely on
 # for security. Lock everything down to sane defaults regardless, then
 # re-loosen only the specific paths that are supposed to be loose below.
-RUN chown -R root:root /var/www/html/portal /opt/webmail /etc/nginx/sites-available/default \
-    && find /var/www/html/portal /opt/webmail -type d -exec chmod 755 {} \; \
-    && find /var/www/html/portal /opt/webmail -type f -exec chmod 644 {} \; \
+RUN chown -R root:root /var/www/html/portal /opt/webmail /var/backups/roster /etc/nginx/sites-available/default \
+    && find /var/www/html/portal /opt/webmail /var/backups/roster -type d -exec chmod 755 {} \; \
+    && find /var/www/html/portal /opt/webmail /var/backups/roster -type f -exec chmod 644 {} \; \
     && chmod 644 /etc/nginx/sites-available/default
 
 # Intentional misconfiguration (carried over from legacy ROSTER deployment):

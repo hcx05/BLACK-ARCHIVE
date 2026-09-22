@@ -11,26 +11,26 @@
 ### 2. 搜尋三個名字
 - 發現：`?page=search&q=` 有真的後端資料，不是裝飾頁
 - 測試：`curl "TARGET:8080/?page=search&q=Okafor"`（Wren、Farrow 同法）
-- 成功：三筆都回傳真案件卡（case_ref、colony、status），另外多搜幾個名字會發現 7 筆裡有 4 筆是正常對照組
-- 下一步：去翻 Support Tickets
+- 成功：三筆都回傳真案件卡（case_ref、colony、status），**且都多一個其他案件沒有的欄位：`Internal transfer ref: SPINDLE-7-0119`（Wren/Farrow 類推）**；另外多搜幾個名字會發現 7 筆裡有 4 筆是正常對照組，完全沒有這個欄位
+- 下一步：這個欄位自己就是異常，先去翻 Support Tickets 找脈絡，順便查這個功能能不能拿到原始 intake 資料（→ Upload）
 
 ### 3. Notes 目錄
 - 發現：`/notes/` 有 autoindex，列出比導覽列連結還多的檔案
 - 測試：`curl TARGET:8080/notes/`
-- 成功：多出 `credential_rotation_status.txt`（不在導覽列連結裡）
-- 下一步：讀這份檔案
+- 成功：多出 `credential_rotation_status.txt`（不在導覽列連結裡）；`todo.txt` 確認 2. 看到的欄位不是巧覺——這 3 筆是整個索引裡唯一這欄還有值的已結案案件
+- 下一步：讀 `credential_rotation_status.txt` 跟 `welcome.txt`
 
-### 4. 帳密外洩
-- 發現：`credential_rotation_status.txt` 是 T. Reyes 的稽核工單，內含 `sysadmin:admin123`（devuser/deploy 已標記為輪替/停用）
-- 測試：先記下這組帳密，同資料夾其他檔案（welcome.txt/todo.txt）先掃過
-- 成功：拿到一組會被重複使用的帳密
+### 4. 帳密外洩（兩份文件合起來才是完整答案）
+- 發現：`credential_rotation_status.txt` 是 T. Reyes 的稽核工單，寫著 `sysadmin` 從沒經過 first-login 輪替、還在用 provisioning 範本的預設值，但**沒有直接寫出那組密碼**（devuser/deploy 已標記為輪替/停用，死線索）；`welcome.txt` 另外提到一句通用政策：新帳號的範本預設密碼是 `admin123`
+- 測試：把兩份文件的資訊接起來——沒輪替的帳號是 `sysadmin`，範本預設是 `admin123`
+- 成功：推出 `sysadmin/admin123`，會被重複使用
 - 下一步：試試看 Upload 這個功能頁；順便試這組帳密登 webmail
 
-### 5. Upload（拿 shell）
-- 發現：`?page=upload` 現在會擋非圖片檔（`getimagesize()` 檢查）
+### 5. Upload（拿 shell，第一個「突破後才有」的故事事實）
+- 發現：`?page=upload` 現在會擋非圖片檔（`getimagesize()` 檢查）；頁面文字明講這是案件結案後唯一還能新增/補正文件的管道，這也是玩家會想測這個功能的理由——不是單純「有上傳功能就測」
 - 測試：先傳一個純 `.php`（被擋）；再傳 GIF89a 檔頭 + PHP payload 的 polyglot
 - 成功：polyglot 上傳成功，`GET /uploads/shell.php?c=id` 回傳 `uid=33(www-data)`
-- 下一步：去查 webmail
+- 下一步：用這個 shell 讀 `/var/backups/roster/reyes_scratch.txt`——不在 `/notes/` 底下、LFI 式的 `?page=notes&file=` 也碰不到，只有真的拿到程式碼執行才讀得到。內容是 T. Reyes 自己把整個索引比對過一輪的私人筆記，確認 2. 看到的欄位確實只出現在這 3 筆案件上——第一個只有突破後才能確認的故事事實；接著去查 webmail
 
 ### 6. Webmail
 - 發現：`:8025/debug` 直接洩漏環境變數

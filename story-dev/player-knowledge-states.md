@@ -12,15 +12,17 @@
 
 ## FRONTIER 攻破後
 新增知道：
-- Support ticket 提到「SPINDLE」是一個舊系統名稱，多筆案件在遷移時出現異常。
+- Okafor/Wren/Farrow 三筆案件卡各自帶有一個其他案件都沒有的欄位：`Internal transfer ref`（`SPINDLE-7-xxxx`）——這是玩家在查委託信給的三個名字時自己第一手看到的異常，不是被工單或郵件告知的。
+- Support ticket 提到「SPINDLE」是一個舊系統名稱，並確認這個 transfer ref 欄位是整個索引裡唯一還有值的已結案案件（其他已結案案件全部是空的）。
 - 有一個內部系統叫 LEDGER，可能保存更完整的紀錄。
-- 一組可能有效的憑證（webmail `sysadmin/admin123`，實際上是密碼重用，不是信裡寫的那組）。
+- 一組可能有效的憑證（webmail `sysadmin/admin123`，實際上是密碼重用，不是信裡寫的那組，且密碼本身要把「哪個帳號沒輪替」跟「範本預設值是什麼」兩份獨立文件接起來才推得出來）。
+- （**拿到 shell 後才讀得到，不在 webroot 底下**）T. Reyes 自己的私人筆記，把整個索引比對過一輪，確認這 3 筆案件的異常是真的、且他自己也注意到了但沒有深究。
 - **（推理，非證據）** 「這只是遷移假影」這句官方說法，在三個完全獨立的來源裡幾乎逐字重複，而且兩個殖民地行政單位分別為 Okafor、Wren 的案子反覆詢問過好幾年，每次都被同一套說法打發。玩家此時應該開始懷疑這句話，但手上沒有任何能反駁它的實質證據。
 仍不知道：候選人／transfer reference 的意義、ONI、SPARTAN-II、官方說法到底哪裡不對。
 
 ## RELAY 攻破後
 新增知道：
-- 「已結案死亡」的案件带有不該存在的 transfer reference（SPINDLE-7-xxxx）。
+- relay 的 case index 用完全獨立的資料來源（DB，不是 frontier 的公開搜尋介面）印證了 frontier 案件卡上那個 `transfer_ref` 欄位的確切值——同一個異常，第二個獨立來源確認，不再只是 frontier 單一系統裡看到的東西。
 - 這些孩子在系統內被稱為某種「candidate」，且與一般案件分開處理。
 - 存在一個叫 CAIRN 的更高機密系統，以及一次由 ONI Section III（Cmdr. Petrov）授權的資料遷移/限閱決定。
 - CAIRN Fileshare 的憑證（密碼重用）；CAIRN Records Terminal 的憑證要另外在 relay 檔案系統的 `/etc/ledger/sync.conf` 才找得到，DB 裡不再直接給。

@@ -11,6 +11,7 @@ RE: 待辦事項
 - [ ] 把 webmail 那台的 /debug 端點拔掉。去年稽核完就該做了。
 - [ ] 再一次輪替 sandbox DB 密碼。
 - [ ] 問一下 records 為什麼三個不同殖民地的「已結案」被扶養人案件，
-      transfer reference 都指向同一個內部參照。可能沒什麼。可能只是
-      SPINDLE 時期的批次匯入假影。
+      是整個索引裡唯一 internal transfer reference 欄位還有值的已結案
+      案件。其他已結案案件這欄全部是空的，跟在案案件一樣。可能沒什麼。
+      可能只是 SPINDLE 時期的批次匯入假影。
 - [ ] 不要再把最後一項講出來了。

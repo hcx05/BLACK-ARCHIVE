@@ -20,5 +20,10 @@ onboarding packet:
     user: app_svc
     pass: S3cretDB!2024
   (This is the sandbox copy only. Don't use it against anything live.)
+- Every new terminal/webmail account still gets provisioned from the same
+  account-setup template until someone forces a rotation on it. Standard
+  temp password out of that template is admin123 - if an account you're
+  looking at hasn't gone through first-login rotation yet, that's what
+  it's still sitting on.
 
 — T.R.

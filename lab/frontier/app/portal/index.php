@@ -285,6 +285,9 @@ switch($page) {
             echo '<div class="field">' . htmlspecialchars($STR['field_colony']) . ' ' . htmlspecialchars($detail_rec['colony']) . '</div>';
             echo '<div class="field">' . htmlspecialchars($STR['field_case_ref']) . ' ' . htmlspecialchars($detail_rec['case_ref']) . '</div>';
             echo '<div class="field">' . htmlspecialchars($STR['field_status']) . ' ' . htmlspecialchars($detail_rec['status']) . '</div>';
+            if (isset($detail_rec['transfer_ref'])) {
+                echo '<div class="field">' . htmlspecialchars($STR['field_transfer_ref']) . ' ' . htmlspecialchars($detail_rec['transfer_ref']) . '</div>';
+            }
             echo '</div></div>';
             break;
         }
@@ -316,6 +319,9 @@ switch($page) {
                     echo '<div class="field">' . htmlspecialchars($STR['field_colony']) . ' ' . htmlspecialchars($rec['colony']) . '</div>';
                     echo '<div class="field">' . htmlspecialchars($STR['field_case_ref']) . ' ' . htmlspecialchars($rec['case_ref']) . '</div>';
                     echo '<div class="field">' . htmlspecialchars($STR['field_status']) . ' ' . htmlspecialchars($rec['status']) . '</div>';
+                    if (isset($rec['transfer_ref'])) {
+                        echo '<div class="field">' . htmlspecialchars($STR['field_transfer_ref']) . ' ' . htmlspecialchars($rec['transfer_ref']) . '</div>';
+                    }
                     echo '</div></div></a>';
                 }
             } else {
