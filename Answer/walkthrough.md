@@ -51,8 +51,8 @@
 ### 8. LEDGER API
 - 發現：`127.0.0.1:3000` 沒對外開 port，但這是在 relay 自己的 shell 裡打，本機服務直接 `127.0.0.1` 就能連
 - 測試：`curl 127.0.0.1:3000/api/cases`（只回摘要：id/name/colony）、`/api/cases/1~5`（完整紀錄）、`/api/health`
-- 成功：`/api/cases` 列表本身看不到 `transfer_ref`，要逐一查 id 才看得到；`/api/cases/1~3` 完整紀錄有不該存在的 `transfer_ref`；`/api/cases/5` 是服務帳號 `ledger-cairn-sync`（不是案件）；`/api/health` 洩漏 `cairn.internal:445`
-- 下一步：第一次看到 CAIRN 這個名字，去找它的帳密
+- 成功：`/api/cases` 列表本身看不到 `transfer_ref`，要逐一查 id 才看得到；`/api/cases/1~3` 完整紀錄有不該存在的 `transfer_ref`；`/api/cases/5` 是服務帳號 `ledger-cairn-sync`（不是案件，第一次看到 CAIRN 這個名字）；`/api/health` 只回報 `archive_fileshare: "degraded"`，不給實際位址
+- 下一步：有個叫 CAIRN 的東西存在、而且目前狀態異常，去找它實際的位址跟帳密
 
 ### 9. MariaDB（要調參數才連得上）
 - 發現：預設 client 遠端連線會被要求 TLS（`ERROR 2026 ... SSL is required`）

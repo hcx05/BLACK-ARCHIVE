@@ -293,3 +293,16 @@
 全部改完後重新 `--no-cache` 建置 frontier/relay/archive（中英文版都建），並用真實漏洞路徑逐項實測：archive 端 SQLi payload（username 欄位、password 欄位）現在都回 200（拒絕），合法帳密仍回 302；relay `/api/cases` 確認只回摘要，`/api/cases/1`、`/api/cases/5` 確認回完整內容；webmail `/debug` 確認 404，`/inbox` 沒有 cookie 確認 302，登入後帶 cookie 確認 200；record 102 新措辭確認正確渲染。中英文版全部測過一輪。順手發現並修正一個連帶問題：移除 webmail 的 `/debug` 跟 `/inbox` 未驗證路徑後，`walkthrough.md` 原本的步驟 6（Webmail /debug）跟步驟 7（Webmail 登入）合併成新的步驟 6，後續步驟 7-21 全部重新編號成 6-20（比照第十三輪處理步驟編號變動的先例），文中僅有的一處步驟交叉引用（「見 8.」）也同步修正。
 
 更新的文件：`lab/archive/app/admin/admin_panel.py`（清掉 SQLi 殘留註解）、`lab/relay/app/api/server.js`（`/api/cases` 改摘要）、`lab/frontier/app/webmail/webmail.py`（移除 `/debug`，`/inbox` 加 session）、`lab/frontier/Dockerfile`（移除三個 stale env var）、`lab/frontier/app/portal/notes/{welcome,todo}.txt` ＋ `notes-zh` 對應版本、`lab/archive/app/admin/content_en.py`/`content_zh.py`（record 102）、`Answer/truth-en.md`、`Answer/truth-zh.md`、`story-dev/truth-map.md`、`story-dev/player-knowledge-states.md`、`story-dev/attack_chain_design.md`（§2.5、§3.2、附錄 B）、`Answer/walkthrough.md`（步驟重新編號 1-20）、`BLACK_ARCHIVE_Modification_Plan.md`。
+
+## 第十八輪：四點技術/正史細節校正
+
+使用者列了四點，要求先查證再改：
+
+1. **`/api/health` 洩漏 `cairn.internal:445` 太直接**：這個 endpoint 完全不用認證、關卡最早期就打得到，直接把下一台主機的完整位址交出來，比 3.3/3.3b 節 MariaDB `service_accounts` 表跟 `/etc/ledger/sync.conf` 這兩個「正規」發現管道還早、還輕鬆——查過這兩個管道本來就會給出一模一樣的 `cairn.internal`，`/api/health` 是純粹的多餘捷徑。改成只回報 `internal_services.archive_fileshare: "degraded"`，不再給 hostname/port，真正的位址只能靠站穩 relay 之後查 MariaDB 或本機檔案系統才拿得到。
+2. **`smbclient -m NT1` 是否為相容性問題**：查過 `lab/archive/config/smb.conf`，`server min protocol = NT1` 是明確標註「Intentionally weak: allow SMBv1」的刻意設計，不是不小心。這個環境裡的 `smbclient` 也已經在這個 session 裡實測多次成功用 `-m NT1` 連上，不是打不通。**查證結果：屬實但不是 bug，是刻意設計，維持原樣不動。**
+3. **SPARTAN-II 公開時間措辭**：原本寫成「2552 年星盟戰爭結束後這批人成為公開英雄」，暗示公開發生在戰爭結束當下，跟正史裡 UNSC 在戰爭期間就已經拿 Spartan 戰績做士氣宣傳/招募素材、逐步建立公眾形象的設定不符。改成「至少從 2547 年起就已經是公開的存在，UNSC 拿來做宣傳，2552 年戰爭結束後只是形象更普及，不是這時候才第一次公開」——`truth-en.md`、`truth-zh.md`、`timeline.md`、`truth-map.md`、`attack_chain_design.md` 附錄 C 全部同步改寫。
+4. **「玩家不知道 ONI」改成「不知道 ONI 涉入此案／不知道 Section III」**：上一輪（第十七輪）改的措辭把 ONI 寫成「這個單位本身」玩家完全不知道，但 ONI（海軍情報局）本身是公開存在的 UNSC 情報機構，不應該設定成沒人聽過——沒被揭露的是「ONI 涉入這起案件」跟「Section III 這個內部單位」的存在。`player-knowledge-states.md`（開場、FRONTIER 攻破後兩處）、`attack_chain_design.md`（Act I 結論）同步修正。
+
+已重新 `--no-cache` 建置 relay（中英文版都建）並實測：`/api/health` 確認只回 `"degraded"`，不再有 `cairn.internal:445`；SMB `-m NT1` 維持原樣，不動。
+
+更新的文件：`lab/relay/app/api/server.js`（`/api/health`）、`Answer/truth-en.md`、`Answer/truth-zh.md`、`story-dev/timeline.md`、`story-dev/truth-map.md`、`story-dev/attack_chain_design.md`（§3.2、附錄 C）、`story-dev/player-knowledge-states.md`（ONI 措辭）、`Answer/walkthrough.md`（步驟 8）。

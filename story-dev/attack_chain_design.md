@@ -153,7 +153,7 @@ webmail 的登入帳號 `sysadmin` 剛好也是 base image 的真實 OS 帳號 �
 玩家在這裡應該得出的結論，不是「官方在說謊」（那要到 Act II/III 才有實質證據），而是**「官方的說法太一致、太方便，一致到不像自然發生的」**——這是一個建立懷疑的節點，不是給答案的節點，跟後面 3.4/4.4/4.5/4.5b 節「證據互相矛盾、遊戲不告訴你誰對」的處理方式一致，不會提前劇透。（Dominic Farrow 這裡刻意不給對應的殖民地行政公文——三個名字裡留一個沒有這條支線，避免玩家覺得「每個名字都剛好有一封對應的信」太過工整，像是硬湊出來的規律。）
 
 ### Act I 結論（玩家此時應該知道的）
-三筆名字是真的、系統裡有個叫 SPINDLE 的退役系統、有個叫 LEDGER 的內部系統、拿到一組會員密碼 `sysadmin/admin123`；而且應該已經對「這只是遷移假影」這句官方說法產生懷疑——不是因為看到了矛盾的證據（那是 Act II 的事），而是因為這句話太一致、用得太剛好，剛好只蓋住這三個名字。**還不知道**任何 ONI 相關的事，也不知道這起案件跟 SPARTAN-II 有什麼關係，更還沒有任何實質證據能反駁官方說法。
+三筆名字是真的、系統裡有個叫 SPINDLE 的退役系統、有個叫 LEDGER 的內部系統、拿到一組會員密碼 `sysadmin/admin123`；而且應該已經對「這只是遷移假影」這句官方說法產生懷疑——不是因為看到了矛盾的證據（那是 Act II 的事），而是因為這句話太一致、用得太剛好，剛好只蓋住這三個名字。**還不知道** ONI 涉入這起案件、不知道 Section III 這個內部單位，也不知道這起案件跟 SPARTAN-II 有什麼關係，更還沒有任何實質證據能反駁官方說法。
 
 ---
 
@@ -187,9 +187,9 @@ curl http://127.0.0.1:3000/                       # 列出全部 endpoint（在 
 curl http://127.0.0.1:3000/api/cases               # 列出全部案件，但只有 id/name/colony 摘要
 curl http://127.0.0.1:3000/api/cases/1              # 完整紀錄（IDOR：無授權檢查）— Eli Okafor，帶 transfer_ref: SPINDLE-7-0119
 curl http://127.0.0.1:3000/api/cases/5              # 完整紀錄不是案件，是系統帳號：ledger-cairn-sync
-curl http://127.0.0.1:3000/api/health                # 洩漏 cairn.internal:445
+curl http://127.0.0.1:3000/api/health                # internal_services.archive_fileshare 只回 "degraded"，不再直接給 hostname/port
 ```
-**這一輪修正**：`/api/cases`（列表）原本直接把每筆的完整內容（含 `transfer_ref`、`case_ref`、id 5 的 `api_key`）一次全倒出來，等於 `/api/cases/:id` 這個「無授權檢查」根本沒有意義可言——列表本身就已經給了一切，IDOR 標籤名不副實。改成列表只回傳 `id`/`name`/`colony`（id 5 只回傳 `id`/`type`），完整內容只有指定 id 單獨查詢才拿得到，`/api/cases/:id` 才真的是「沒有授權檢查，任何 id 都能查」的 IDOR，不是列表的重複輸出。
+**這一輪修正**：`/api/cases`（列表）原本直接把每筆的完整內容（含 `transfer_ref`、`case_ref`、id 5 的 `api_key`）一次全倒出來，等於 `/api/cases/:id` 這個「無授權檢查」根本沒有意義可言——列表本身就已經給了一切，IDOR 標籤名不副實。改成列表只回傳 `id`/`name`/`colony`（id 5 只回傳 `id`/`type`），完整內容只有指定 id 單獨查詢才拿得到，`/api/cases/:id` 才真的是「沒有授權檢查，任何 id 都能查」的 IDOR，不是列表的重複輸出。`/api/health` 原本直接把 `cairn.internal:445` 寫在 `internal_services.archive_fileshare` 裡——一個完全不用認證、關卡最早期就打得到的 endpoint，直接把下一台主機的位址交出來，太乾脆了。改成只回報服務異常狀態（`"degraded"`），不給位址：真正的 `cairn.internal` 主機名稱要靠 3.3 節 MariaDB 的 `service_accounts` 表或 3.3b 節的 `sync.conf` 才找得到，這兩個管道都需要先站穩 relay 這台才拿得到，比未認證 API 更合理的難度曲線。
 
 關鍵發現：`/api/cases/1~3` 都是「已結案死亡」卻帶有一個不該存在的 `transfer_ref`（`SPINDLE-7-01xx`）。`/api/cases/4`（Priya Anand）沒有 `transfer_ref` —— 這是刻意放的對照組，讓玩家自己比較出「不是每筆資料都異常」。
 
@@ -434,4 +434,4 @@ cat /root/cairn_disposition_review.txt
 
 ## 附錄 C：完整時間軸 / 真相
 
-遊戲現在時間點：**2555 年**。見 `timeline.md`、`truth-map.md`。簡述：SPARTAN-II 代號 2513 年起就在 Section III 內部小規模使用 → 2516 年殖民地叛亂風險推估把它推向全面徵召 → 2517 年正式 Candidate Acquisition Directive 發出（候選人徵召時約 6 歲）→ 用 flash-clone 掩蓋兒童失蹤（當地醫師簽署死亡證明，Castel 在 ONI 端事後審核）→ Reach 訓練（Chief Mendez 主持，CPO Kade 是麾下訓練幹部之一）+ 2525 年 augmentation（死傷不一，Farrow 的結局有三份互相矛盾的來源，永遠不解答）→ 2552 年星盟戰爭結束後這批人成為公開英雄，起源持續保密 → 2547 年舊系統 SPINDLE 退役，資料分流進 LEDGER（一般）與待轉移的 CAIRN staging mirror（機密），Petrov 正式授權整批資料「保留但不公開」，**同一時間他私自把 Farrow/07-B 的低溫懸置單位保管狀態改成「繼續、無需處理」，未經授權跳過了本該觸發的正式審查——這是遊戲真正的終局答案，不是 SPARTAN-II 本身** → LONGSHORE（Naomi Okafor）恰好在同一批 migration 中處理鄰近案件時意外發現 Eli 的異常，又找到一份顯示 Farrow 案在結案數十年後被重新處理過的 index 殘存片段，花約 8 年查證後於 2555 年聯絡玩家，要求玩家查出「誰動了 Farrow 的檔案、為什麼」。
+遊戲現在時間點：**2555 年**。見 `timeline.md`、`truth-map.md`。簡述：SPARTAN-II 代號 2513 年起就在 Section III 內部小規模使用 → 2516 年殖民地叛亂風險推估把它推向全面徵召 → 2517 年正式 Candidate Acquisition Directive 發出（候選人徵召時約 6 歲）→ 用 flash-clone 掩蓋兒童失蹤（當地醫師簽署死亡證明，Castel 在 ONI 端事後審核）→ Reach 訓練（Chief Mendez 主持，CPO Kade 是麾下訓練幹部之一）+ 2525 年 augmentation（死傷不一，Farrow 的結局有三份互相矛盾的來源，永遠不解答）→ 這批人至少從 2547 年起就已經是公開的英雄形象（UNSC 拿來做宣傳），2552 年戰爭結束後只是形象更普及，起源持續保密 → 2547 年舊系統 SPINDLE 退役，資料分流進 LEDGER（一般）與待轉移的 CAIRN staging mirror（機密），Petrov 正式授權整批資料「保留但不公開」，**同一時間他私自把 Farrow/07-B 的低溫懸置單位保管狀態改成「繼續、無需處理」，未經授權跳過了本該觸發的正式審查——這是遊戲真正的終局答案，不是 SPARTAN-II 本身** → LONGSHORE（Naomi Okafor）恰好在同一批 migration 中處理鄰近案件時意外發現 Eli 的異常，又找到一份顯示 Farrow 案在結案數十年後被重新處理過的 index 殘存片段，花約 8 年查證後於 2555 年聯絡玩家，要求玩家查出「誰動了 Farrow 的檔案、為什麼」。

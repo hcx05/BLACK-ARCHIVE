@@ -42,7 +42,7 @@ Dominic Farrow's outcome - **deliberately unresolved, not an unfinished thread**
 
 ## V. The War, and After
 
-The main phase of the Human-Covenant War ended in 2552; UNSC entered postwar reconstruction from 2553. By then, SPARTAN-II was already a public symbol - the armor, the record, the near-mythic reputation, known across colonies and Earth alike. The one thing that stayed unpublished was the origin. By 2555, when this story takes place, it still hadn't been confirmed through any public channel.
+SPARTAN-II's existence had been public knowledge since well before the war ended - UNSC had been leaning on their combat record for morale and recruiting purposes since at least 2547. By the time the main phase of the Human-Covenant War ended in 2552, that reputation - the armor, the record, the near-mythic image, known across colonies and Earth alike - was simply more widespread than ever, not something that had just appeared. UNSC entered postwar reconstruction from 2553. The one thing that stayed unpublished, then and now, was the origin. By 2555, when this story takes place, it still hadn't been confirmed through any public channel.
 
 ## VI. A Body Nobody Finished Cleaning Up
 

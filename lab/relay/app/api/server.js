@@ -29,7 +29,10 @@ app.get('/api/cases', (req, res) => {
   res.json(summaries);
 });
 
-// Health check exposes internal info
+// Health check exposes internal info - but only that a downstream
+// dependency is unwell, not its address. The hostname itself is only
+// meant to come from /etc/ledger/sync.conf and the service_accounts
+// table, both of which require actually landing on this host first.
 app.get('/api/health', (req, res) => {
   res.json({
     status: "ok",
@@ -39,7 +42,7 @@ app.get('/api/health', (req, res) => {
     uptime: process.uptime(),
     env: process.env.NODE_ENV || "development",
     internal_services: {
-      archive_fileshare: "cairn.internal:445"
+      archive_fileshare: "degraded"
     }
   });
 });
