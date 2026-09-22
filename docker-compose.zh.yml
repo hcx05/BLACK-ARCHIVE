@@ -19,6 +19,8 @@ services:
         LANG: zh
     container_name: ba-frontier-zh
     hostname: frontier
+    environment:
+      WEBMAIL_PORT: "18025"
     networks:
       dmz-zh:
         ipv4_address: 172.21.1.10

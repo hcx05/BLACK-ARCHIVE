@@ -4,7 +4,7 @@
 Answer/truth-zh.md 已經確立的譯法，保持全專案用詞一致。"""
 
 RECORDS = [
-    (101, "ONI Section III - Disposition Order 2547-014",
+    (101, "ONI Section III - 處置令 2547-014",
      "//機密 - ONI SECTION III - 限閱//\n"
      "處置令 2547-014\n"
      "FROM: Cmdr. I. Petrov, ONI Section III\n"
@@ -20,7 +20,7 @@ RECORDS = [
      "完整除役排程訂在轉移完成之後。請不要把這套系統當成正式生產環境。\n\n"
      "本令不授權銷毀資料。僅授權保留。"),
 
-    (102, "Flash-Clone Substitution Protocol - Medical Annex",
+    (102, "Flash-Clone 替代協議 - 醫療附件",
      "//機密 - ONI SECTION III - 限閱//\n"
      "醫療附件 - FLASH-CLONE 替代協議\n"
      "REVIEWED BY: Dr. M. Castel, UNSC Medical Corps\n"
@@ -34,7 +34,7 @@ RECORDS = [
      "簽的是什麼之前。我不覺得那樣就沒事，我也不打算假裝自己沒有選擇。\n"
      "- M.C."),
 
-    (103, "Correspondence Fragment - C. Halsey to Section III, 2517",
+    (103, "書信片段 - C. Halsey 致 Section III，2517",
      "//機密 - ONI SECTION III - 限閱//\n"
      "書信片段（復原，殘缺）\n"
      "FROM: Dr. C. Halsey\n"
@@ -49,7 +49,7 @@ RECORDS = [
      "心安。\n\n"
      "依原送候選人名單繼續進行。"),
 
-    (104, "Internal Memo - CPO M. Kade to Records, 2540",
+    (104, "內部備忘錄 - CPO M. Kade 致 Records，2540",
      "//機密 - ONI SECTION III - 限閱//\n"
      "內部備忘錄\n"
      "FROM: CPO M. Kade, UNSC Training Command (Reach)\n"
@@ -68,7 +68,7 @@ RECORDS = [
      "也不知道為什麼。\n\n"
      "- M. Kade, CPO"),
 
-    (105, "Medical Certification Log Fragment - Case Closures 2517",
+    (105, "醫療證明紀錄片段 - 2517 年結案",
      "//機密 - ONI SECTION III - 限閱//\n"
      "醫療證明紀錄（片段）\n"
      "RE: 替代協議下開立的死亡證明，2517 年批次\n\n"
@@ -79,7 +79,7 @@ RECORDS = [
      "  OCPA-R4-10733    Dr. R. Achebe\n\n"
      "僅存此片段 - 其餘紀錄在 SPINDLE 遷移過程中遺失。"),
 
-    (106, "Cryogenic Recovery Transfer Authorization - Subject 07-B",
+    (106, "低溫恢復轉移授權書 - 07-B 對象",
      "//機密 - ONI SECTION III - 限閱//\n"
      "轉移授權書（醫療）\n"
      "RE: 強化後恢復轉移，對象 07-B\n"

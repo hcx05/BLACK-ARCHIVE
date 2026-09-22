@@ -257,7 +257,8 @@ switch($page) {
         echo '<a href="?page=upload">' . htmlspecialchars($STR['quicklink_upload']) . '</a>';
         echo '<a href="?page=notes">' . htmlspecialchars($STR['quicklink_notes']) . '</a>';
         $request_host = explode(':', $_SERVER['HTTP_HOST'])[0];
-        echo '<a href="http://' . htmlspecialchars($request_host) . ':8025">' . htmlspecialchars($STR['quicklink_webmail']) . '</a>';
+        $webmail_port = getenv('WEBMAIL_PORT') ?: '8025';
+        echo '<a href="http://' . htmlspecialchars($request_host) . ':' . htmlspecialchars($webmail_port) . '">' . htmlspecialchars($STR['quicklink_webmail']) . '</a>';
         echo '</div>';
         break;
 

@@ -14,9 +14,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Normalize the fpm socket path across PHP versions so nginx.conf doesn't
-# need to hardcode a version-specific socket name.
+# need to hardcode a version-specific socket name. Also disable clear_env -
+# php-fpm strips the container's environment from workers by default, which
+# would silently break getenv('WEBMAIL_PORT') (used by the portal's own
+# webmail quicklink) and any future env-based config.
 RUN PHP_INI_DIR=$(ls -d /etc/php/*/fpm | head -n1) \
-    && sed -i 's|^listen = .*|listen = /run/php/php-fpm.sock|' "$PHP_INI_DIR/pool.d/www.conf"
+    && sed -i 's|^listen = .*|listen = /run/php/php-fpm.sock|' "$PHP_INI_DIR/pool.d/www.conf" \
+    && sed -i 's|^;clear_env = no|clear_env = no|' "$PHP_INI_DIR/pool.d/www.conf"
 
 # ROSTER terminal (public portal) + webmail
 COPY app/portal/ /var/www/html/portal/
@@ -55,6 +59,12 @@ RUN chmod -R 777 /var/www/html/portal/uploads
 ENV SMTP_USER=duty.admin
 ENV SMTP_PASS=MailP@ss2024
 ENV SECRET_KEY=roster-webmail-secret-do-not-share
+
+# Host-published webmail port, so the portal's own "Webmail" quicklink
+# points somewhere that actually resolves - the container only knows its
+# own internal port (8025), not which host port a given compose file
+# publishes it as. Override per-deployment in docker-compose*.yml.
+ENV WEBMAIL_PORT=8025
 
 COPY config/supervisord.conf /etc/supervisor/conf.d/frontier.conf
 RUN chown root:root /etc/supervisor/conf.d/frontier.conf && chmod 644 /etc/supervisor/conf.d/frontier.conf
