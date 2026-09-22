@@ -59,11 +59,17 @@ check_port() {
     exec 3>&- 2>/dev/null
     echo -e "  ${GREEN}[ OK ]${NC} $name ($host:$port)"
 }
-check_port localhost 8080 "FRONTIER portal" || true
-check_port localhost 8025 "FRONTIER webmail" || true
+health_ok=true
+check_port localhost 8080 "FRONTIER portal" || health_ok=false
+check_port localhost 8025 "FRONTIER webmail" || health_ok=false
 
 echo ""
-echo -e "${GREEN}[+] BLACK ARCHIVE is running.${NC}"
+if [ "$health_ok" = true ]; then
+    echo -e "${GREEN}[+] BLACK ARCHIVE is running.${NC}"
+else
+    echo -e "${RED}[!] BLACK ARCHIVE did not come up cleanly - see [FAIL] lines above.${NC}"
+    echo -e "${YELLOW}    Check container logs: docker compose logs frontier${NC}"
+fi
 echo ""
 echo -e "${CYAN}=== Reachable from your attacking machine ===${NC}"
 echo "  http://localhost:8080   (portal)"

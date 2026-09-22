@@ -30,8 +30,12 @@ def init_db():
     c.execute("""CREATE TABLE IF NOT EXISTS admins (
         id INTEGER PRIMARY KEY, username TEXT, password TEXT, role TEXT
     )""")
+    # A second, weak-password account here (there used to be one: operator/
+    # operator123) would be reachable by guessing alone and would grant the
+    # exact same session as the legitimate credential, since sessions carry
+    # no role check - that bypasses the sync.conf discovery path entirely.
+    # One account, one way in.
     c.execute("INSERT OR IGNORE INTO admins (id, username, password, role) VALUES (1, 'administrator', 'Records!Access99', 'superadmin')")
-    c.execute("INSERT OR IGNORE INTO admins (id, username, password, role) VALUES (2, 'operator', 'operator123', 'operator')")
     conn.commit()
     conn.close()
 

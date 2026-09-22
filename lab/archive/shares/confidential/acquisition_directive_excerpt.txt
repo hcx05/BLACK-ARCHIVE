@@ -18,9 +18,11 @@ colonial-administration level through substitute case closure (see
 Medical Annex, CAIRN record 102).
 
 This batch is acquired under the existing SPARTAN-II designation
-(Section III internal use since 2513, limited-scale evaluation only to
-date). This directive authorizes the program's transition to full-scale
-candidate acquisition, beginning with this cycle.
+(Section III internal use since 2511). Candidate screening against the
+Outer Colony vaccination program's genetic records has been running
+since the program's founding; this directive authorizes acquisition of
+the seventy-five candidates selected from that screening pool,
+beginning with this cycle.
 
 This directive is not intended to be permanent doctrine. It is intended
 to be survivable doctrine, for as long as the alternative is worse.

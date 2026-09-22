@@ -8,7 +8,6 @@ from content import EMAILS, UI
 
 USERS = {
     "sysadmin": "admin123",
-    "devuser": "devuser2024",
 }
 
 # In-memory session store, same pattern as the CAIRN Records Terminal on

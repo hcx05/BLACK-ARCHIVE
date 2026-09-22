@@ -5,11 +5,11 @@
 遊戲「現在」的年份**定死為 2555 年**（星盟戰爭主要戰事 2552 年結束，UNSC 2553 年起進入戰後時期；SPARTAN-II 真正起源要到 2558 年《Hunt the Truth》才首次被公眾挖出——遊戲設定在那之前，玩家挖出的東西仍然是真正意義上「還沒被任何人證實過」的秘密，不要不小心把故事日期挪到 2558 之後）。
 
 - **2510–2511**：Eli Okafor、Talia Wren、Dominic Farrow、Samuel Voight 出生於不同殖民地（Eridanus II / Madrigal / Skopje）。四人在 2517 年徵召時都是 **6 歲左右**（貼近 canon「75 名約六歲兒童」的設定，不要讓任何一個候選人的年齡明顯偏離這個區間）。
-- **2513**：SPARTAN-II 這個代號在 Section III 內部首次啟用——當時只是 Halsey 的小規模提案，僅限理論建模與少量志願者試驗，還沒有任何殖民地兒童涉入（archive `acquisition_directive_excerpt.txt` 提及 "2513 年起使用，至今僅限小規模驗證"）。
-- **2516**：Section III 完成殖民地叛亂風險推估（archive 文件提及 "2516 revision"），這份推估是把 SPARTAN-II 從小規模驗證推向全面徵召的觸發點。
-- **2517**：正式 Candidate Acquisition Directive 發出，授權 SPARTAN-II 由小規模驗證轉入全面徵召（archive `acquisition_directive_excerpt.txt`）。同年 Halsey 與 Section III 的書信往來（CAIRN record 103）。候選人被帶走，flash-clone 死亡證明由當地醫師簽發（他們並不知情，只是在結一個看起來正常的案子），ONI 端由 Dr. Castel 事後審核（CAIRN record 102）；至少一筆由 Dr. R. Achebe 審核簽核，見 record 105。
+- **2511**：Halsey 的 Generation II ORION 提案正式啟動並改名 SPARTAN-II——從一開始核心就是鎖定基因/認知條件符合的殖民地兒童，不是先做成人志願者試驗、後來才轉向兒童。候選人篩選（透過外環殖民地疫苗接種計畫留下的基因紀錄）從此時起持續進行，逐步累積到 150 名候選人（archive `acquisition_directive_excerpt.txt` 提及 "2511 年起使用"）。
+- **2516**：Section III 完成一次殖民地叛亂風險推估（archive 文件稱為 "2516 revision"，代表這是對更早期評估的一次修訂，不是初版）——這是對已經在跑的篩選計畫做的一次內部再確認／審查，**不是兒童徵召概念的起點**。
+- **2517**：正式 Candidate Acquisition Directive 發出，從累積到的 150 名候選人裡選出 75 名，授權實際帶離行動（archive `acquisition_directive_excerpt.txt`）。同年 Halsey 與 Section III 的書信往來（CAIRN record 103）。候選人被帶走，flash-clone 死亡證明由當地醫師簽發（他們並不知情，只是在結一個看起來正常的案子），ONI 端由 Dr. Castel 事後審核（CAIRN record 102）；至少一筆由 Dr. R. Achebe 審核簽核，見 record 105。
 - **2517 之後（訓練期）**：候選人被送往 Reach，交由 Chief Mendez 主持的訓練體系。CPO Kade 是 Mendez 麾下的訓練幹部之一，負責名單裡一小群候選人，不是整個梯隊（CAIRN record 104 回顧視角）。
-- **2525：augmentation 階段**（候選人約 14 歲，貼近 canon 時間點）。Eli Okafor augmentation 失敗死亡；Talia Wren、Samuel Voight augmentation 成功並進入現役，分別編號 Spartan-141、Spartan-156；Dominic Farrow 的結果**有爭議**——官方 casualty log 記為「augmentation 失敗、永久殘障、除役」，但 Kade 的備忘錄聲稱他親眼看到 Farrow 死亡，另外還有一份 2525 年的「07-B 低溫恢復艙轉移授權」（CAIRN record 106）記載他當時被判定「臨床上無法存活」而轉入低溫懸置、後續無追蹤記錄。三份來源互相不完全一致，遊戲**刻意不解答**哪一份才是真的。
+- **2525：augmentation 階段**（候選人約 14 歲，貼近 canon 時間點）。Eli Okafor augmentation 失敗死亡；Talia Wren、Samuel Voight augmentation 成功並進入現役，分別編號 Spartan-108、Spartan-128（原創編號，避開 Cal-141、Edgar-150 等既有正史角色，見 `characters.md`）；Dominic Farrow 的結果**有爭議**——官方 casualty log 記為「augmentation 失敗、永久殘障、除役」，但 Kade 的備忘錄聲稱他親眼看到 Farrow 死亡，另外還有一份 2525 年的「07-B 低溫恢復艙轉移授權」（CAIRN record 106）記載他當時被判定「臨床上無法存活」而轉入低溫懸置、後續無追蹤記錄。三份來源互相不完全一致，遊戲**刻意不解答**哪一份才是真的。
 - **人類—星盟戰爭**：SPARTAN-II 至少從 2547 年起就已經是公開的存在，UNSC 拿他們的戰績做士氣宣傳跟招募素材；2552 年主要戰事結束、2553 年起 UNSC 進入戰後重建期後，這個英雄形象只是變得更普及，不是這時候才第一次公開。起源仍列機密。
 - **約 2547（SPINDLE 退役／migration 前後）**：LONGSHORE（真實身分 Naomi Okafor，殖民地 records clerk）在協助處理 SPINDLE 系統退役的資料遷移作業時，意外看到 Eli 的舊 case 被重新索引，且帶有一個不應存在的 `transfer_ref`。她沒有辦法直接存取限閱系統，但利用自己的 records 工作權限，花了數年時間安靜地用同樣的 pattern 交叉搜尋，才逐步找到 Wren、Farrow 的案例（Voight 的案例她並未查到，這也是為什麼 LONGSHORE 一開始只給玩家三個名字，不是四個）。
 - **2547-02-11**：SPINDLE 系統正式退役，案件資料遷移至 LEDGER（一般案件）與 CAIRN（機密/歷史資料，此節點實際上是待轉移的 staging mirror，正式除役排程後來沒有真的執行完），Cmdr. Petrov 授權 Disposition Order 2547-014（relay `system_migration_log` / archive CAIRN record 101）。

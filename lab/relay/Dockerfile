@@ -17,9 +17,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # This node is dual-homed (DMZ + Internal) - LEDGER gateway + case API + DB
 # socat installed for pivoting exercises
 
-# Weak SSH config + authorized_keys writable (legacy gateway misconfig)
-RUN mkdir -p /home/sysadmin/.ssh \
-    && chmod 777 /home/sysadmin/.ssh
+# Gateway maintenance account, specific to this host's own story (its
+# credentials live in the service_accounts table, a discovery path
+# independent of the notes-based sysadmin one) - not something every
+# host needs, so it's created here rather than in the base image. Ubuntu
+# ships a system "backup" account with no shell/home; remove it first so
+# our login-capable version can take the name.
+RUN userdel -r backup 2>/dev/null; \
+    useradd -m -s /bin/bash backup && echo "backup:backup" | chpasswd
 
 COPY app/api/ /opt/relay/api/
 COPY sql/init.sql /opt/relay/sql/init.sql

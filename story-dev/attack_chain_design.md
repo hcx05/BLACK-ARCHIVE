@@ -394,7 +394,7 @@ id sysadmin                       # sysadmin 是 release 群組成員
 ls -la /opt/staging               # drwxrwxr-x root release  <- release 群組可寫
 ```
 
-推理鏈：cron 用 root 執行 `/opt/healthcheck.sh` → 腳本本身讀得到但寫不到（root:release 750）→ 腳本內部呼叫的 `logtool` 沒有寫絕對路徑 → root 的 crontab 把 `/opt/staging` 排在系統目錄**前面** → `sysadmin` 剛好是 `release` 群組成員，而 `/opt/staging` 對這個群組可寫 → 在 `/opt/staging` 放一個叫 `logtool` 的檔案，等 root cron 在 60 秒內以 root 身份執行它。**這個群組刻意不叫 `deploy`**：base image 本來就有一個叫 `deploy` 的帳號，如果沿用同名群組，那個帳號會透過自己的 primary group 白撿到同樣的寫入權限，變成一條意外的、不需要 enumerate 就能走的捷徑：
+推理鏈：cron 用 root 執行 `/opt/healthcheck.sh` → 腳本本身讀得到但寫不到（root:release 750）→ 腳本內部呼叫的 `logtool` 沒有寫絕對路徑 → root 的 crontab 把 `/opt/staging` 排在系統目錄**前面** → `sysadmin` 剛好是 `release` 群組成員，而 `/opt/staging` 對這個群組可寫 → 在 `/opt/staging` 放一個叫 `logtool` 的檔案，等 root cron 在 60 秒內以 root 身份執行它。**這個群組刻意不叫 `deploy`**，避免語意上被誤認成某個帳號自帶的 primary group（第十九輪之前 base image 曾經有一個叫 `deploy` 的帳號，當時如果沿用同名群組，那個帳號會透過自己的 primary group 白撿到同樣的寫入權限；`deploy` 帳號本身已在第十九輪從 base image 移除，但群組名稱維持不跟任何帳號同名的做法，避免以後又踩到類似的坑）：
 ```bash
 cat > /opt/staging/logtool << 'EOF'
 #!/bin/bash
@@ -421,7 +421,7 @@ cat /root/cairn_disposition_review.txt
 |---|---|---|
 | frontier | upload（getimagesize magic-byte bypass，www-data） | 無。root 在這台解鎖不了任何東西，第十三輪把 `sudo -l` NOPASSWD find 跟 `/opt/backup.sh` 群組寫入兩條「打得到但沒有回報」的路都移除了，不留兔子洞 |
 | relay | SSH 密碼重用（sysadmin） | 無。理由同上，第十三輪移除了 SUID `spindle-legacy-diag` |
-| archive | 合法帳密（`administrator/Records!Access99`）/ SMB 都能直接拿到大部分內容。**但要 shell（提權必要）就只有一條路**：SMB confidential share 裡的 `cairn_backup_key`，SSH 密碼認證在這台被關掉了（`sysadmin/admin123` 對 SSH 完全無效，只有 Samba 還吃這組密碼）——這是刻意設計，避免密碼重用直接跳過整個 Act III 拿 shell | PATH hijack：cron 用 root 執行 `/opt/healthcheck.sh`（讀得到寫不到），腳本呼叫未寫絕對路徑的 `logtool`，root crontab 的 `PATH=` 把 `/opt/staging` 排在前面且對 `release` 群組（`sysadmin` 是成員）可寫 —— **這是主線最終提權，需要多步 enumeration，不是單一 GTFOBins/world-writable 捷徑**（群組刻意不叫 `deploy`，避免跟 base image 既有的 `deploy` 帳號的 primary group 撞名） |
+| archive | 合法帳密（`administrator/Records!Access99`）/ SMB 都能直接拿到大部分內容。**但要 shell（提權必要）就只有一條路**：SMB confidential share 裡的 `cairn_backup_key`，SSH 密碼認證在這台被關掉了（`sysadmin/admin123` 對 SSH 完全無效，只有 Samba 還吃這組密碼）——這是刻意設計，避免密碼重用直接跳過整個 Act III 拿 shell | PATH hijack：cron 用 root 執行 `/opt/healthcheck.sh`（讀得到寫不到），腳本呼叫未寫絕對路徑的 `logtool`，root crontab 的 `PATH=` 把 `/opt/staging` 排在前面且對 `release` 群組（`sysadmin` 是成員）可寫 —— **這是主線最終提權，需要多步 enumeration，不是單一 GTFOBins/world-writable 捷徑**（群組刻意不叫 `deploy`，避免語意上被誤認成某個帳號自帶的 primary group） |
 
 ## 附錄 B：每一組密碼的「合法發現管道」（不需要 brute force）
 
@@ -434,4 +434,4 @@ cat /root/cairn_disposition_review.txt
 
 ## 附錄 C：完整時間軸 / 真相
 
-遊戲現在時間點：**2555 年**。見 `timeline.md`、`truth-map.md`。簡述：SPARTAN-II 代號 2513 年起就在 Section III 內部小規模使用 → 2516 年殖民地叛亂風險推估把它推向全面徵召 → 2517 年正式 Candidate Acquisition Directive 發出（候選人徵召時約 6 歲）→ 用 flash-clone 掩蓋兒童失蹤（當地醫師簽署死亡證明，Castel 在 ONI 端事後審核）→ Reach 訓練（Chief Mendez 主持，CPO Kade 是麾下訓練幹部之一）+ 2525 年 augmentation（死傷不一，Farrow 的結局有三份互相矛盾的來源，永遠不解答）→ 這批人至少從 2547 年起就已經是公開的英雄形象（UNSC 拿來做宣傳），2552 年戰爭結束後只是形象更普及，起源持續保密 → 2547 年舊系統 SPINDLE 退役，資料分流進 LEDGER（一般）與待轉移的 CAIRN staging mirror（機密），Petrov 正式授權整批資料「保留但不公開」，**同一時間他私自把 Farrow/07-B 的低溫懸置單位保管狀態改成「繼續、無需處理」，未經授權跳過了本該觸發的正式審查——這是遊戲真正的終局答案，不是 SPARTAN-II 本身** → LONGSHORE（Naomi Okafor）恰好在同一批 migration 中處理鄰近案件時意外發現 Eli 的異常，又找到一份顯示 Farrow 案在結案數十年後被重新處理過的 index 殘存片段，花約 8 年查證後於 2555 年聯絡玩家，要求玩家查出「誰動了 Farrow 的檔案、為什麼」。
+遊戲現在時間點：**2555 年**。見 `timeline.md`、`truth-map.md`。簡述：SPARTAN-II 代號 2511 年起就在 Section III 內部使用，從一開始核心就是鎖定殖民地兒童、篩選累積出 150 名候選人 → 2516 年殖民地叛亂風險推估是對已在跑的計畫做內部再確認，不是起點 → 2517 年正式 Candidate Acquisition Directive 發出，從 150 人裡選出 75 人（候選人徵召時約 6 歲）→ 用 flash-clone 掩蓋兒童失蹤（當地醫師簽署死亡證明，Castel 在 ONI 端事後審核）→ Reach 訓練（Chief Mendez 主持，CPO Kade 是麾下訓練幹部之一）+ 2525 年 augmentation（死傷不一，Farrow 的結局有三份互相矛盾的來源，永遠不解答）→ 這批人至少從 2547 年起就已經是公開的英雄形象（UNSC 拿來做宣傳），2552 年戰爭結束後只是形象更普及，起源持續保密 → 2547 年舊系統 SPINDLE 退役，資料分流進 LEDGER（一般）與待轉移的 CAIRN staging mirror（機密），Petrov 正式授權整批資料「保留但不公開」，**同一時間他私自把 Farrow/07-B 的低溫懸置單位保管狀態改成「繼續、無需處理」，未經授權跳過了本該觸發的正式審查——這是遊戲真正的終局答案，不是 SPARTAN-II 本身** → LONGSHORE（Naomi Okafor）恰好在同一批 migration 中處理鄰近案件時意外發現 Eli 的異常，又找到一份顯示 Farrow 案在結案數十年後被重新處理過的 index 殘存片段，花約 8 年查證後於 2555 年聯絡玩家，要求玩家查出「誰動了 Farrow 的檔案、為什麼」。

@@ -55,8 +55,8 @@
 - 下一步：有個叫 CAIRN 的東西存在、而且目前狀態異常，去找它實際的位址跟帳密
 
 ### 9. MariaDB（要調參數才連得上）
-- 發現：預設 client 遠端連線會被要求 TLS（`ERROR 2026 ... SSL is required`）
-- 測試：`mariadb -h relay.internal -u root -p'S3cretDB!2024' --skip-ssl ledger`（一定要 `-h`，走 `-h 127.0.0.1`/本機 socket 會直接免密碼過，不是真的驗證到密碼）
+- 發現：預設 client 遠端連線會被要求 TLS（`ERROR 2026 ... SSL is required`）；另外不要省略 `-h` 或用 `localhost`——不帶 `-h`（或用 `localhost`）預設會走 local Unix socket，MariaDB 的 `unix_socket` 認證外掛可能讓本機使用者直接免密碼登入，不會真的驗證到這組密碼
+- 測試：`mariadb -h 127.0.0.1 -u root -p'S3cretDB!2024' --skip-ssl ledger`（用 `-h 127.0.0.1` 或加 `--protocol=tcp` 強制走 TCP，才是真的驗證到這組密碼，不是撿到 unix socket 的免密碼捷徑）
 - 成功：加 `--skip-ssl` 之後連上，`SELECT * FROM service_accounts` 拿到 CAIRN Fileshare 帳密（跟 sysadmin/admin123 一樣）、`dependent_case_index`（10 筆背景資料）、`system_migration_log`（第一次點名 ONI Section III / Cmdr. Petrov）
 - 下一步：`service_accounts` 沒有 CAIRN Records Terminal 的帳密，去查檔案系統
 
@@ -107,12 +107,12 @@
 
 ### 17. CAIRN Records Terminal 登入
 - 發現：`/dashboard`、`/records/*` 要 session cookie
-- 測試：`administrator/Records!Access99`（14. 找到的合法帳密）
-- 成功：302 + `Set-Cookie: cairn_session=...`
+- 測試：`proxychains4 curl -c cairn_cookies.txt -X POST cairn.internal:8080/login -d "username=administrator&password=Records!Access99"`（帳密是 10. 在 `sync.conf` 找到的合法帳密，不是 14.；`-c cairn_cookies.txt` 存下這台自己的 session cookie，不要沿用 6. webmail 那份 `cookie.txt`——是兩台不同主機、各自獨立的 session）
+- 成功：302 + `Set-Cookie: cairn_session=...`，存進 `cairn_cookies.txt`
 - 下一步：帶著這個 cookie 讀 dashboard
 
 ### 18. 讀六份 CAIRN 文件
-- 測試：`proxychains4 curl -b cookie.txt cairn.internal:8080/dashboard`，再逐一 `proxychains4 curl -b cookie.txt .../records/101~106`
+- 測試：`proxychains4 curl -b cairn_cookies.txt cairn.internal:8080/dashboard`，再逐一 `proxychains4 curl -b cairn_cookies.txt .../records/101~106`
 - 成功：101 Disposition Order、102 Castel 自白「事後審核簽核了三份」（她是 ONI 端醫療督導，不是到場簽署的人）、103 Halsey 書信、104 Kade 備忘錄（追加「07-B」線索）、105 Medical Cert Log（102 提到三份，這裡列出四筆，且分「當地簽署醫師」跟「ONI 檔案審核」兩欄，第四份的 ONI 端審核是 Achebe 而非 Castel）、106 07-B 低溫轉移授權
 - 下一步：三個推理節點——(1) 102 說三份 vs 案件其實四筆，答案在 105；(2) 用 16. 的訓練名冊把 07-B 代號還原成 Farrow（Skopje 只有一筆），發現 Kade 說的跟官方紀錄矛盾；(3) 106 給出第三個互相矛盾的版本，遊戲不解答哪個真——都做完之後去提權
 

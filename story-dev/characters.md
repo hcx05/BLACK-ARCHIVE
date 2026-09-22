@@ -46,12 +46,12 @@
 | 姓名 | 殖民地 | LEDGER 狀態 | 官方紀錄結果 | Spartan 編號 | 其他來源 |
 |---|---|---|---|---|---|
 | Eli Okafor | Eridanus II | Case Closed - Deceased | Augmentation failure, deceased | — | 無爭議 |
-| Talia Wren | Madrigal | Case Closed - Deceased | Augmentation successful, active service | Spartan-141 | 無爭議 |
+| Talia Wren | Madrigal | Case Closed - Deceased | Augmentation successful, active service | Spartan-108 | 無爭議 |
 | Dominic Farrow | Skopje | Case Closed - Deceased | 官方 casualty log：discharged, permanent disability | — | 三份來源互相牴觸，**遊戲永遠不解答哪個對**：(1) CPO Kade 備忘錄（CAIRN 104）聲稱親眼看到他死於 augmentation；(2) CAIRN 106「07-B 低溫恢復艙轉移授權」記載他被判定臨床無法存活、轉入懸置、之後無追蹤紀錄 |
-| Samuel Voight | Eridanus II | （僅在 relay DB 背景資料出現，無 API record）Closed - Deceased | Augmentation successful, active service | Spartan-156 | 無爭議，但死亡證明的 ONI 端審核簽核人是 Dr. Achebe 而非 Castel（見上）；當地簽署醫師另有其人（見 CAIRN record 105） |
+| Samuel Voight | Eridanus II | （僅在 relay DB 背景資料出現，無 API record）Closed - Deceased | Augmentation successful, active service | Spartan-128 | 無爭議，但死亡證明的 ONI 端審核簽核人是 Dr. Achebe 而非 Castel（見上）；當地簽署醫師另有其人（見 CAIRN record 105） |
 | Priya Anand | Eridanus II | Active（對照組，證明不是所有案件都異常） | 未涉入計畫 | — | 純粹作為「不是每筆資料都有問題」的對照 |
 
-（Spartan-141、Spartan-156 為本作原創編號，刻意避開既有正史角色已使用的編號，避免日後撞設定。）
+（Spartan-108、Spartan-128 為本作原創編號，刻意避開既有正史角色已使用的編號——第十九輪查證發現 Spartan-141 撞到正史角色 Cal-141（2517 年徵召、2544 年 Operation GREY VEIL 陣亡），Spartan-156 則超出正史候選人池的編號上限（正史候選人池為 001–150，Edgar-150 是目前已知最高編號），兩個都已換掉，避免日後撞設定。）
 
 Farrow 案是目前唯一一個刻意設計成「多份可信來源互相矛盾、遊戲不裁決真假」的節點，對應作品核心要求「有些 evidence 可以…看似矛盾…玩家應該會建立 hypothesis，再用 hacking 去驗證」。線索鏈：archive backups share 的 `training_roster_fragment.txt`（只給訓練代號 07-A~07-D + 殖民地 + 年齡，不給姓名）→ CPO Kade 備忘錄提到「07-B」的親眼見聞 → 玩家要自己用殖民地（Skopje 只有 Farrow 一筆）交叉比對回真實姓名，才能發現這條反駁官方紀錄的線索；找到 CAIRN record 106 後，矛盾從「兩份資料一真一假」升級成「三份都不完整、可能都對也可能都不對」的真正 forensic ambiguity——不是單純字串比對，是要跨三份文件做身分還原與判斷。
 
