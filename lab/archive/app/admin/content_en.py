@@ -42,10 +42,10 @@ RECORDS = [
      "held up under normal scrutiny, and maintaining the clone specification\n"
      "records. This office did not attend any closure in person.\n\n"
      "Cross-reference note (added later, different hand): I reviewed and\n"
-     "signed off on the case files for OCPA-R4-11902, 11944 and 11887 after\n"
-     "the fact, confirming each closure was clean. I did that before I\n"
-     "understood what I was actually confirming. I am not proud of that, and\n"
-     "I am not going to pretend I didn't have a choice.\n"
+     "signed off on three of these case files after the fact, confirming\n"
+     "each closure was clean. I did that before I understood what I was\n"
+     "actually confirming. I am not proud of that, and I am not going to\n"
+     "pretend I didn't have a choice.\n"
      "- M.C."),
 
     (103, "Correspondence Fragment - C. Halsey to Section III, 2517",

@@ -24,9 +24,10 @@
 | archive Samba `public/welcome.txt` | CAIRN 使用須知 | 建立場景真實感，非關鍵 |
 | archive Samba `confidential/legacy_service_credentials.txt` | 舊帳密清單 | 對照 base 帳號，強化「憑證重複使用」主題 |
 | archive Samba `confidential/acquisition_directive_excerpt.txt` | 2517 徵召指令 | **SPARTAN-II 名稱正式出現**；揭露原始動機（殖民地叛亂風險，非星盟） |
-| archive Samba `backups/casualty_log_partial.txt` | augmentation 傷亡紀錄（意外留在 backups） | 連結案件姓名與真實結果（部分死亡/部分成為現役 Spartan）；示範「不安全備份習慣」 |
+| archive Samba `backups/casualty_log_partial.txt` | augmentation 傷亡紀錄（意外留在 backups） | **只有 case_ref，沒有姓名也沒有 Spartan 編號**（第十九輪拿掉）——玩家要用自己在 Act I/II 記下的 case_ref↔姓名對照表才能認出這四筆分別是誰；示範「不安全備份習慣」 |
+| archive Samba `confidential/spartan_designation_crosscheck.txt`（新增） | 法定保留審查比對備忘 | **主動推理節點**：兩筆 case_ref 對現役 Spartan 編號的比對結果，同樣沒有姓名，且刻意放在存取權限比 `casualty_log_partial.txt` 更高的 confidential share——要把這份文件、`casualty_log_partial.txt` 的結果、玩家自己的 case_ref↔姓名對照表三者放在一起看，才能拼出「Talia Wren = Spartan-108、Samuel Voight = Spartan-128」，見下方第十九輪紀錄 |
 | archive CAIRN record 101 (admin panel) | Disposition Order 2547-014 | 解釋 LEDGER/CAIRN 分層的官方理由；确认 Petrov 的角色 |
-| archive CAIRN record 102 | Medical Annex（Dr. Castel） | 解釋 flash-clone 掩蓋機制；直接連結四個 case_ref |
+| archive CAIRN record 102 | Medical Annex（Dr. Castel） | 解釋 flash-clone 掩蓋機制；Castel 自白「審核簽核了三份」但**不寫是哪三份**（第十九輪拿掉原本直接列出的三組 case_ref）——要跟 record 105 對表才知道 |
 | archive CAIRN record 103 | Halsey 書信片段 | 呈現道德複雜性，非反派台詞 |
 | archive CAIRN record 104 | CPO Kade 備忘錄 | 人性視角：訓練者本人的矛盾情感；**追加段落引入「07-B」訓練代號**，需要玩家自己跟 backups share 的訓練名冊交叉比對才能還原成 Dominic Farrow，並發現他跟官方 casualty log 的紀錄互相矛盾 |
 | archive CAIRN record 105 | Medical Certification Log Fragment | **主動推理節點**：解答「Castel 說審核簽核了三份，但案件有四份」的落差——當地簽署醫師另有其人（不知情），第四份的 ONI 端審核是 Dr. Achebe，證明涉入審核的醫療人員不只 Castel 一人 |
@@ -327,3 +328,20 @@
 已重新建置 `black-archive-base`（只建立 `sysadmin`）、frontier/relay/archive（中英文版都 `--no-cache` 重建），並逐項實測：`operator` 登入 CAIRN 確認回 200（拒絕），合法帳密仍 302；`devuser/devuser2024` 登入 webmail 確認回「Invalid credentials」，`sysadmin/admin123` 仍正常；`docker exec` 進三台主機的 `/etc/passwd` 逐一確認 `devuser`/`deploy` 已完全不存在，frontier 只有 `sysadmin`，relay 有 `sysadmin`+`backup`（`passwd -S` 確認 `backup` 密碼狀態跟 `sysadmin` 一致、真的可登入），archive 只有 `sysadmin`（外加 Ubuntu 內建無法登入的系統 `backup`，無影響）；`/server-status` 確認 404；修正後的 CAIRN cookie 指令組實際在 relay shell 裡跑過一遍，登入 302、帶 cookie 讀 dashboard 200；archive 的新版 `acquisition_directive_excerpt.txt` 跟 `casualty_log_partial.txt`（新編號 108/128）中英文版都重新用 pivot 鏈讀過一次，內容正確。
 
 更新的文件：`lab/archive/app/admin/admin_panel.py`（移除 `operator`）、`lab/base/Dockerfile`（只留 `sysadmin`）、`lab/relay/Dockerfile`（新增 `backup`、移除 `.ssh chmod 777`）、`lab/frontier/app/webmail/webmail.py`（移除 `devuser`）、`lab/frontier/config/nginx.conf`（移除 `/server-status`）、`start.sh`（健康檢查失敗改印警告）、`lab/archive/shares/confidential/acquisition_directive_excerpt.txt` ＋ `shares-zh` 對應版本（2511 起源）、`lab/archive/shares/backups/casualty_log_partial.txt` ＋ `shares-zh` 對應版本（Spartan-108/128）、`Answer/truth-en.md`、`Answer/truth-zh.md`、`story-dev/truth-map.md`、`story-dev/timeline.md`、`story-dev/characters.md`、`story-dev/attack_chain_design.md`（附錄 C、§4.6 推理鏈說明）、`Answer/walkthrough.md`（MariaDB 步驟、CAIRN cookie 步驟）。
+
+## 第二十輪：ARCHIVE 後段證據去中心化——拿 root 不等於自動看懂全貌
+
+使用者的方向：保留 FRONTIER→RELAY→ARCHIVE 三階段結構不變，但 ARCHIVE 後段有些文件單獨一份就把好幾個問題一次答完，讓玩家從「推理」滑向「閱讀整理」。要求不是砍線索數量、也不是加密碼/藏字這類傳統 CTF 解謎，而是**降低單份證據的完整度，逼玩家跨文件比對 case_ref、代號、殖民地、時間、人物關係才能自己拼出答案**——07-B/Farrow 的代號還原是現有的正確示範，SPARTAN-II 身分、候選人結果、flash-clone 掩蓋機制也該用同樣的方式逐步拼出。後續使用者再次強調：推理節點的份量要重到 walkthrough 除了 payload 之外的推理說明也要花不小篇幅解釋，但答案不能牽強附會。
+
+盤點過 ARCHIVE 目前所有證據（六份 CAIRN record、三個 SMB 分享的全部文字檔、root 文件）之後，找到兩個真正「單一文件回答過多問題」的地方，其餘（103 Halsey 書信、104 Kade 備忘錄+07-B、105 醫療簽署表、106 低溫轉移、training_roster_fragment.txt、foia_review/dependent_notification 的 LONGSHORE 身分鏈）本來就已經是跨文件才能拼出答案的設計，不用動：
+
+1. **CAIRN record 102（Castel 自白）直接列出三個具體 case_ref**：「I reviewed and signed off on the case files for OCPA-R4-11902, 11944 and 11887」——這其實跟 record 105 的表格完全重複，等於「3 vs 4」推理節點的答案被 102 自己先劇透了一半，玩家只要數 105 的列數就好，不用真的比對兩份文件。**修法**：102 改成只講「事後審核並簽核了三份案件檔案」，不寫是哪三份——玩家要自己拿 105 的表格去對，才能確認是哪三筆、少了哪一筆、那一筆是誰簽的。
+2. **`casualty_log_partial.txt`（backups share）把姓名、case_ref、結果、Spartan 編號全部寫在同一行**：「Candidate (case_ref OCPA-R4-11944 / Talia Wren) ... active service, designated Spartan-108」——玩家不用做任何跨文件比對就知道「Talia Wren 現在是 Spartan-108」。**修法**：拆成兩份文件、兩個存取層級。`casualty_log_partial.txt` 只留 case_ref + 結果，拿掉姓名跟編號；Spartan 編號單獨放進**新文件** `spartan_designation_crosscheck.txt`，放在存取權限更高的 confidential share（要 sysadmin 密碼，不是 backups 的 guest 權限），內容是一份法定保留審查的內部比對備忘，只給 case_ref↔現役編號的對照，同樣不寫姓名。玩家要把三樣東西攤開對表才能拼出結論：(a) Act I/II 早就記下的 case_ref↔姓名對照、(b) `casualty_log_partial.txt` 的結果、(c) `spartan_designation_crosscheck.txt` 的編號——三份資料刻意分散在不同存取層級（免密碼的姓名對照、guest 權限的結果、需要認證的編號），沒有任何一份單獨的文件會把「姓名+結果+編號」三件事寫在一起。這個設計沒有硬塞密碼學/藏字：`spartan_designation_crosscheck.txt` 存在的理由本身就是劇情合理的（法定保留審查本來就會做這種交叉比對），案件卡上的「Active service designations are not to be cross-referenced...」這句原本只是氣氛文字，現在變成這份新文件存在的直接理由，答案不是憑空冒出來的。
+
+**沒有動、但值得記錄為什麼保留的部分**：`acquisition_directive_excerpt.txt`（SPARTAN-II 名稱正式出現的那份文件）維持不變——這是 Act III 設計上唯一刻意保留的「一次性重大揭露」，講的是「為什麼帶走、怎麼掩蓋」，不講任何候選人的個別結果，跟候選人結果本來就分屬不同文件（見上），沒有過度集中的問題；root 文件本來就已經是全專案唯一「拿到最高權限也沒有標準答案」的地方（Farrow 的結局），也維持不動。
+
+`story-dev/attack_chain_design.md` 新增 §4.2c【推理節點 0-archive】，用完整段落說明這條三段串接的推理鏈（case_ref→姓名、case_ref→結果、case_ref→編號），並解釋為什麼三份資料要分散在不同存取層級；§4.4 的說明同步補上「102 不再寫是哪三份」這一點。`Answer/walkthrough.md` 新增獨立的步驟 17（案件結果 + Spartan 編號重建），後續步驟 18-21 重新編號（比照第十三、十七輪的先例），步驟 14/16/19 的敘述同步更新成「沒有姓名/沒有編號」的現況。
+
+已重新 `--no-cache` 建置 archive（中英文版都建）並實測：record 102 確認渲染出「three of these case files」、不再有具體 case_ref；`casualty_log_partial.txt` 確認只剩 case_ref + 結果；`spartan_designation_crosscheck.txt` 確認能從 confidential share 讀到、內容正確、檔案權限（644）跟同分享區其他檔案一致；中文版三處內容同步確認正確。全鏈路的存取權限也複查過一次：姓名對照（Act I/II，免密碼）< 結果（backups，guest SMB）< 編號（confidential，sysadmin 密碼）< CAIRN Records Terminal 本身（administrator 密碼，找到管道另計）——存取難度隨資訊敏感度遞增，沒有出現「後面的內容反而比前面更好拿」的邏輯錯亂。
+
+更新的文件：`lab/archive/app/admin/content_en.py`/`content_zh.py`（record 102）、`lab/archive/shares/backups/casualty_log_partial.txt` ＋ `shares-zh` 對應版本、`lab/archive/shares/confidential/spartan_designation_crosscheck.txt` ＋ `shares-zh` 對應版本（新檔案）、`story-dev/attack_chain_design.md`（新增 §4.2c、§4.2/§4.4 說明更新）、`Answer/walkthrough.md`（新增步驟 17，步驟 14/16/18-21 更新）、`Answer/evidence-map.md`（record 102、casualty_log 兩行更新，新增一行）。

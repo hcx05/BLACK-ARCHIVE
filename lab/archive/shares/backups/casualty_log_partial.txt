@@ -3,10 +3,10 @@ AUGMENTATION PROGRAM - CASUALTY LOG (PARTIAL, BACKUP COPY)
 RE: SPINDLE candidate cohort, 2525 augmentation cycle, outcomes
 Left on the backups share during the 2547 migration. Should not be here.
 
-Candidate (case_ref OCPA-R4-11902 / Eli Okafor) ................ Augmentation failure, deceased
-Candidate (case_ref OCPA-R4-11944 / Talia Wren) ................. Augmentation successful, active service, designated Spartan-108
-Candidate (case_ref OCPA-R4-11887 / Dominic Farrow) ............. Augmentation failure, discharged, permanent disability
-Candidate (case_ref OCPA-R4-10733 / Samuel Voight) .............. Augmentation successful, active service, designated Spartan-128
+Candidate (case_ref OCPA-R4-11902) ................ Augmentation failure, deceased
+Candidate (case_ref OCPA-R4-11944) ................. Augmentation successful, active service
+Candidate (case_ref OCPA-R4-11887) ............. Augmentation failure, discharged, permanent disability
+Candidate (case_ref OCPA-R4-10733) .............. Augmentation successful, active service
 
 Note: "Active service" designations are not to be cross-referenced against
 current Spartan service rosters outside of Section III. This log should

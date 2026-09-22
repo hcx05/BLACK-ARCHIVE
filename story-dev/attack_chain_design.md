@@ -284,14 +284,15 @@ proxychains4 smbclient -L //cairn.internal/ -U sysadmin%admin123 -m NT1
 ```bash
 proxychains4 smbclient //cairn.internal/confidential -U sysadmin%admin123 -m NT1 \
   -c "get acquisition_directive_excerpt.txt; get acquisition_directive_scan.pdf; get disposition_order_2547-014.pdf; get legacy_service_credentials.txt; get cairn_backup_key; \
-      get cairn_access_log_extract.txt; get petrov_i_performance_review_2518.txt"
+      get cairn_access_log_extract.txt; get petrov_i_performance_review_2518.txt; get spartan_designation_crosscheck.txt"
 ```
-- `acquisition_directive_excerpt.txt` / `acquisition_directive_scan.pdf`（掃描版）— **SPARTAN-II 名稱正式出現**的地方：2517 年的徵召指令，說明動機是「殖民地叛亂風險」而不是為了打星盟。
+- `acquisition_directive_excerpt.txt` / `acquisition_directive_scan.pdf`（掃描版）— **SPARTAN-II 名稱正式出現**的地方：2517 年的徵召指令，說明動機是「殖民地叛亂風險」而不是為了打星盟。這份文件交代的是「為什麼帶走、怎麼掩蓋」，不會告訴玩家「後來怎麼了」——那是另一組文件的事，見下方 4.2c。
 - `disposition_order_2547-014.pdf` — Cmdr. Petrov 簽署的正式處置令掃描版，跟 admin panel record 101 的內容是同一份文件的兩種呈現（一份是 web app 內文字，一份是真正的簽署掃描件），互相印證。
 - `legacy_service_credentials.txt` — 四組 base 帳密清單，第三次驗證同一批密碼。
 - `cairn_backup_key` — **真的 RSA 私鑰，主線必要**。這是拿到 archive 本機 shell 的唯一方式，見下方 4.2b。
 - `cairn_access_log_extract.txt` — **帶線索**。CAIRN 存取紀錄片段，只列時間戳跟動作，不解釋原因：`i.petrov` 在 2547-02-11 10:03 先 `RECORD_VIEW` 了 106（Farrow 的低溫轉移授權），10:19 對「07-B」做了一筆 `CUSTODY_STATUS_SET`——**注意這裡動的是一個獨立的保管狀態欄位，不是 106 這份文件本身的內容**，跟 root 文件講的「保管狀態被私自改掉，三份矛盾來源本身沒有被動過」完全對得上，不要寫成他改了 106 的文字內容。時間點跟 disposition order 101 同一天。不解答「為什麼」，只證明「他那天確實碰過那個欄位」，把 root 文件的答案佐證得更扎實，但不提前劇透。
 - `petrov_i_performance_review_2518.txt` — 純填充。刻意寫得平淡稱職，呼應「不要把 ONI 寫成卡通反派」的設計要求。
+- `spartan_designation_crosscheck.txt` — **這一輪新增，帶線索**。一份法定保留審查的內部備忘，記錄了兩筆案件編號跟現役 Spartan 編號的比對結果（`OCPA-R4-11944 = Spartan-108`、`OCPA-R4-10733 = Spartan-128`），但**完全沒有姓名**，也沒有解釋這兩筆案件編號原本對應誰。要跟 backups share 的 `casualty_log_partial.txt`（見下方 4.2c）跟玩家自己在 Act I/II 就記下的 case_ref↔姓名對照表放在一起看，才能還原成「Talia Wren = Spartan-108、Samuel Voight = Spartan-128」。
 
 ### 4.2b 用找到的 key 拿 archive 本機 shell
 
@@ -311,11 +312,21 @@ proxychains4 smbclient //cairn.internal/backups -U sysadmin%admin123 -m NT1 \
 ```
 - `kade_m_separation_summary.txt` / `castel_m_leave_record_2517.txt` — 純填充人事資料，時間點跟兩人既有的角色設定對得上（Castel 的假剛好接在 2517 年徵召期之後），但不需要新台詞就有效果。
 - `foia_review_2553.txt` — **帶線索，Naomi Okafor optional evidence chain 的延伸**。2553 年 N. Okafor 本人（Eli 的監護人身份）曾經走正規管道申請調閱 Eli 的完整案件資料，被 Compliance 官員 S. Andrade 引用 Disposition Order 2547-014 駁回；備註裡 Compliance 官員自己也注意到「這個名字跟 2547 年那個臨時協助遷移的人員同名」但判定無關——這解釋了 LONGSHORE 為什麼最後選擇找玩家這種非正規管道（她已經試過正規申請，行不通），也是系統內部「差一點自己就發現了」的呼應。
-- `casualty_log_partial.txt` — 四個候選人的 augmentation 結果（死亡/殘障/現役），第一次把 Act I/II 的名字跟「augmentation」這個詞連起來。
+- `casualty_log_partial.txt` — 四筆 augmentation 結果（死亡/殘障/現役），**這一輪拿掉了姓名跟 Spartan 編號，只留 case_ref**——玩家要自己用 Act I/II 已經記下的 case_ref↔姓名對照表，才能認出這四筆分別是誰。第一次把 Act I/II 的案件跟「augmentation」這個詞連起來，但不會直接告訴玩家「誰」發生了什麼，見下方 4.2c。
 - `training_roster_fragment.txt` — **只給訓練代號 + 殖民地 + 年齡，不給姓名**，見 4.4 節。
 - `dependent_notification_fragment.txt` — 一份不該留在這個分享的次要送達紀錄殘存片段，指出 Eli Okafor 的通知送達對象是「Naomi Okafor, parent/guardian of record」——這是 LONGSHORE = Naomi Okafor 這條 optional evidence chain 的其中一環，見 `truth-map.md`。
 - `n.okafor_badge_photo.jpg` — 一張員工識別證照片，跟 relay `system_migration_log` 裡「Processed by: N. Okafor, Colonial Records Clerk」那筆紀錄對得上，也剛好跟同一個分享夾裡 `dependent_notification_fragment.txt` 提到的監護人同名同姓。純粹是「這張照片剛好也在這個備份資料夾裡」的巧合擺放，沒有任何文字說明特別指出兩者是同一人——玩家自己要注意到名字重複。這是刻意加強 Naomi Okafor 身份線索真實感的素材，不是必經節點。
 - `old_budget_q3_2546.txt` — 純填充，一份過季的預算摘要，跟劇情完全無關，放著只是因為「備份資料夾裡通常什麼都有」。
+
+### 4.2c 【推理節點 0-archive】案件結果要跨兩個分享、兩輪資料比對才拼得出來
+
+這一輪新增，理由：`casualty_log_partial.txt` 跟 `spartan_designation_crosscheck.txt` 各自看都是「有資料但看不出是誰」——前者只有 case_ref + 結果，後者只有 case_ref + 現役編號，**兩份都不提姓名**。玩家要自己做三段串接：
+
+1. **case_ref → 姓名**：這一步其實不用等到 Act III，Act I（frontier 案件卡的 `transfer_ref` 欄位）跟 Act II（relay `/api/cases/:id` 的完整紀錄）早就把 `OCPA-R4-11902 = Eli Okafor`、`11944 = Talia Wren`、`11887 = Dominic Farrow`、`10733 = Samuel Voight` 這組對照表交到玩家手上了——前提是玩家有自己記下來或截圖下來，遊戲不會在 Act III 幫忙複誦一次。
+2. **case_ref → augmentation 結果**：`casualty_log_partial.txt`（backups share）給的是「11902 augmentation failure, deceased」「11944 augmentation successful, active service」這種格式，玩家要拿第 1 步的對照表回頭套，才知道死的是 Okafor、成功的是 Wren。
+3. **case_ref → 現役編號**：`spartan_designation_crosscheck.txt`（confidential share，需要 sysadmin 密碼才拿得到，跟 backups 的 guest 權限不是同一組）另外給「11944 = Spartan-108」「10733 = Spartan-128」——玩家要把這份**單獨在另一個分享區、用不同存取權限保護**的文件，再套回同一張對照表，才能拼出「Talia Wren 現役編號 Spartan-108，Samuel Voight 現役編號 Spartan-128」。
+
+三份資料（Act I/II 的 case_ref 對照表、backups 的結果、confidential 的編號）刻意分散在不同存取層級——姓名對照免密碼就查得到，結果只要 guest SMB，編號卻要 sysadmin 認證——沒有任何一份單獨的文件會把「某人的名字 + 結果 + 編號」三件事寫在同一段話裡。`casualty_log_partial.txt` 裡那句「Active service designations are not to be cross-referenced against current Spartan service rosters outside of Section III」現在不只是氣氛文字，`spartan_designation_crosscheck.txt` 本身就是那句警告所描述的行為留下的紀錄——這也是為什麼這份比對筆記會被特地收進限閱層級更高的 confidential share，而不是隨手跟結果放在同一個 backups 資料夾裡。
 
 ### 4.3 登入 CAIRN Records Terminal（8080）
 
@@ -343,7 +354,7 @@ proxychains4 curl -b cairn_cookies.txt http://cairn.internal:8080/dashboard
 101/102/104/105 這四份文件掛有真實人物照片（Cmdr. I. Petrov / Dr. M. Castel / CPO M. Kade / Dr. R. Achebe，`RECORD_PHOTOS` dict），103 跟 106 刻意不給照片——不是遺漏，是因為 103 是書信片段、106 是轉移授權書，這兩種文件類型本來就不會附照片，跟其他文件的照片一起看才會覺得「有些文件有照片、有些沒有」是正常的，而不是「系統只做了一半」。
 
 ### 4.4 【推理節點 1】三份 vs 四筆
-102 說 Castel「事後審核簽核了三份」案件檔案，但玩家在 Act II 已經看過**四筆**帶 `transfer_ref` 異常的案件（Okafor / Wren / Farrow / Voight）。這個落差不會自動被指出來——玩家要自己數。
+102 說 Castel「事後審核簽核了三份」案件檔案，但**沒有寫是哪三份**（這一輪拿掉了原本直接列出的三組 case_ref）——玩家在 Act II 已經看過**四筆**帶 `transfer_ref` 異常的案件（Okafor / Wren / Farrow / Voight）。這個落差不會自動被指出來，「哪三份」跟「差了哪一筆」都要玩家自己對表才知道。
 
 答案在 105（現在是三欄：案件編號 / 當地簽署醫師 / ONI 檔案審核——當地醫師才是實際簽署死亡證明的人，完全不知情；ONI 端的審核簽核人才是 Castel/Achebe 的落差所在）：
 ```

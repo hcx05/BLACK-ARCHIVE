@@ -91,7 +91,7 @@
 ### 14. confidential
 - 發現：`valid users = sysadmin`
 - 測試：`proxychains4 smbclient //cairn.internal/confidential -U sysadmin%admin123 -m NT1 -c "ls"`
-- 成功：拿到 acquisition directive（SPARTAN-II 名稱正式出現）、disposition order 掃描件、`cairn_access_log_extract.txt`（Petrov 在 2547-02-11 對 07-B 做過一次 `CUSTODY_STATUS_SET`）、**`cairn_backup_key`（真的 SSH 私鑰）**
+- 成功：拿到 acquisition directive（SPARTAN-II 名稱正式出現，只講「為什麼帶走、怎麼掩蓋」，不講「後來怎麼了」）、disposition order 掃描件、`cairn_access_log_extract.txt`（Petrov 在 2547-02-11 對 07-B 做過一次 `CUSTODY_STATUS_SET`）、`spartan_designation_crosscheck.txt`（兩筆 case_ref 對現役 Spartan 編號的比對，完全沒有姓名）、**`cairn_backup_key`（真的 SSH 私鑰）**
 - 下一步：這台的 SSH 密碼認證被關掉了，用這把 key
 
 ### 15. SSH（key-only）
@@ -102,27 +102,33 @@
 
 ### 16. backups（guest 可讀寫）
 - 測試：`proxychains4 smbclient //cairn.internal/backups -U guest% -m NT1 -c "ls"`
-- 成功：拿到 `casualty_log_partial.txt`（四人 augmentation 結果）、`training_roster_fragment.txt`（只有代號+殖民地+年齡）、`foia_review_2553.txt`（N. Okafor 2553 年正規申請被駁回，內部備註她的名字跟遷移事務員同名）、`n.okafor_badge_photo.jpg`
-- 下一步：訓練代號要自己還原成真名（見推理節點）
+- 成功：拿到 `casualty_log_partial.txt`（四筆 augmentation 結果，**只有 case_ref，沒有姓名也沒有 Spartan 編號**）、`training_roster_fragment.txt`（只有代號+殖民地+年齡）、`foia_review_2553.txt`（N. Okafor 2553 年正規申請被駁回，內部備註她的名字跟遷移事務員同名）、`n.okafor_badge_photo.jpg`
+- 下一步：訓練代號要自己還原成真名（見推理節點）；`casualty_log_partial.txt` 也要靠自己的對照表還原，見 17.
 
-### 17. CAIRN Records Terminal 登入
+### 17. 案件結果 + Spartan 編號重建（跨分享比對，不需要新指令，靠自己的筆記）
+- 發現：`casualty_log_partial.txt`（16.，backups share，guest 權限）跟 `spartan_designation_crosscheck.txt`（14.，confidential share，要 sysadmin 密碼）**都只用 case_ref，完全不寫姓名**，而且分別放在存取權限不同的兩個分享區，不是同一份文件的兩個部分
+- 測試：沒有新指令要打——把手上已經有的三樣東西攤開對表：(a) Act I/II 就記下的 case_ref↔姓名對照（`OCPA-R4-11902=Okafor`、`11944=Wren`、`11887=Farrow`、`10733=Voight`）、(b) 16. 的結果表（`11902` 死亡、`11944` 現役、`11887` 除役有爭議、`10733` 現役）、(c) 14. 的編號表（`11944=Spartan-108`、`10733=Spartan-128`）
+- 成功：拼出「Talia Wren 現役、編號 Spartan-108」「Samuel Voight 現役、編號 Spartan-128」——這個結論沒有任何一份文件單獨講過，是三份文件對表出來的
+- 下一步：CAIRN Records Terminal 還沒登入，去登入讀六份文件
+
+### 18. CAIRN Records Terminal 登入
 - 發現：`/dashboard`、`/records/*` 要 session cookie
 - 測試：`proxychains4 curl -c cairn_cookies.txt -X POST cairn.internal:8080/login -d "username=administrator&password=Records!Access99"`（帳密是 10. 在 `sync.conf` 找到的合法帳密，不是 14.；`-c cairn_cookies.txt` 存下這台自己的 session cookie，不要沿用 6. webmail 那份 `cookie.txt`——是兩台不同主機、各自獨立的 session）
 - 成功：302 + `Set-Cookie: cairn_session=...`，存進 `cairn_cookies.txt`
 - 下一步：帶著這個 cookie 讀 dashboard
 
-### 18. 讀六份 CAIRN 文件
+### 19. 讀六份 CAIRN 文件
 - 測試：`proxychains4 curl -b cairn_cookies.txt cairn.internal:8080/dashboard`，再逐一 `proxychains4 curl -b cairn_cookies.txt .../records/101~106`
-- 成功：101 Disposition Order、102 Castel 自白「事後審核簽核了三份」（她是 ONI 端醫療督導，不是到場簽署的人）、103 Halsey 書信、104 Kade 備忘錄（追加「07-B」線索）、105 Medical Cert Log（102 提到三份，這裡列出四筆，且分「當地簽署醫師」跟「ONI 檔案審核」兩欄，第四份的 ONI 端審核是 Achebe 而非 Castel）、106 07-B 低溫轉移授權
-- 下一步：三個推理節點——(1) 102 說三份 vs 案件其實四筆，答案在 105；(2) 用 16. 的訓練名冊把 07-B 代號還原成 Farrow（Skopje 只有一筆），發現 Kade 說的跟官方紀錄矛盾；(3) 106 給出第三個互相矛盾的版本，遊戲不解答哪個真——都做完之後去提權
+- 成功：101 Disposition Order、102 Castel 自白「事後審核簽核了三份」（**沒寫是哪三份**——她是 ONI 端醫療督導，不是到場簽署的人）、103 Halsey 書信、104 Kade 備忘錄（追加「07-B」線索）、105 Medical Cert Log（102 只說三份、沒寫哪三份，這裡列出四筆並分「當地簽署醫師」跟「ONI 檔案審核」兩欄，要自己數才知道第四份的 ONI 端審核是 Achebe 而非 Castel）、106 07-B 低溫轉移授權
+- 下一步：四個推理節點——(0) 17. 已經做過的案件結果/編號重建；(1) 102 說三份、沒寫哪三份 vs 105 列出四筆，要自己數出少了哪一筆、誰簽的；(2) 用 16. 的訓練名冊把 07-B 代號還原成 Farrow（Skopje 只有一筆），發現 Kade 說的跟官方紀錄矛盾；(3) 106 給出第三個互相矛盾的版本，遊戲不解答哪個真——都做完之後去提權
 
-### 19. 本機提權
+### 20. 本機提權
 - 發現：`/etc/crontab` 有 `PATH=/opt/staging:...` 排在系統目錄前面；`/opt/healthcheck.sh`（root:release 750，讀得到寫不到）內部呼叫未寫絕對路徑的 `logtool`；`id` 顯示 sysadmin 是 `release` 群組成員；`/opt/staging` 對這個群組可寫
 - 測試：在 `/opt/staging` 放一個叫 `logtool` 的腳本（`cp /bin/bash /tmp/rootbash; chmod u+s /tmp/rootbash`），等 root cron 一分鐘內執行
 - 成功：`/tmp/rootbash -p` → `euid=0(root)`
 - 下一步：讀最終文件
 
-### 20. 最終文件
+### 21. 最終文件
 - 測試：`cat /root/cairn_disposition_review.txt`
 - 成功：讀到 Petrov 的私人記述——SPINDLE 除役檢查把 07-B 列入審查清單，他在審查觸發前私自把保管狀態改成「繼續、無需處理」，跳過審查，未經授權；07-B 的三份矛盾來源依然沒有標準答案
 - 下一步：（無，案件結束——但完整真相見 `truth-zh.md` / `truth-en.md`）
