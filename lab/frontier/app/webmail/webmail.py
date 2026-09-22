@@ -1,16 +1,29 @@
 #!/usr/bin/env python3
 """ROSTER Webmail — OCPA Region 4 internal correspondence gateway."""
-import os
+import secrets
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs, urlparse
 
 from content import EMAILS, UI
 
 USERS = {
-    "duty.admin": "MailP@ss2024",
     "sysadmin": "admin123",
     "devuser": "devuser2024",
 }
+
+# In-memory session store, same pattern as the CAIRN Records Terminal on
+# archive. /inbox only renders once /login has actually accepted a
+# password - reading it isn't a separate, unauthenticated path.
+VALID_SESSIONS = set()
+
+
+def has_valid_session(handler):
+    cookie_header = handler.headers.get("Cookie", "")
+    for part in cookie_header.split(";"):
+        part = part.strip()
+        if part.startswith("roster_session="):
+            return part[len("roster_session="):] in VALID_SESSIONS
+    return False
 
 
 STYLE = b"""<html><head><title>OCPA Webmail</title>
@@ -94,6 +107,11 @@ class WebmailHandler(BaseHTTPRequestHandler):
             )
             self.wfile.write(html.encode())
         elif parsed.path == "/inbox":
+            if not has_valid_session(self):
+                self.send_response(302)
+                self.send_header("Location", "/")
+                self.end_headers()
+                return
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.end_headers()
@@ -122,13 +140,6 @@ class WebmailHandler(BaseHTTPRequestHandler):
             except OSError:
                 self.send_response(404)
                 self.end_headers()
-        elif parsed.path == "/debug":
-            # Information disclosure: environment variables
-            self.send_response(200)
-            self.send_header("Content-Type", "text/plain; charset=utf-8")
-            self.end_headers()
-            env_dump = "\n".join(f"{k}={v}" for k, v in os.environ.items())
-            self.wfile.write(env_dump.encode())
         else:
             self.send_response(404)
             self.end_headers()
@@ -142,8 +153,11 @@ class WebmailHandler(BaseHTTPRequestHandler):
             pw = params.get("pass", [""])[0]
             # Vulnerable: no rate limiting, no account lockout
             if user in USERS and USERS[user] == pw:
+                token = secrets.token_hex(16)
+                VALID_SESSIONS.add(token)
                 self.send_response(302)
                 self.send_header("Location", "/inbox")
+                self.send_header("Set-Cookie", f"roster_session={token}; Path=/")
                 self.end_headers()
             else:
                 self.send_response(200)

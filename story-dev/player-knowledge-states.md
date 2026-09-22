@@ -7,8 +7,8 @@
 實際的開場委託信現在只存在於線上 artifact（本機 `briefing/` 目錄已移除），內容是三個案例（Eli Okafor / Talia Wren / Dominic Farrow），加上明確的三個問題（誰授權轉移、原始紀錄去向、Farrow 案為何三十年後被重開）與收尾句「I don't need a theory. I need the record that made them change his file.」，不含任何登入資訊或下一步提示。遊戲現在時間點定死為 2555 年。
 
 ## 開場（拿到 LONGSHORE 的委託後）
-知道：一批兒童紀錄、官方顯示已死亡、委託人懷疑造假。
-不知道：SPINDLE / LEDGER / CAIRN 這些名字、ONI、SPARTAN-II、Halsey。
+知道：一批兒童紀錄、官方顯示已死亡、委託人懷疑造假。SPARTAN-II 本身是公開的戰後英雄象徵，玩家當然聽過這個名字（見開場前的背景介紹）。
+不知道：SPINDLE / LEDGER / CAIRN 這些系統名字、ONI（這個單位本身）、Halsey 在這裡的角色，以及——最重要的——**這起案件跟 SPARTAN-II 有任何關係**。
 
 ## FRONTIER 攻破後
 新增知道：
@@ -18,7 +18,7 @@
 - 一組可能有效的憑證（webmail `sysadmin/admin123`，實際上是密碼重用，不是信裡寫的那組，且密碼本身要把「哪個帳號沒輪替」跟「範本預設值是什麼」兩份獨立文件接起來才推得出來）。
 - （**拿到 shell 後才讀得到，不在 webroot 底下**）T. Reyes 自己的私人筆記，把整個索引比對過一輪，確認這 3 筆案件的異常是真的、且他自己也注意到了但沒有深究。
 - **（推理，非證據）** 「這只是遷移假影」這句官方說法，在三個完全獨立的來源裡幾乎逐字重複，而且兩個殖民地行政單位分別為 Okafor、Wren 的案子反覆詢問過好幾年，每次都被同一套說法打發。玩家此時應該開始懷疑這句話，但手上沒有任何能反駁它的實質證據。
-仍不知道：候選人／transfer reference 的意義、ONI、SPARTAN-II、官方說法到底哪裡不對。
+仍不知道：候選人／transfer reference 的意義、ONI（這個單位本身）、案件跟 SPARTAN-II 之間有沒有關係、官方說法到底哪裡不對。
 
 ## RELAY 攻破後
 新增知道：
@@ -27,7 +27,7 @@
 - 存在一個叫 CAIRN 的更高機密系統，以及一次由 ONI Section III（Cmdr. Petrov）授權的資料遷移/限閱決定。
 - CAIRN Fileshare 的憑證（密碼重用）；CAIRN Records Terminal 的憑證要另外在 relay 檔案系統的 `/etc/ledger/sync.conf` 才找得到，DB 裡不再直接給。
 - relay 自己的官方稽核紀錄（2540 年）說這些異常「只是批次匯入的假影」——跟玩家自己看到的 transfer_ref 模式矛盾，玩家要自己判斷。
-仍不知道：SPARTAN-II 這個名稱本身、flash-clone 機制細節、候選人的最終命運、Halsey 的角色、CAIRN 實際上是什麼樣的系統（現役還是廢棄）。
+仍不知道：這起案件跟 SPARTAN-II 之間的關聯、flash-clone 機制細節、候選人的最終命運、Halsey 的角色、CAIRN 實際上是什麼樣的系統（現役還是廢棄）。
 
 ## ARCHIVE 攻破後（合法帳密 / Samba 取得，未 root）
 新增知道：

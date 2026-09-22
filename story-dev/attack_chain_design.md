@@ -125,12 +125,13 @@ curl "http://TARGET:8080/?page=notes&file=credential_rotation_status.txt"
 
 ### 2.5 Webmail（8025）— 憑證重用的起點
 ```bash
-curl http://TARGET:8025/debug          # 環境變數洩漏：duty.admin / MailP@ss2024
-curl -X POST http://TARGET:8025/login --data "user=sysadmin&pass=admin123"   # 302 -> /inbox
+curl -X POST http://TARGET:8025/login --data "user=sysadmin&pass=admin123"   # 302 -> /inbox，設 session cookie
 ```
 webmail 的登入帳號 `sysadmin` 剛好也是 base image 的真實 OS 帳號 — 這是刻意設計的「密碼重用」示範，不是巧合。
 
-登入後看 `/inbox`（**共 18 封信**，用同一個 session 直接 GET `/inbox` 也看得到，因為**沒有 session 驗證**，這本身也是一個漏洞）。18 封裡有 **7 封跟劇情/漏洞有關**，剩下 11 封是刻意加的填充信件（合規訓練提醒、停水通知、電梯維修、印表機耗材、印表機抱怨、午餐訂購閒聊、patch window 通知、物料補貨、門禁卡停用，加上 3 封 2555 年的近期信件——新印表機、Q1 費用報告、消防演習——確保這個信箱看起來是「現在還在用」，不是一個停在 2547 年的歷史快照）——玩家要自己從一堆無聊的辦公室信件裡認出哪幾封重要，這是這輪特別加強的「訊噪比」設計，不是隨便塞信件湊數。
+**這一輪清掉的兩條冗餘旁路**：webmail 原本同時有兩種不用密碼就能讀信箱的方式——`/debug` 端點洩漏環境變數拿到 `duty.admin/MailP@ss2024`（一組跟主線密碼重用主題無關、且從沒被其他地方消費過的次要帳密）；`/inbox` 本身完全沒有 session 驗證，直接 GET 就能看到全部信件，等於讓 2.4 節辛苦推出來的 `sysadmin/admin123` 變得可有可無。兩條路只留一條：`/debug` 整個端點連同 Dockerfile 裡那三個只為了餵它的 stale env var 一起移除；`/inbox` 補上跟 CAIRN Records Terminal 同一套 session cookie 機制，沒有有效 cookie 一律 302 回登入頁。現在讀信箱唯一的路，就是 2.4 節推論出來的那組密碼——這是唯一保留、也是唯一跟故事有關的那條 credential 路徑。
+
+登入後看 `/inbox`（**共 18 封信**）。18 封裡有 **7 封跟劇情/漏洞有關**，剩下 11 封是刻意加的填充信件（合規訓練提醒、停水通知、電梯維修、印表機耗材、印表機抱怨、午餐訂購閒聊、patch window 通知、物料補貨、門禁卡停用，加上 3 封 2555 年的近期信件——新印表機、Q1 費用報告、消防演習——確保這個信箱看起來是「現在還在用」，不是一個停在 2547 年的歷史快照）——玩家要自己從一堆無聊的辦公室信件裡認出哪幾封重要，這是這輪特別加強的「訊噪比」設計，不是隨便塞信件湊數。
 
 七封關鍵信（依收件時間混雜在其他信件中間，不會排在一起）：
 1. "LEDGER Terminal Access" — 提到一個叫 `svc-relay` 的帳號，**這是死線索**（該帳號根本不存在），但正確指出目標是 `relay.internal`。
@@ -152,7 +153,7 @@ webmail 的登入帳號 `sysadmin` 剛好也是 base image 的真實 OS 帳號 �
 玩家在這裡應該得出的結論，不是「官方在說謊」（那要到 Act II/III 才有實質證據），而是**「官方的說法太一致、太方便，一致到不像自然發生的」**——這是一個建立懷疑的節點，不是給答案的節點，跟後面 3.4/4.4/4.5/4.5b 節「證據互相矛盾、遊戲不告訴你誰對」的處理方式一致，不會提前劇透。（Dominic Farrow 這裡刻意不給對應的殖民地行政公文——三個名字裡留一個沒有這條支線，避免玩家覺得「每個名字都剛好有一封對應的信」太過工整，像是硬湊出來的規律。）
 
 ### Act I 結論（玩家此時應該知道的）
-三筆名字是真的、系統裡有個叫 SPINDLE 的退役系統、有個叫 LEDGER 的內部系統、拿到一組會員密碼 `sysadmin/admin123`；而且應該已經對「這只是遷移假影」這句官方說法產生懷疑——不是因為看到了矛盾的證據（那是 Act II 的事），而是因為這句話太一致、用得太剛好，剛好只蓋住這三個名字。**還不知道**任何 ONI / SPARTAN-II 相關的事，也還沒有任何實質證據能反駁官方說法。
+三筆名字是真的、系統裡有個叫 SPINDLE 的退役系統、有個叫 LEDGER 的內部系統、拿到一組會員密碼 `sysadmin/admin123`；而且應該已經對「這只是遷移假影」這句官方說法產生懷疑——不是因為看到了矛盾的證據（那是 Act II 的事），而是因為這句話太一致、用得太剛好，剛好只蓋住這三個名字。**還不知道**任何 ONI 相關的事，也不知道這起案件跟 SPARTAN-II 有什麼關係，更還沒有任何實質證據能反駁官方說法。
 
 ---
 
@@ -183,11 +184,13 @@ relay 是 dual-homed：DMZ 側 `172.20.1.12`、Internal 側 `10.10.0.12`。SSH �
 ### 3.2 LEDGER API（relay 的 3000 port，只在 internal-facing，不對 host 開 port）
 ```bash
 curl http://127.0.0.1:3000/                       # 列出全部 endpoint（在 relay 本機執行；從 frontier 直連則用 172.20.1.12:3000）
-curl http://127.0.0.1:3000/api/cases               # 列出全部案件（IDOR：無授權檢查）
-curl http://127.0.0.1:3000/api/cases/1              # Eli Okafor — 帶 transfer_ref: SPINDLE-7-0119
-curl http://127.0.0.1:3000/api/cases/5              # 不是案件，是系統帳號：ledger-cairn-sync
+curl http://127.0.0.1:3000/api/cases               # 列出全部案件，但只有 id/name/colony 摘要
+curl http://127.0.0.1:3000/api/cases/1              # 完整紀錄（IDOR：無授權檢查）— Eli Okafor，帶 transfer_ref: SPINDLE-7-0119
+curl http://127.0.0.1:3000/api/cases/5              # 完整紀錄不是案件，是系統帳號：ledger-cairn-sync
 curl http://127.0.0.1:3000/api/health                # 洩漏 cairn.internal:445
 ```
+**這一輪修正**：`/api/cases`（列表）原本直接把每筆的完整內容（含 `transfer_ref`、`case_ref`、id 5 的 `api_key`）一次全倒出來，等於 `/api/cases/:id` 這個「無授權檢查」根本沒有意義可言——列表本身就已經給了一切，IDOR 標籤名不副實。改成列表只回傳 `id`/`name`/`colony`（id 5 只回傳 `id`/`type`），完整內容只有指定 id 單獨查詢才拿得到，`/api/cases/:id` 才真的是「沒有授權檢查，任何 id 都能查」的 IDOR，不是列表的重複輸出。
+
 關鍵發現：`/api/cases/1~3` 都是「已結案死亡」卻帶有一個不該存在的 `transfer_ref`（`SPINDLE-7-01xx`）。`/api/cases/4`（Priya Anand）沒有 `transfer_ref` —— 這是刻意放的對照組，讓玩家自己比較出「不是每筆資料都異常」。
 
 （第十三輪移除：原本這個 API 還有 `/api/fetch?url=` SSRF、`/api/diagnostics` command injection、`/api/files?name=` path traversal 三個「示範用」的洞——SSRF/path traversal 拿到的東西跟 `/api/health` 已經給的資訊重複，command injection 在修掉 supervisord 的 root 執行問題之前，甚至是一條從 frontier 就能直接打、完全不用先拿 relay shell 的意外 root 捷徑。三個都跟主線沒有關係，也不會給任何獨有資訊，已經整段刪除，不再是這台的攻擊面。）
@@ -240,7 +243,7 @@ sync_pass = Records!Access99
 問題是：你在 3.2 節已經親眼看過 `transfer_ref` 的模式，而且只出現在特定幾筆案件上，不是隨機雜訊。這裡遊戲**不告訴你官方是失職還是刻意淡化**——這是故意設計成矛盾、不給答案的節點，呼應作品核心要求「證據可以看似矛盾，玩家自己建立 hypothesis」。
 
 ### Act II 結論
-玩家現在知道：這些孩子在系統裡被當成某種「candidate」處理、有個叫 CAIRN 的更高機密系統、ONI Section III 跟 Cmdr. Petrov 的名字第一次出現、官方紀錄跟你自己查到的東西對不上。**還不知道** SPARTAN-II 這個名稱、flash-clone 機制、Halsey 的角色。
+玩家現在知道：這些孩子在系統裡被當成某種「candidate」處理、有個叫 CAIRN 的更高機密系統、ONI Section III 跟 Cmdr. Petrov 的名字第一次出現、官方紀錄跟你自己查到的東西對不上。**還不知道**案件跟 SPARTAN-II 之間的關聯、flash-clone 機制、Halsey 的角色。
 
 RELAY 沒有本機 root 提權（第十三輪移除了原本的 SUID `spindle-legacy-diag`）：root 在這台解鎖不了任何東西（`/etc/ledger/sync.conf` 本身就是 644，`sysadmin` 就讀得到），留著只是一個打完也什麼都不會多知道的兔子洞。`socat` 還在，但只是給玩家自己拿來 pivoting/tunneling 用的工具，不是提權捷徑（原本掛在 `sudo -l` 上的 `NOPASSWD: /usr/bin/socat` 也已經在更早一輪移除）。
 
@@ -426,10 +429,8 @@ cat /root/cairn_disposition_review.txt
 |---|---|
 | `sysadmin/admin123`（webmail + relay SSH + archive SMB） | frontier `/notes/` 目錄列出的兩份文件合起來：`credential_rotation_status.txt`（哪個帳號還沒輪替：`sysadmin`）+ `welcome.txt`（範本預設密碼是什麼：`admin123`） |
 | `root/S3cretDB!2024`（relay MariaDB） | frontier webmail inbox 第二封信；relay `service_accounts` 沒有這筆但 MariaDB 連線本身就是憑證來源 |
-| `duty.admin/MailP@ss2024`（webmail） | frontier webmail `/debug` 環境變數洩漏 |
 | CAIRN Fileshare 帳密 | relay MariaDB `service_accounts` 表（密碼重用印證） |
 | CAIRN Records Terminal 帳密 | relay 檔案系統 `/etc/ledger/sync.conf`（呼應 API record id 5） |
-| CAIRN Records Terminal 的替代路徑 | SQL injection（不需要密碼） |
 
 ## 附錄 C：完整時間軸 / 真相
 

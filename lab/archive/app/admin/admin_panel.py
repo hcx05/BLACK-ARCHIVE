@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """CAIRN Records Terminal — restricted disposition archive (internal only)."""
-# nosemgrep
 import os
 import pwd
 import secrets
@@ -12,8 +11,8 @@ from content import RECORDS, UI
 
 DB_PATH = "/opt/admin/admin.db"
 
-# In-memory session store. A successful login (legitimate creds or the
-# password-field SQLi) is what's supposed to gate /dashboard and /records/*.
+# In-memory session store. A successful login (legitimate creds, checked
+# via a parameterized query) is what gates /dashboard and /records/*.
 VALID_SESSIONS = set()
 
 

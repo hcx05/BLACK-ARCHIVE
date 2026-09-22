@@ -10,8 +10,9 @@ onboarding packet:
 - The Dependent Status Index is slow to update. If a record looks wrong,
   it's probably just lag from the last SPINDLE migration batch, not an
   actual data error. Don't file a correction ticket for that.
-- The search page still throws unescaped output on bad input. I flagged
-  it two cycles ago. Not my priority right now.
+- The search page used to throw unescaped output on bad input. Flagged as
+  SEC-1204, closed two cycles ago. If you see it happening again, that's
+  a regression - open a new ticket, don't reopen the old one.
 - If you need to reach LEDGER for anything cross-referenced with the
   old case files, you'll need duty.admin credentials, not your own.
   Ask around — I'm not supposed to hand those out over a ticket.

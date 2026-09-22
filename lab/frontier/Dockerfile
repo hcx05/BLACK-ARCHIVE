@@ -66,11 +66,6 @@ RUN chown -R root:root /var/www/html/portal /opt/webmail /var/backups/roster /et
 # already gives, so there isn't one to find.
 RUN chmod -R 777 /var/www/html/portal/uploads
 
-# Stale env vars from the last credential rotation on the webmail gateway
-ENV SMTP_USER=duty.admin
-ENV SMTP_PASS=MailP@ss2024
-ENV SECRET_KEY=roster-webmail-secret-do-not-share
-
 # Host-published webmail port, so the portal's own "Webmail" quicklink
 # points somewhere that actually resolves - the container only knows its
 # own internal port (8025), not which host port a given compose file

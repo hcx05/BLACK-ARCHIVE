@@ -7,9 +7,10 @@ RE: Open items
 - [x] Fix upload validation on Case File Intake — added an image check
       (SEC-1188) so it at least rejects garbage files. Extension
       allowlist/rename still open, marked low priority, don't re-open.
-- [ ] Escape the search query field, for real this time
-- [ ] Pull the /debug endpoint off the webmail box. Should've done this
-      after the audit last year.
+- [x] Escape the search query field. Actually done this time (SEC-1204) -
+      output is HTML-escaped now, verified against the old payload list.
+- [x] Pull the /debug endpoint off the webmail box. A year late, but
+      it's gone. /inbox needs a real session now too while I was in there.
 - [ ] Rotate the sandbox DB password. Again.
 - [ ] Ask records why three "closed" dependent cases from different
       colonies are the only closed cases in the whole index still

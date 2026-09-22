@@ -17,9 +17,16 @@ app.get('/api/cases/:id', (req, res) => {
   }
 });
 
-// List all cases (information disclosure)
+// List all cases (information disclosure) - summary only. Full records,
+// including the transfer_ref anomaly and the id-5 service account, only
+// come back from /api/cases/:id - that's what makes the missing
+// authorization check on that endpoint an actual IDOR instead of a
+// second copy of what this endpoint already hands out.
 app.get('/api/cases', (req, res) => {
-  res.json(Object.values(cases));
+  const summaries = Object.values(cases).map((r) => (
+    r.type === 'system' ? { id: r.id, type: r.type } : { id: r.id, name: r.name, colony: r.colony }
+  ));
+  res.json(summaries);
 });
 
 // Health check exposes internal info

@@ -935,7 +935,7 @@ story-dev/
 - 不像完整 enterprise range
 
 ### 故事
-- 玩家開始不知道 SPARTAN-II
+- 玩家開始不知道案件與 SPARTAN-II 有關
 - 玩家自己從資料中建立假設
 - Halo lore 是調查結果，不是 opening exposition
 - root / highest privilege 只是取得最後證據的工具
