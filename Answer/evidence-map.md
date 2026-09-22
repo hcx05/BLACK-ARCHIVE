@@ -230,3 +230,18 @@
 已重新 `docker compose down && build --no-cache && up` 完整重建三台 host，並重新走了一次**完整攻擊鏈**確認沒有任何主線功能受影響，同時逐一確認每個「砍掉」的東西真的不在了：外部 `nmap` 確認 `6379` 已關閉；`search`/`notes`/`ping` 三個頁面用原本的 payload 測試，全部確認不再可利用，但頁面本身功能正常（ping 還能正常 ping、notes 還能正常讀檔、search 還能正常搜尋，只是輸出有跳脱）；FRONTIER webshell 確認 `sudo -l` 空白、`/opt/backup.sh`/`ops` 群組都不存在；RELAY 確認 `find / -perm -4000` 不再列出任何自訂 SUID 檔案、LEDGER API 的 `/api/diagnostics` 回 404；ARCHIVE 確認 CAIRN 登入的 SQLi payload 回 200（拒絕）而合法帳密回 302（成功）。最後完整重跑一次 FRONTIER→RELAY→ARCHIVE→CAIRN→PATH-hijack→root file 全鏈，`euid=0(root)` 跟 `cairn_disposition_review.txt` 都確認讀到。
 
 更新的文件：`lab/frontier/app/portal/index.php`（XSS/LFI/ping 三個漏洞修掉，功能保留）、`lab/frontier/Dockerfile`（移除 `ops`/`backup.sh`/`sudo` NOPASSWD）、`lab/relay/app/api/server.js`（移除 SSRF/command injection/path traversal 三個 endpoint，刪掉 `data/readme.txt`）、`lab/relay/Dockerfile`（移除 `spindle-legacy-diag`）、`lab/relay/sql/init.sql`（移除 CAIRN Cache 那筆）、`lab/archive/app/admin/admin_panel.py`（SQLi 改參數化查詢）、`lab/archive/Dockerfile`（移除 Redis）、`lab/archive/config/supervisord.conf`（移除 `[program:redis]`）、`story-dev/attack_chain_design.md`（§1 新增原則 7、§2.2/2.3、§3.2/3.3/3.5、§4.3、附錄 A 全部同步）、`Answer/walkthrough.md`（移除步驟 6 Ping，其餘全部重新編號 1-21，CAIRN 登入步驟移除 SQLi）、`story-dev/player-knowledge-states.md`/`timeline.md`/`characters.md`（三處提到 SQLi/Redis 的字句同步修掉）。`story-dev/legacy-mechanics.md` 維持凍結，不更新——那份文件本來就是「原始 VulnCastle 機制」的歷史記錄，不是目前實際漏洞集合的說明。
+
+## 第十四輪：Act I 補一個推理節點，讓「資安」跟「邏輯推理」比重打平
+
+使用者反饋：漏洞/資安素材維持現狀就好（第十三輪剛砍完，不要再動），但覺得**推理內容前半段（Act I）份量太少**，希望資安跟邏輯推理兩邊比重相當。現況確實不平衡：Act II 有一個推理節點（3.4 節，官方稽核 vs 自己查到的證據）、Act III 有三個（4.4/4.5/4.5b），Act I 完全沒有——玩家在 FRONTIER 階段純粹是技術性 enumeration（找立足點、找密碼），沒有任何需要自己下判斷的節點。
+
+新增的是**純粹用 Act I 現有材料就能拼出來的推理節點**，沒有動任何資安/漏洞機制，也沒有用到 Act II/III 才會出現的資料：
+
+1. 新增一封 webmail 郵件（webmail.py 的 `EMAILS`）：Madrigal 殖民地行政單位的 J. Brandt 追問 Talia Wren 案件（`OCPA-R4-11944`），Records 用跟既有的 V. Dumont/Eli Okafor（`OCPA-R4-11902`）那封幾乎一樣的公式化語言打發，還補一句「這已經是回覆你們單位第二次問一樣的問題了」。原本 V. Dumont 那封信在文件裡只算「填充信件」，這輪重新定義成推理素材的一部分。
+2. `attack_chain_design.md` 新增 §2.6【推理節點 0】：把三組獨立線索——(a) 搜尋結果 7 筆裡剛好只有 LONGSHORE 給的 3 筆異常、(b) 三個互不相關的來源對「這只是遷移假影」給出幾乎逐字相同的說法（其中 T. Reyes 自己在私人信裡就已經點出這個異常一致性）、(c) 兩個不同殖民地的行政單位分別為 Okafor、Wren 的案子持續詢問好幾年、每次都被同一套話打發——寫成一個明確的推理節點。結論刻意停在「懷疑」而不是「證據」：玩家這時候還沒有任何能反駁官方說法的實質東西，跟後面 Act II/III 的節點一樣，遊戲不提前劇透。
+3. 刻意**不**幫 Dominic Farrow 也加一封對應的殖民地行政公文——三個名字裡故意留一個沒有這條支線，避免「每個名字都剛好對得上一封信」顯得太工整、像是硬湊出來的規律，而不是玩家自己注意到的真實模式。
+4. 順手修正一個既有的錯誤章節交叉引用：Act I 原本寫「替後面的官方稽核回應（4.4 節）先埋一個伏筆」，4.4 節其實是 Act III 的「三份 vs 四筆」節點，跟這裡講的官方稽核回應（3.4 節，Act II）是兩個不同的東西——已改成正確的 3.4 節。
+
+已重新 `docker compose build --no-cache frontier` 並實測：新郵件正確出現在 `/inbox`，跟 Dumont 那封一樣能靠 `OCPA-R4-11944` 對回搜尋頁的 Talia Wren 案件；收件匣總數從 17 封變成 18 封，關鍵信從 4 封變成 7 封（新增 Brandt 那封，加上把原本算填充的 Dumont、"you're not going to believe this" 兩封重新定義成推理素材）；全鏈路其餘部分（recon/立足點/RELAY/ARCHIVE）不受影響，沒有重新測試主線技術漏洞，因為這輪完全沒有動任何漏洞機制。
+
+更新的文件：`lab/frontier/app/webmail/webmail.py`（新增一封信）、`story-dev/attack_chain_design.md`（新增 §2.6、更新 Act I 結論、更新信件數量統計、修正 4.4→3.4 的錯誤引用）、`Answer/walkthrough.md`（步驟 7 補上推理節點提示、更新信件數量）、`story-dev/player-knowledge-states.md`（FRONTIER 攻破後新增「推理、非證據」的一條）。

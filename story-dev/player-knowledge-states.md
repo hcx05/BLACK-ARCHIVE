@@ -15,7 +15,8 @@
 - Support ticket 提到「SPINDLE」是一個舊系統名稱，多筆案件在遷移時出現異常。
 - 有一個內部系統叫 LEDGER，可能保存更完整的紀錄。
 - 一組可能有效的憑證（webmail `sysadmin/admin123`，實際上是密碼重用，不是信裡寫的那組）。
-仍不知道：候選人／transfer reference 的意義、ONI、SPARTAN-II。
+- **（推理，非證據）** 「這只是遷移假影」這句官方說法，在三個完全獨立的來源裡幾乎逐字重複，而且兩個殖民地行政單位分別為 Okafor、Wren 的案子反覆詢問過好幾年，每次都被同一套說法打發。玩家此時應該開始懷疑這句話，但手上沒有任何能反駁它的實質證據。
+仍不知道：候選人／transfer reference 的意義、ONI、SPARTAN-II、官方說法到底哪裡不對。
 
 ## RELAY 攻破後
 新增知道：

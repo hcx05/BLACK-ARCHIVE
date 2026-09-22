@@ -41,8 +41,8 @@
 ### 7. Webmail 登入 + 收件匣
 - 發現：webmail 登入沒有 session 驗證，登入後 `/inbox` 誰都能直接 GET
 - 測試：`curl -X POST TARGET:8025/login --data "user=sysadmin&pass=admin123"`，再 GET `/inbox`
-- 成功：`sysadmin/admin123` 登入成功；14 封信裡挑出關鍵的幾封：`root/S3cretDB!2024`（LEDGER sandbox）、一串多部門引言串提到 N. Okafor 跟 transfer_ref 異常、一個死線索帳號 `svc-relay`
-- 下一步：這組 `sysadmin/admin123` 同時是 OS 帳號，但 RELAY 沒有映射 SSH port，得先在 FRONTIER 自己拿到一個真正互動式的 shell 才能往裡面 pivot（見 8.）
+- 成功：`sysadmin/admin123` 登入成功；18 封信裡挑出關鍵的幾封：`root/S3cretDB!2024`（LEDGER sandbox）、一串多部門引言串提到 N. Okafor 跟 transfer_ref 異常、一個死線索帳號 `svc-relay`、兩封分別是殖民地行政單位問 Okafor（OCPA-R4-11902）跟 Wren（OCPA-R4-11944）案子被 Records 用幾乎同一套話打發，還提到「不是第一次問了」
+- 下一步：【推理節點 0，非必經但建立懷疑】把這兩封信跟 `welcome.txt`/`todo.txt`/"New Case Handler Onboarding"/"you're not going to believe this" 四個獨立來源的「這只是遷移假影」說法放在一起看——同一句話出現在太多互不相關的地方，而且剛好黏著 LONGSHORE 名單裡至少兩個名字、黏了好幾年，這時候還沒有證據，但應該已經不信官方說法了。這組 `sysadmin/admin123` 同時是 OS 帳號，但 RELAY 沒有映射 SSH port，得先在 FRONTIER 自己拿到一個真正互動式的 shell 才能往裡面 pivot（見 8.）
 
 ---
 
