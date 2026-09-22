@@ -318,7 +318,7 @@ proxychains4 curl -b cairn_cookies.txt http://cairn.internal:8080/dashboard
 | # | 標題 | 內容重點 |
 |---|---|---|
 | 101 | ONI Section III - Disposition Order 2547-014 | 解釋 LEDGER/CAIRN 為什麼分兩層；Cmdr. Petrov 的正式授權；**註明這個節點只是待轉移的 staging mirror**，不是現役最高機密資料中心（解釋了為什麼這台機器資安這麼糟） |
-| 102 | Flash-Clone Substitution Protocol - Medical Annex | 掩蓋機制本身；Dr. Castel 自白「我簽了三份」 |
+| 102 | Flash-Clone Substitution Protocol - Medical Annex | 掩蓋機制本身；Dr. Castel 自白「我事後審核簽核了三份」（她是計畫端醫療督導，不是到場簽署死亡證明的人——實際簽署人是各殖民地當地醫師） |
 | 103 | Correspondence Fragment - C. Halsey to Section III, 2517 | 道德複雜性，不是反派台詞 |
 | 104 | Internal Memo - CPO M. Kade to Records, 2540 | 訓練者的矛盾情感 + 追加的「07-B」線索（見 4.4） |
 | 105 | Medical Certification Log Fragment | 解答 102 的「三份 vs 四筆案件」落差 |
@@ -327,16 +327,17 @@ proxychains4 curl -b cairn_cookies.txt http://cairn.internal:8080/dashboard
 101/102/104/105 這四份文件掛有真實人物照片（Cmdr. I. Petrov / Dr. M. Castel / CPO M. Kade / Dr. R. Achebe，`RECORD_PHOTOS` dict），103 跟 106 刻意不給照片——不是遺漏，是因為 103 是書信片段、106 是轉移授權書，這兩種文件類型本來就不會附照片，跟其他文件的照片一起看才會覺得「有些文件有照片、有些沒有」是正常的，而不是「系統只做了一半」。
 
 ### 4.4 【推理節點 1】三份 vs 四筆
-102 說 Castel「簽了三份」死亡證明，但玩家在 Act II 已經看過**四筆**帶 `transfer_ref` 異常的案件（Okafor / Wren / Farrow / Voight）。這個落差不會自動被指出來——玩家要自己數。
+102 說 Castel「事後審核簽核了三份」案件檔案，但玩家在 Act II 已經看過**四筆**帶 `transfer_ref` 異常的案件（Okafor / Wren / Farrow / Voight）。這個落差不會自動被指出來——玩家要自己數。
 
-答案在 105：
+答案在 105（現在是三欄：案件編號 / 當地簽署醫師 / ONI 檔案審核——當地醫師才是實際簽署死亡證明的人，完全不知情；ONI 端的審核簽核人才是 Castel/Achebe 的落差所在）：
 ```
-OCPA-R4-11902  Dr. M. Castel
-OCPA-R4-11944  Dr. M. Castel
-OCPA-R4-11887  Dr. M. Castel
-OCPA-R4-10733  Dr. R. Achebe   <- 第四份是別人簽的
+案件編號         當地簽署醫師                ONI 檔案審核
+OCPA-R4-11902   Dr. H. Idowu（Eridanus II）  M. Castel
+OCPA-R4-11944   Dr. A. Petrides（Madrigal）  M. Castel
+OCPA-R4-11887   Dr. T. Marlow（Skopje）      M. Castel
+OCPA-R4-10733   Dr. H. Idowu（Eridanus II）  R. Achebe   <- 第四份 ONI 端審核是別人
 ```
-意義：涉入這件事的醫療人員不只 Castel 一個。
+意義：涉入這件事的 ONI 端醫療人員不只 Castel 一個；當地簽署醫師則完全是各殖民地不知情的一般醫師，跟 ONI 端的審核是兩層不同的人。
 
 ### 4.5 【推理節點 2】代號還原真名，兩份來源互相矛盾
 104 的追加段落只用訓練代號「07-B」講一段親眼所見，暗示他其實死在強化手術中：
@@ -419,4 +420,4 @@ cat /root/cairn_disposition_review.txt
 
 ## 附錄 C：完整時間軸 / 真相
 
-遊戲現在時間點：**2555 年**。見 `timeline.md`、`truth-map.md`。簡述：2517 年 ONI Section III 因殖民地叛亂風險發起 SPARTAN-II 計畫（候選人徵召時約 6 歲）→ 用 flash-clone 掩蓋兒童失蹤 → Reach 訓練 + 2525 年 augmentation（死傷不一，Farrow 的結局有三份互相矛盾的來源，永遠不解答）→ 2552 年星盟戰爭結束後這批人成為公開英雄，起源持續保密 → 2547 年舊系統 SPINDLE 退役，資料分流進 LEDGER（一般）與待轉移的 CAIRN staging mirror（機密），Petrov 正式授權整批資料「保留但不公開」，**同一時間他私自把 Farrow/07-B 的低溫懸置單位保管狀態改成「繼續、無需處理」，未經授權跳過了本該觸發的正式審查——這是遊戲真正的終局答案，不是 SPARTAN-II 本身** → LONGSHORE（Naomi Okafor）恰好在同一批 migration 中處理鄰近案件時意外發現 Eli 的異常，又找到一份顯示 Farrow 案在結案數十年後被重新處理過的 index 殘存片段，花約 8 年查證後於 2555 年聯絡玩家，要求玩家查出「誰動了 Farrow 的檔案、為什麼」。
+遊戲現在時間點：**2555 年**。見 `timeline.md`、`truth-map.md`。簡述：SPARTAN-II 代號 2513 年起就在 Section III 內部小規模使用 → 2516 年殖民地叛亂風險推估把它推向全面徵召 → 2517 年正式 Candidate Acquisition Directive 發出（候選人徵召時約 6 歲）→ 用 flash-clone 掩蓋兒童失蹤（當地醫師簽署死亡證明，Castel 在 ONI 端事後審核）→ Reach 訓練（Chief Mendez 主持，CPO Kade 是麾下訓練幹部之一）+ 2525 年 augmentation（死傷不一，Farrow 的結局有三份互相矛盾的來源，永遠不解答）→ 2552 年星盟戰爭結束後這批人成為公開英雄，起源持續保密 → 2547 年舊系統 SPINDLE 退役，資料分流進 LEDGER（一般）與待轉移的 CAIRN staging mirror（機密），Petrov 正式授權整批資料「保留但不公開」，**同一時間他私自把 Farrow/07-B 的低溫懸置單位保管狀態改成「繼續、無需處理」，未經授權跳過了本該觸發的正式審查——這是遊戲真正的終局答案，不是 SPARTAN-II 本身** → LONGSHORE（Naomi Okafor）恰好在同一批 migration 中處理鄰近案件時意外發現 Eli 的異常，又找到一份顯示 Farrow 案在結案數十年後被重新處理過的 index 殘存片段，花約 8 年查證後於 2555 年聯絡玩家，要求玩家查出「誰動了 Farrow 的檔案、為什麼」。

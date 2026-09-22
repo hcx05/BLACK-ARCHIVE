@@ -119,7 +119,7 @@
 
 ### 19. 讀六份 CAIRN 文件
 - 測試：`proxychains4 curl -b cookie.txt cairn.internal:8080/dashboard`，再逐一 `proxychains4 curl -b cookie.txt .../records/101~106`
-- 成功：101 Disposition Order、102 Castel 自白「簽了三份」、103 Halsey 書信、104 Kade 備忘錄（追加「07-B」線索）、105 Medical Cert Log（103 提到三份，這裡列出四筆，第四份是 Achebe 簽的）、106 07-B 低溫轉移授權
+- 成功：101 Disposition Order、102 Castel 自白「事後審核簽核了三份」（她是 ONI 端醫療督導，不是到場簽署的人）、103 Halsey 書信、104 Kade 備忘錄（追加「07-B」線索）、105 Medical Cert Log（102 提到三份，這裡列出四筆，且分「當地簽署醫師」跟「ONI 檔案審核」兩欄，第四份的 ONI 端審核是 Achebe 而非 Castel）、106 07-B 低溫轉移授權
 - 下一步：三個推理節點——(1) 102 說三份 vs 案件其實四筆，答案在 105；(2) 用 17. 的訓練名冊把 07-B 代號還原成 Farrow（Skopje 只有一筆），發現 Kade 說的跟官方紀錄矛盾；(3) 106 給出第三個互相矛盾的版本，遊戲不解答哪個真——都做完之後去提權
 
 ### 20. 本機提權

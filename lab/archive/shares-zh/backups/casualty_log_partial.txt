@@ -4,9 +4,9 @@ RE: SPINDLE 候選人梯隊，2525 年強化週期，結果
 2547 遷移期間留在 backups 分享區。不應該出現在這裡。
 
 候選人（case_ref OCPA-R4-11902 / Eli Okafor）................ 強化失敗，死亡
-候選人（case_ref OCPA-R4-11944 / Talia Wren）.................. 強化成功，現役
+候選人（case_ref OCPA-R4-11944 / Talia Wren）.................. 強化成功，現役，編號 Spartan-141
 候選人（case_ref OCPA-R4-11887 / Dominic Farrow）............. 強化失敗，除役，永久殘障
-候選人（case_ref OCPA-R4-10733 / Samuel Voight）.............. 強化成功，現役
+候選人（case_ref OCPA-R4-10733 / Samuel Voight）.............. 強化成功，現役，編號 Spartan-156
 
 備註：「現役」標記不應該拿去跟 Section III 以外流通的現行 Spartan
 服役名冊做交叉比對。這份紀錄本來應該被銷毀，不該被備份。標記待清理。

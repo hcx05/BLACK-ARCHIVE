@@ -26,7 +26,7 @@
 | archive CAIRN record 102 | Medical Annex（Dr. Castel） | 解釋 flash-clone 掩蓋機制；直接連結四個 case_ref |
 | archive CAIRN record 103 | Halsey 書信片段 | 呈現道德複雜性，非反派台詞 |
 | archive CAIRN record 104 | CPO Kade 備忘錄 | 人性視角：訓練者本人的矛盾情感；**追加段落引入「07-B」訓練代號**，需要玩家自己跟 backups share 的訓練名冊交叉比對才能還原成 Dominic Farrow，並發現他跟官方 casualty log 的紀錄互相矛盾 |
-| archive CAIRN record 105 | Medical Certification Log Fragment | **主動推理節點**：解答「Castel 說簽了三份，但案件有四份」的落差——第四份是 Dr. Achebe 簽的，證明涉入的醫療人員不只 Castel 一人 |
+| archive CAIRN record 105 | Medical Certification Log Fragment | **主動推理節點**：解答「Castel 說審核簽核了三份，但案件有四份」的落差——當地簽署醫師另有其人（不知情），第四份的 ONI 端審核是 Dr. Achebe，證明涉入審核的醫療人員不只 Castel 一人 |
 | archive CAIRN record 106（新增） | Cryogenic Recovery Transfer Authorization - Subject 07-B | Farrow 矛盾的**第三個來源**：官方 casualty log 說「殘障除役」、Kade 說「我看他死了」、這份 2525 年的轉移授權說「臨床無法存活、轉入低溫懸置、之後無追蹤紀錄」——三份都不完整也互相牴觸，遊戲永遠不解答，讓矛盾從「兩份資料一真一假」升級成真正的 forensic ambiguity |
 | archive Samba `backups/training_roster_fragment.txt` | 訓練代號對照表（只有代號+殖民地+年齡，沒有姓名） | 逼玩家做真正的跨文件身分還原（代號 → 殖民地/年齡 → 交叉比對 relay 的 case index → 還原成真名），而不是單純複製貼上同一個字串；年齡已修正為 6-7 歲區間（貼近 canon「約六歲」設定） |
 | archive `/root/cairn_disposition_review.txt`（root only，已改名+**大幅改寫**，見下方 bug 修正） | 最終處置決定書（Petrov 親筆） | **不再重講整個陰謀**，只回答「ONI 為什麼沒有銷毀這批資料」——這是 root 之後唯一新增的資訊，acquisition/flash-clone/augmentation 結果玩家此時應該已經從其他文件自己拼出來了 |
@@ -245,3 +245,18 @@
 已重新 `docker compose build --no-cache frontier` 並實測：新郵件正確出現在 `/inbox`，跟 Dumont 那封一樣能靠 `OCPA-R4-11944` 對回搜尋頁的 Talia Wren 案件；收件匣總數從 17 封變成 18 封，關鍵信從 4 封變成 7 封（新增 Brandt 那封，加上把原本算填充的 Dumont、"you're not going to believe this" 兩封重新定義成推理素材）；全鏈路其餘部分（recon/立足點/RELAY/ARCHIVE）不受影響，沒有重新測試主線技術漏洞，因為這輪完全沒有動任何漏洞機制。
 
 更新的文件：`lab/frontier/app/webmail/webmail.py`（新增一封信）、`story-dev/attack_chain_design.md`（新增 §2.6、更新 Act I 結論、更新信件數量統計、修正 4.4→3.4 的錯誤引用）、`Answer/walkthrough.md`（步驟 7 補上推理節點提示、更新信件數量）、`story-dev/player-knowledge-states.md`（FRONTIER 攻破後新增「推理、非證據」的一條）。
+
+## 第十五輪：六點正史相容性修正
+
+使用者要求讓故事跟 Halo 正史更相容，具體六點：
+
+1. **SPARTAN-II 成立時間**：不再寫成「2516-2517 才決定發起計畫」，改成「代號 2513 年就在 Section III 內部小規模使用（僅理論建模＋少量志願者試驗），2516 年殖民地叛亂風險推估才是把它推向全面徵召的觸發點」，2516-2517 重新定位成「進入正式徵召／執行階段」而不是「發起」。
+2. **「SPARTAN-II」名稱首次出現時間**：不再讓 2517 年的 acquisition directive 是名稱第一次出現——`acquisition_directive_excerpt.txt` 改成「這批人員將編入既有的 SPARTAN-II 計畫（Section III 內部代號，2513 年起使用，至今僅限小規模驗證）」。
+3. **CPO Kade 的定位**：不再讓他像是取代 Mendez、成為 SPARTAN-II 的主要教官。CAIRN record 104 改成「我是 Chief Mendez 在 Reach 的訓練幹部之一，不是負責整個計畫的人——那從頭到尾都是他的計畫。我自己負責的只是 SPINDLE 名單裡一小群，不是整個梯隊」，`characters.md`/`timeline.md`/`truth-map.md`/`truth-en.md`/`truth-zh.md` 同步改成「Mendez 麾下的訓練幹部」而非「Mendez 類比角色」。
+4. **原創候選人名額**：Eli/Talia/Farrow/Voight 明確設定成原本 75 名 SPARTAN-II 候選人裡尚未被正史詳細描述的人（`characters.md`/`truth-map.md`/`truth-en.md`/`truth-zh.md`：「還有七十一個孩子——這一批一共七十五人」），不是額外的第 76、77 人。
+5. **成功服役者的 Spartan 編號**：Talia Wren、Samuel Voight 分別給予 Spartan-141、Spartan-156——刻意避開既有正史角色已使用的編號（John-117、Kelly-087、Fred-104、Linda-058、Jorge-052、Kurt-051、Solomon-069、William-043 等），避免日後撞設定。新增進 `casualty_log_partial.txt`（中英文版）、`characters.md`、`truth-en.md`、`truth-zh.md`。
+6. **Dr. Castel 簽多地死亡證明**：改成本地醫師簽死亡證明（各殖民地不知情的一般醫師：Dr. H. Idowu / Eridanus II、Dr. A. Petrides / Madrigal、Dr. T. Marlow / Skopje），Castel 在 ONI Section III 的角色改成計畫端醫療督導，負責事後審核／確認案件檔案結案沒有問題，並不親自到場簽署。CAIRN record 102 改寫成她的自白是「事後審核並簽核了三份案件檔案」；record 105 從兩欄（案件編號/簽署醫師）改成三欄（案件編號/當地簽署醫師/ONI 檔案審核），第四份 Voight 的 ONI 端審核仍是 Dr. R. Achebe——4.4 節「三份 vs 四筆」的推理邏輯本身不變，只是欄位語意從「誰簽的」變成「當地簽的 vs ONI 審核的」。
+
+順手修掉兩個既有的用詞落差（review 時發現，跟本輪主題相關但屬於既有小 bug）：`Answer/walkthrough.md` 步驟 19 把「105（103 提到三份...）」的錯誤交叉引用改成「105（102 提到三份...）」；`characters.md`/`Answer/evidence-map.md` 裡舊的「Castel 說她簽了三份」統一改成「Castel 說她審核簽核了三份」，跟 record 102/105 的新措辭一致。
+
+更新的文件：`lab/archive/app/admin/content_en.py`/`content_zh.py`（record 102/104/105）、`lab/archive/shares/confidential/acquisition_directive_excerpt.txt`＋`shares-zh` 對應版本、`lab/archive/shares/backups/casualty_log_partial.txt`＋`shares-zh` 對應版本、`Answer/truth-en.md`、`Answer/truth-zh.md`、`story-dev/truth-map.md`、`story-dev/timeline.md`、`story-dev/characters.md`、`story-dev/attack_chain_design.md`（§4.4、附錄 C 摘要、CAIRN 六份文件表格的 102 一行）、`Answer/walkthrough.md`（步驟 19）、`Answer/evidence-map.md`（record 105 一行）。英文版 archive 已 `--no-cache` 重建並透過完整 pivot 鏈實測 record 102/104/105 與兩份 SMB 檔案渲染正確；中文版 archive 已重建但尚待實測。遊戲機制、帳密、`transfer_ref`、案件編號、SQL/PATH-hijack 等所有漏洞邏輯完全沒有變動，這輪純粹是敘事文字修正。
