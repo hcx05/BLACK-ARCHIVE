@@ -1,0 +1,80 @@
+###############################################################################
+# BLACK ARCHIVE - Chinese content build
+# Same images, same Dockerfiles, same vulnerability mechanics as
+# docker-compose.yml - only difference is ARG LANG=zh, which selects the
+# Chinese content_*.php/py/notes-zh/etc. files at build time instead of the
+# English ones. Runs as a fully separate stack (own network, own ports,
+# own container names) so it can coexist with the English deployment.
+# DO NOT expose to the internet.
+###############################################################################
+
+name: black-archive-zh
+
+services:
+  frontier:
+    build:
+      context: ./lab/frontier
+      dockerfile: Dockerfile
+      args:
+        LANG: zh
+    container_name: ba-frontier-zh
+    hostname: frontier
+    networks:
+      dmz-zh:
+        ipv4_address: 172.21.1.10
+    ports:
+      - "18080:80"
+      - "18025:8025"
+    restart: unless-stopped
+
+  relay:
+    build:
+      context: ./lab/relay
+      dockerfile: Dockerfile
+      args:
+        LANG: zh
+    container_name: ba-relay-zh
+    hostname: relay
+    networks:
+      dmz-zh:
+        ipv4_address: 172.21.1.12
+        aliases:
+          - relay.internal
+      internal-zh:
+        ipv4_address: 10.11.0.12
+        aliases:
+          - relay.internal
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  archive:
+    build:
+      context: ./lab/archive
+      dockerfile: Dockerfile
+      args:
+        LANG: zh
+    container_name: ba-archive-zh
+    hostname: cairn
+    networks:
+      internal-zh:
+        ipv4_address: 10.11.0.15
+        aliases:
+          - cairn.internal
+    restart: unless-stopped
+
+networks:
+  dmz-zh:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.1.0/24
+          gateway: 172.21.1.1
+
+  internal-zh:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.11.0.0/24
+          gateway: 10.11.0.1

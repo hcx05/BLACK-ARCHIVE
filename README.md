@@ -76,6 +76,20 @@ docker compose up -d --force-recreate   # 沒改程式碼，只是想重置成�
 
 FRONTIER 預設對外開在 `8080`（portal）、`8025`（webmail）；如果是從另一台攻擊機打，把 `localhost` 換成跑 docker 那台受害機的 IP 就好（兩台機器要能互相 ping 通）。RELAY 跟 ARCHIVE 都沒有映射任何 host port，從外部（攻擊機）打不到——要先在 FRONTIER 拿到 shell，再從裡面 pivot。
 
+### 5. 中文版
+
+遊戲內容（漏洞機制、密碼、案件編號、攻擊鏈）跟英文版完全一樣，只是網站/文件/信件內容換成中文，兩個版本用不同 port、可以同時跑：
+
+```bash
+docker compose -f docker-compose.zh.yml up -d --build
+```
+
+中文版對外開在 `18080`（portal）、`18025`（webmail），跟英文版的 `8080`/`8025` 是完全獨立的兩套 container/network，互不干擾。停止：
+
+```bash
+docker compose -f docker-compose.zh.yml down
+```
+
 ## 免責聲明
 
 **此環境為刻意設計的漏洞靶場，僅供授權安全訓練使用。**

@@ -1,5 +1,10 @@
 FROM black-archive-base:latest
 
+# Selects which language content pack gets built into this image. The app
+# code never branches on language at runtime - each language is a separate
+# built image (see docker-compose.zh.yml), picked at build time here.
+ARG LANG=en
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
     php-fpm \
@@ -17,6 +22,17 @@ RUN PHP_INI_DIR=$(ls -d /etc/php/*/fpm | head -n1) \
 COPY app/portal/ /var/www/html/portal/
 COPY app/webmail/ /opt/webmail/
 COPY config/nginx.conf /etc/nginx/sites-available/default
+
+# Select the content pack for this build's LANG and drop the other one -
+# index.php just requires content.php, it has no idea which language it is.
+RUN cp /var/www/html/portal/content_${LANG}.php /var/www/html/portal/content.php \
+    && rm -f /var/www/html/portal/content_en.php /var/www/html/portal/content_zh.php \
+    && cp /opt/webmail/content_${LANG}.py /opt/webmail/content.py \
+    && rm -f /opt/webmail/content_en.py /opt/webmail/content_zh.py \
+    && if [ -d "/var/www/html/portal/notes-${LANG}" ]; then \
+         rm -rf /var/www/html/portal/notes && mv /var/www/html/portal/notes-${LANG} /var/www/html/portal/notes; \
+       fi \
+    && rm -rf /var/www/html/portal/notes-en /var/www/html/portal/notes-zh
 
 # COPY preserves whatever mode these files had in the build context, which
 # depends on the umask of whoever ran the build - not something to rely on

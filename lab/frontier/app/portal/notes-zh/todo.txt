@@ -1,0 +1,16 @@
+//OCPA 第四區 - 內部使用//
+FROM: T. Reyes (Systems)
+TO: Self / Systems Backlog
+DATE: 2547-02-09
+RE: 待辦事項
+
+- [x] 修好 Case File Intake 的上傳驗證 — 加了一個影像檢查（SEC-1188），
+      至少會擋掉明顯不是圖片的檔案。副檔名白名單/重新命名還沒做，標成
+      低優先，不要重新開這一項。
+- [ ] 把 search 欄位的輸出跳脫掉，這次真的要做
+- [ ] 把 webmail 那台的 /debug 端點拔掉。去年稽核完就該做了。
+- [ ] 再一次輪替 sandbox DB 密碼。
+- [ ] 問一下 records 為什麼三個不同殖民地的「已結案」被扶養人案件，
+      transfer reference 都指向同一個內部參照。可能沒什麼。可能只是
+      SPINDLE 時期的批次匯入假影。
+- [ ] 不要再把最後一項講出來了。

@@ -1,0 +1,5 @@
+歡迎使用 CAIRN Records File Server。
+
+這個分享區是給 disposition team 一般檔案交換用的。限閱資料不應該放在
+這裡——任何屬於保留處置的東西，請用 confidential 分享區跟 records
+terminal。

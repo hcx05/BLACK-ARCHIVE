@@ -8,44 +8,9 @@ $page = isset($_GET['page']) ? $_GET['page'] : 'home';
 // placeholder. This is the same batch of closed cases OCPA can legally
 // disclose the existence of; internal transfer/disposition detail lives
 // on other systems entirely.
-$DEPENDENT_INDEX = array(
-    array('name' => 'Eli Okafor', 'colony' => 'Eridanus II', 'case_ref' => 'OCPA-R4-11902',
-          'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_okafor.png'),
-    array('name' => 'Talia Wren', 'colony' => 'Madrigal', 'case_ref' => 'OCPA-R4-11944',
-          'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_wren.png'),
-    array('name' => 'Dominic Farrow', 'colony' => 'Skopje', 'case_ref' => 'OCPA-R4-11887',
-          'status' => 'Case Closed - Deceased (medical, age 6)', 'image' => 'case_farrow.png'),
-    array('name' => 'Priya Anand', 'colony' => 'Eridanus II', 'case_ref' => 'OCPA-R4-12210',
-          'status' => 'Active - standard dependent case', 'image' => 'case_anand.png'),
-    array('name' => 'Marcus Webb', 'colony' => 'Tribute', 'case_ref' => 'OCPA-R4-12551',
-          'status' => 'Active - standard dependent case', 'image' => 'case_webb.png'),
-    array('name' => 'Dana Song', 'colony' => 'Coral', 'case_ref' => 'OCPA-R4-12608',
-          'status' => 'Active - standard dependent case', 'image' => 'case_song.png'),
-    array('name' => 'Theo Alvarez', 'colony' => 'Eridanus II', 'case_ref' => 'OCPA-R4-12439',
-          'status' => 'Case Closed - Family relocated off-colony', 'image' => 'case_alvarez.png'),
-);
+require __DIR__ . '/content.php';
 
-$NAV = array(
-    'home' => 'Dashboard',
-    'search' => 'Dependent Status Index',
-    'upload' => 'Case File Intake',
-    'ping' => 'Network Diagnostics',
-    'notes' => 'Support Tickets',
-);
-$page_title = isset($NAV[$page]) ? $NAV[$page] : 'Not Found';
-
-$SERVICES = array(
-    array('name' => 'ROSTER Terminal', 'status' => 'ok'),
-    array('name' => 'Webmail Gateway', 'status' => 'ok'),
-    array('name' => 'LEDGER Sync', 'status' => 'ok'),
-    array('name' => 'Case File Intake', 'status' => 'degraded'),
-);
-$TIPS = array(
-    'Case reference numbers follow OCPA-R{region}-{5 digits}. Bookmark frequent lookups instead of re-searching each time.',
-    'Terminal sessions expire after 20 minutes idle. Save case notes before stepping away.',
-    'Support Tickets is monitored by Systems on business days only. For urgent access issues, use the Building 2 helpdesk in person.',
-    'Scanned intake files over 25MB may time out on upload. Split large case files before submitting.',
-);
+$page_title = isset($NAV[$page]) ? $NAV[$page] : $STR['page_title_not_found'];
 $tip = $TIPS[intval(date('j')) % count($TIPS)];
 ?>
 <!DOCTYPE html>
@@ -53,7 +18,7 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ROSTER :: OCPA Regional Terminal</title>
+    <title><?php echo htmlspecialchars($STR['html_title']); ?></title>
     <link rel="icon" type="image/png" href="assets/ocpa_seal.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -233,14 +198,14 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
     </style>
 </head>
 <body>
-<div class="topbar">UNSC OCPA NETWORK &mdash; AUTHORIZED PERSONNEL ONLY &mdash; ACTIVITY IS LOGGED (Reg. 4 Systems Directive 09)</div>
+<div class="topbar"><?php echo $STR['topbar']; ?></div>
 <div class="shell">
     <aside class="sidebar">
         <div class="brand">
             <img src="assets/unsc_insignia.png" alt="">
             <div>
-                <div class="name">ROSTER Terminal</div>
-                <div class="sub">OCPA &middot; Region 4</div>
+                <div class="name"><?php echo htmlspecialchars($STR['brand_name']); ?></div>
+                <div class="sub"><?php echo $STR['brand_sub']; ?></div>
             </div>
         </div>
         <nav class="sidenav">
@@ -250,15 +215,15 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
 <?php endforeach; ?>
         </nav>
         <div class="sidefoot">
-            SESSION duty-terminal-04<span class="cursor-blink"></span><br>
-            LAST LOGIN 2555-03-19 07:45
+            <?php echo htmlspecialchars($STR['sidefoot_session']); ?><span class="cursor-blink"></span><br>
+            <?php echo htmlspecialchars($STR['sidefoot_lastlogin']); ?>
         </div>
     </aside>
 
     <main class="main">
         <div class="pagebar">
             <div>
-                <div class="crumb">OCPA &rsaquo; ROSTER &rsaquo; <b><?php echo htmlspecialchars($page_title); ?></b></div>
+                <div class="crumb"><?php echo $STR['breadcrumb_root']; ?> <b><?php echo htmlspecialchars($page_title); ?></b></div>
                 <h1 class="page-title"><?php echo htmlspecialchars($page_title); ?></h1>
             </div>
         </div>
@@ -268,31 +233,31 @@ $tip = $TIPS[intval(date('j')) % count($TIPS)];
 switch($page) {
     case 'home':
         echo '<div class="dash-grid">';
-        echo '<div class="stat"><div class="num">142</div><div class="lbl">Active dependent cases</div></div>';
-        echo '<div class="stat"><div class="num">38</div><div class="lbl">Closed this quarter</div></div>';
-        echo '<div class="stat"><div class="num">6</div><div class="lbl">Pending review</div></div>';
-        echo '<div class="stat"><div class="num">3</div><div class="lbl">Open support tickets</div></div>';
+        echo '<div class="stat"><div class="num">142</div><div class="lbl">' . htmlspecialchars($STR['stat_active_cases']) . '</div></div>';
+        echo '<div class="stat"><div class="num">38</div><div class="lbl">' . htmlspecialchars($STR['stat_closed_quarter']) . '</div></div>';
+        echo '<div class="stat"><div class="num">6</div><div class="lbl">' . htmlspecialchars($STR['stat_pending_review']) . '</div></div>';
+        echo '<div class="stat"><div class="num">3</div><div class="lbl">' . htmlspecialchars($STR['stat_open_tickets']) . '</div></div>';
         echo '</div>';
 
-        echo '<h2>System Notices</h2>';
+        echo '<h2>' . htmlspecialchars($STR['system_notices']) . '</h2>';
         echo '<div class="board">';
-        echo '<div class="board-item"><span>Annual badge photo retake week - sign-up sheet at the Facilities desk, Building 2.</span><span class="tag">2555-03-19</span></div>';
-        echo '<div class="board-item"><span>Scheduled maintenance window, Sun 0200-0400 - terminal may be briefly unavailable.</span><span class="tag">2555-03-18</span></div>';
-        echo '<div class="board-item"><span>Cafeteria closed for deep clean, Thu 1100-1400. Vending machines on 2nd and 4th floor unaffected.</span><span class="tag">2555-03-14</span></div>';
-        echo '<div class="board-item"><span>Building 3 elevator inspection, Wed 0800-1200 - use the east stairwell during that window.</span><span class="tag">2555-03-11</span></div>';
-        echo '<div class="board-item"><span>Water shutoff, Building 4, Tue 0600-0900 - see Support Tickets for details.</span><span class="tag">2555-03-09</span></div>';
-        echo '<div class="board-item"><span>Lot C resurfacing complete. Standard permit parking resumes Monday.</span><span class="tag">2555-03-06</span></div>';
-        echo '<div class="board-item"><span>Reminder: case file intake accepts scanned correspondence and transfer notes only.</span><span class="tag">2555-02-27</span></div>';
-        echo '<div class="board-item"><span>Region 4 quarterly all-hands moved to the 25th, same time, same room.</span><span class="tag">2555-02-19</span></div>';
+        echo '<div class="board-item"><span>' . htmlspecialchars($STR['notice_1']) . '</span><span class="tag">2555-03-19</span></div>';
+        echo '<div class="board-item"><span>' . htmlspecialchars($STR['notice_2']) . '</span><span class="tag">2555-03-18</span></div>';
+        echo '<div class="board-item"><span>' . htmlspecialchars($STR['notice_3']) . '</span><span class="tag">2555-03-14</span></div>';
+        echo '<div class="board-item"><span>' . htmlspecialchars($STR['notice_4']) . '</span><span class="tag">2555-03-11</span></div>';
+        echo '<div class="board-item"><span>' . htmlspecialchars($STR['notice_5']) . '</span><span class="tag">2555-03-09</span></div>';
+        echo '<div class="board-item"><span>' . htmlspecialchars($STR['notice_6']) . '</span><span class="tag">2555-03-06</span></div>';
+        echo '<div class="board-item"><span>' . htmlspecialchars($STR['notice_7']) . '</span><span class="tag">2555-02-27</span></div>';
+        echo '<div class="board-item"><span>' . htmlspecialchars($STR['notice_8']) . '</span><span class="tag">2555-02-19</span></div>';
         echo '</div>';
 
-        echo '<h2>Quick Links</h2>';
+        echo '<h2>' . htmlspecialchars($STR['quick_links']) . '</h2>';
         echo '<div class="quicklinks">';
-        echo '<a href="?page=search">Dependent Status Index</a>';
-        echo '<a href="?page=upload">Case File Intake</a>';
-        echo '<a href="?page=notes">Support Tickets</a>';
+        echo '<a href="?page=search">' . htmlspecialchars($STR['quicklink_search']) . '</a>';
+        echo '<a href="?page=upload">' . htmlspecialchars($STR['quicklink_upload']) . '</a>';
+        echo '<a href="?page=notes">' . htmlspecialchars($STR['quicklink_notes']) . '</a>';
         $request_host = explode(':', $_SERVER['HTTP_HOST'])[0];
-        echo '<a href="http://' . htmlspecialchars($request_host) . ':8025">Webmail</a>';
+        echo '<a href="http://' . htmlspecialchars($request_host) . ':8025">' . htmlspecialchars($STR['quicklink_webmail']) . '</a>';
         echo '</div>';
         break;
 
@@ -311,27 +276,27 @@ switch($page) {
             }
         }
         if ($detail_rec) {
-            echo '<a class="detail-back" href="?page=search">&laquo; back to Dependent Status Index</a>';
+            echo '<a class="detail-back" href="?page=search">' . $STR['search_back'] . '</a>';
             echo '<div class="detail-card">';
             echo '<img src="assets/' . htmlspecialchars($detail_rec['image']) . '" width="280">';
             echo '<div>';
             echo '<h2>' . htmlspecialchars($detail_rec['name']) . '</h2>';
-            echo '<div class="field">Colony of record: ' . htmlspecialchars($detail_rec['colony']) . '</div>';
-            echo '<div class="field">Case reference: ' . htmlspecialchars($detail_rec['case_ref']) . '</div>';
-            echo '<div class="field">Status: ' . htmlspecialchars($detail_rec['status']) . '</div>';
+            echo '<div class="field">' . htmlspecialchars($STR['field_colony']) . ' ' . htmlspecialchars($detail_rec['colony']) . '</div>';
+            echo '<div class="field">' . htmlspecialchars($STR['field_case_ref']) . ' ' . htmlspecialchars($detail_rec['case_ref']) . '</div>';
+            echo '<div class="field">' . htmlspecialchars($STR['field_status']) . ' ' . htmlspecialchars($detail_rec['status']) . '</div>';
             echo '</div></div>';
             break;
         }
 
         $query = isset($_GET['q']) ? $_GET['q'] : '';
-        echo '<p>Search by dependent name, colony of record, or case reference number.</p>';
+        echo '<p>' . htmlspecialchars($STR['search_intro']) . '</p>';
         echo '<form method="GET">';
         echo '<input type="hidden" name="page" value="search">';
-        echo '<input type="text" name="q" placeholder="Search records..." value="' . htmlspecialchars($query) . '">';
-        echo ' <input type="submit" value="Search">';
+        echo '<input type="text" name="q" placeholder="' . htmlspecialchars($STR['search_placeholder']) . '" value="' . htmlspecialchars($query) . '">';
+        echo ' <input type="submit" value="' . htmlspecialchars($STR['search_submit']) . '">';
         echo '</form>';
         if ($query) {
-            echo "<p style='margin-top:16px'>Results for: " . htmlspecialchars($query) . "</p>";
+            echo "<p style='margin-top:16px'>" . htmlspecialchars($STR['search_results_for']) . " " . htmlspecialchars($query) . "</p>";
             $needle = strtolower($query);
             $hits = array();
             foreach ($DEPENDENT_INDEX as $rec) {
@@ -347,45 +312,45 @@ switch($page) {
                     echo '<img src="assets/' . $rec['image'] . '" width="140">';
                     echo '<div>';
                     echo '<div class="name">' . htmlspecialchars($rec['name']) . '</div>';
-                    echo '<div class="field">Colony of record: ' . htmlspecialchars($rec['colony']) . '</div>';
-                    echo '<div class="field">Case reference: ' . htmlspecialchars($rec['case_ref']) . '</div>';
-                    echo '<div class="field">Status: ' . htmlspecialchars($rec['status']) . '</div>';
+                    echo '<div class="field">' . htmlspecialchars($STR['field_colony']) . ' ' . htmlspecialchars($rec['colony']) . '</div>';
+                    echo '<div class="field">' . htmlspecialchars($STR['field_case_ref']) . ' ' . htmlspecialchars($rec['case_ref']) . '</div>';
+                    echo '<div class="field">' . htmlspecialchars($STR['field_status']) . ' ' . htmlspecialchars($rec['status']) . '</div>';
                     echo '</div></div></a>';
                 }
             } else {
-                echo "<p>No records found matching your query in the current index.</p>";
+                echo "<p>" . htmlspecialchars($STR['search_no_results']) . "</p>";
             }
         }
         break;
 
     case 'upload':
         echo '<div class="panel">';
-        echo '<p style="margin-top:0">Upload scanned correspondence, medical transfer notes, or archived case material for indexing.</p>';
+        echo '<p style="margin-top:0">' . htmlspecialchars($STR['upload_intro']) . '</p>';
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
             $target = '/var/www/html/portal/uploads/' . basename($_FILES['file']['name']);
             // Post-finding patch (SEC-1188): reject anything that isn't a
             // decodable image. Still no extension allowlist or rename -
             // that part of the finding was marked "won't fix" (see todo.txt).
             if (@getimagesize($_FILES['file']['tmp_name']) === false) {
-                echo "<p class='warning'>Intake rejected: file does not appear to be a valid scanned image.</p>";
+                echo "<p class='warning'>" . htmlspecialchars($STR['upload_rejected']) . "</p>";
             } elseif (move_uploaded_file($_FILES['file']['tmp_name'], $target)) {
-                echo "<p>File indexed: <a href='/uploads/" . basename($_FILES['file']['name']) . "'>" . htmlspecialchars($_FILES['file']['name']) . "</a></p>";
+                echo "<p>" . htmlspecialchars($STR['upload_indexed']) . " <a href='/uploads/" . basename($_FILES['file']['name']) . "'>" . htmlspecialchars($_FILES['file']['name']) . "</a></p>";
             } else {
-                echo "<p class='warning'>Intake failed.</p>";
+                echo "<p class='warning'>" . htmlspecialchars($STR['upload_failed']) . "</p>";
             }
         }
         echo '<form method="POST" enctype="multipart/form-data">';
         echo '<input type="file" name="file"><br><br>';
-        echo '<input type="submit" value="Submit">';
+        echo '<input type="submit" value="' . htmlspecialchars($STR['upload_submit']) . '">';
         echo '</form>';
         echo '</div>';
         break;
 
     case 'ping':
-        echo '<p>Legacy tool left over from the ROSTER migration. Reach out to Systems if it misbehaves.</p>';
+        echo '<p>' . htmlspecialchars($STR['ping_intro']) . '</p>';
         echo '<form method="POST">';
-        echo '<input type="text" name="host" placeholder="Enter hostname or IP">';
-        echo ' <input type="submit" value="Ping">';
+        echo '<input type="text" name="host" placeholder="' . htmlspecialchars($STR['ping_placeholder']) . '">';
+        echo ' <input type="submit" value="' . htmlspecialchars($STR['ping_submit']) . '">';
         echo '</form>';
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['host'])) {
             $host = $_POST['host'];
@@ -396,7 +361,7 @@ switch($page) {
                 $output = shell_exec("ping -c 3 " . escapeshellarg($host));
                 echo '<pre style="margin-top:16px">' . htmlspecialchars($output) . '</pre>';
             } else {
-                echo '<p class="warning">Invalid hostname or IP.</p>';
+                echo '<p class="warning">' . htmlspecialchars($STR['ping_invalid']) . '</p>';
             }
         }
         break;
@@ -404,8 +369,8 @@ switch($page) {
     case 'notes':
         $file = isset($_GET['file']) ? $_GET['file'] : 'welcome.txt';
         echo '<ul class="ticket-list">';
-        echo '<li><a href="?page=notes&file=welcome.txt">Onboarding Note (T. Reyes)</a></li>';
-        echo '<li><a href="?page=notes&file=todo.txt">Open Items &mdash; Systems</a></li>';
+        echo '<li><a href="?page=notes&file=welcome.txt">' . htmlspecialchars($STR['notes_link_welcome']) . '</a></li>';
+        echo '<li><a href="?page=notes&file=todo.txt">' . $STR['notes_link_todo'] . '</a></li>';
         echo '</ul>';
         // basename() strips any directory component, so ../ traversal
         // collapses to a lookup inside notes/ instead of escaping it.
@@ -414,29 +379,29 @@ switch($page) {
         if (in_array($file, $reyes_files, true)) {
             echo '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">';
             echo '<a href="assets/t_reyes.jpg" target="_blank" rel="noopener"><img src="assets/t_reyes.jpg" width="60" style="border-radius:0;border:1px solid var(--border)"></a>';
-            echo '<div><div style="font-size:14.5px;font-weight:600;color:var(--text)">T. Reyes</div><div style="font-size:12px;color:var(--text-faint)">Systems &middot; ROSTER / LEDGER</div></div>';
+            echo '<div><div style="font-size:14.5px;font-weight:600;color:var(--text)">' . htmlspecialchars($STR['notes_reyes_name']) . '</div><div style="font-size:12px;color:var(--text-faint)">' . $STR['notes_reyes_dept'] . '</div></div>';
             echo '</div>';
         }
         if (file_exists($filepath)) {
             echo "<pre>" . htmlspecialchars(file_get_contents($filepath)) . "</pre>";
         } else {
-            echo "<p>File not found.</p>";
+            echo "<p>" . htmlspecialchars($STR['notes_not_found']) . "</p>";
         }
         break;
 
     default:
-        echo "<p>Page not found.</p>";
+        echo "<p>" . htmlspecialchars($STR['page_not_found']) . "</p>";
 }
 ?>
-            <footer>ROSTER Terminal v2.1 &mdash; OCPA Region 4 &middot; Do not forward case material off-network.</footer>
+            <footer><?php echo $STR['footer']; ?></footer>
         </div>
         <aside class="rail">
             <div class="rail-card">
-                <h3>Regional Network</h3>
-                <img src="assets/region_map.png" alt="OCPA Region 4 network reference">
+                <h3><?php echo htmlspecialchars($STR['rail_regional_network']); ?></h3>
+                <img src="assets/region_map.png" alt="<?php echo htmlspecialchars($STR['rail_region_alt']); ?>">
             </div>
             <div class="rail-card">
-                <h3>System Status</h3>
+                <h3><?php echo htmlspecialchars($STR['rail_system_status']); ?></h3>
                 <div class="body" style="padding:6px 0">
 <?php foreach ($SERVICES as $svc): ?>
                     <div class="status-row"><span class="dot <?php echo $svc['status']; ?>"></span><?php echo htmlspecialchars($svc['name']); ?></div>
@@ -444,8 +409,8 @@ switch($page) {
                 </div>
             </div>
             <div class="rail-card tip-card">
-                <h3>Terminal Tip</h3>
-                <div class="body"><span class="tip-label">TIP&nbsp;&mdash;</span> <?php echo htmlspecialchars($tip); ?></div>
+                <h3><?php echo htmlspecialchars($STR['rail_terminal_tip']); ?></h3>
+                <div class="body"><span class="tip-label"><?php echo $STR['tip_label']; ?></span> <?php echo htmlspecialchars($tip); ?></div>
             </div>
         </aside>
         </div>

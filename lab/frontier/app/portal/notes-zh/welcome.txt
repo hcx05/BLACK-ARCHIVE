@@ -1,0 +1,21 @@
+//OCPA 第四區 - 內部使用//
+FROM: T. Reyes (Systems)
+TO: New Terminal User
+DATE: 2547-02-02
+RE: ROSTER 新人須知
+
+歡迎加入。有幾件事官方新人手冊裡沒寫：
+
+- 被扶養人狀態索引更新比較慢。如果一筆紀錄看起來不對，八成只是上次
+  SPINDLE 遷移批次留下的延遲，不是真的資料錯誤。不用為這個開更正工單。
+- search 頁面對錯誤輸入還是會直接輸出、沒有跳脫。我兩個週期前就標記過
+  了。現在不是我的優先事項。
+- 如果需要用跟舊案件檔交叉比對的方式連 LEDGER，要用 duty.admin 的帳密，
+  不是你自己的。自己去問——這個我不方便直接寫在工單裡給。
+- sandbox 實例的開發用 DB 帳密，以防 Ops 又來問：
+    host: relay.internal
+    user: app_svc
+    pass: S3cretDB!2024
+  （這只是 sandbox 複本。不要拿去打任何正式環境。）
+
+— T.R.

@@ -1,0 +1,12 @@
+//OCPA 第四區 - 內部使用//
+年度績效總結
+NAME: T. Reyes (Systems, ROSTER/LEDGER support)
+PERIOD: 2546
+REVIEWED BY: M. Alcaraz, Duty Administrator
+
+評等：符合預期。
+評語：在支援人力有限的情況下處理了大量工單。幾個反覆出現的基礎設施
+問題（見未結工單）超出職務範圍，無法獨力解決。建議 Systems 在下個
+週期前檢討第四區的人力配置。
+
+員工意見："已知悉。也想留個紀錄——同樣三件事我已經連續兩年提出來了。"

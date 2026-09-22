@@ -1,0 +1,10 @@
+//一般 - 人事紀錄//
+休假紀錄（部分匯出）
+NAME: Castel, M. (Dr., UNSC Medical Corps)
+TYPE: 延長個人休假
+DATES: 2517-09 至 2517-12（約 14 週）
+APPROVED BY: R. Okonjo, Human Resources
+MEDICAL FLAG: 無存檔
+
+備註欄（行政用，非臨床）：「依現場派遣返回人員標準政策核准，未經進一步
+審查。依政策不需要復職適任性追蹤。」
